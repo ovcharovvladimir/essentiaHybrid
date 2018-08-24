@@ -239,7 +239,8 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *
 		return errZeroBlockTime
 	}
 	// Verify the block's difficulty based in it's timestamp and parent's difficulty
-	expected := ethash.CalcDifficulty(chain, header.Time.Uint64(), parent)
+
+	expected := ethash.CalcDifficulty(chain, header.Time.Uint64(),  parent)
 
 	if expected.Cmp(header.Difficulty) != 0 {
 		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expected)
@@ -288,24 +289,31 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
 func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, parent *types.Header) *big.Int {
-	return CalcDifficulty(chain.Config(), time, parent)
+    mode :=ethash.config.PowMode
+	return CalcDifficultyAdj(chain.Config(), time,mode, parent)
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
-	//Below Lines commented for the ESStest net
-	//	next := new(big.Int).Add(parent.Number, big1)
-	//	switch {
-	//	case config.IsByzantium(next):
-	//		return calcDifficultyByzantium(time, parent)
-	//	case config.IsHomestead(next):
-	//		return calcDifficultyHomestead(time, parent)
-	//	default:
-	//		return calcDifficultyFrontier(time, parent)
-	//	}
-	return big.NewInt(1)
+func CalcDifficultyAdj(config *params.ChainConfig, time uint64, mode Mode, parent *types.Header) *big.Int {
+
+	if (mode==ModeTest){
+		return big.NewInt(1)
+
+	}else{
+		next := new(big.Int).Add(parent.Number, big1)
+		switch {
+		case config.IsByzantium(next):
+			return calcDifficultyByzantium(time, parent)
+		case config.IsHomestead(next):
+			return calcDifficultyHomestead(time, parent)
+		default:
+			return calcDifficultyFrontier(time, parent)
+		}
+	}
+
+
 }
 
 // Some weird constants to avoid constant memory allocs for them.

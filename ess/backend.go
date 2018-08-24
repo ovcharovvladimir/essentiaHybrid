@@ -117,6 +117,10 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 		return nil, genesisErr
 	}
 	log.Info("Initialised chain configuration", "config", chainConfig)
+	//Change POW mode to simplify difficulty
+	if (config.NetworkId==3){
+		config.Ethash.PowMode=esshash.ModeTest
+	};
 
 	eth := &Ethereum{
 		config:         config,
