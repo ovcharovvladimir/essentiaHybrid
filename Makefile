@@ -10,6 +10,14 @@
 
 GOBIN = $(shell pwd)/build/bin
 GO ?= latest
+bootnode:
+	build/env.sh go run build/ci.go install ./cmd/bootnode
+	@echo "Done building BOOTNODE."
+	@echo "Run \"$(GOBIN)/bootnode\" to launch bootnode."
+esskey:
+	build/env.sh go run build/ci.go install ./cmd/esskey
+	@echo "Done building ESSKEY."
+	@echo "Run \"$(GOBIN)/esskey\" to launch esskey"
 
 gess:
 	build/env.sh go run build/ci.go install ./cmd/gess
