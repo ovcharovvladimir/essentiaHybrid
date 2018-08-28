@@ -96,20 +96,20 @@ matrix:
       git:
         submodules: false # avoid cloning ethereum/tests
       script:
-        - go run build/ci.go xgo --alltools -- --targets=linux/mips --ldflags '-extldflags "-static"' -v
-        - for bin in build/bin/*-linux-mips; do mv -f "${bin}" "${bin/-linux-mips/}"; done
+      #  - go run build/ci.go xgo --alltools -- --targets=linux/mips --ldflags '-extldflags "-static"' -v
+      #  - for bin in build/bin/*-linux-mips; do mv -f "${bin}" "${bin/-linux-mips/}"; done
       #  - go run build/ci.go archive -arch mips -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
 
-        - go run build/ci.go xgo --alltools -- --targets=linux/mipsle --ldflags '-extldflags "-static"' -v
-        - for bin in build/bin/*-linux-mipsle; do mv -f "${bin}" "${bin/-linux-mipsle/}"; done
+      # - go run build/ci.go xgo --alltools -- --targets=linux/mipsle --ldflags '-extldflags "-static"' -v
+      #  - for bin in build/bin/*-linux-mipsle; do mv -f "${bin}" "${bin/-linux-mipsle/}"; done
       #  - go run build/ci.go archive -arch mipsle -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
 
-        - go run build/ci.go xgo --alltools -- --targets=linux/mips64 --ldflags '-extldflags "-static"' -v
-        - for bin in build/bin/*-linux-mips64; do mv -f "${bin}" "${bin/-linux-mips64/}"; done
+       # - go run build/ci.go xgo --alltools -- --targets=linux/mips64 --ldflags '-extldflags "-static"' -v
+       # - for bin in build/bin/*-linux-mips64; do mv -f "${bin}" "${bin/-linux-mips64/}"; done
        # - go run build/ci.go archive -arch mips64 -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
 
-        - go run build/ci.go xgo --alltools -- --targets=linux/mips64le --ldflags '-extldflags "-static"' -v
-        - for bin in build/bin/*-linux-mips64le; do mv -f "${bin}" "${bin/-linux-mips64le/}"; done
+       # - go run build/ci.go xgo --alltools -- --targets=linux/mips64le --ldflags '-extldflags "-static"' -v
+       # - for bin in build/bin/*-linux-mips64le; do mv -f "${bin}" "${bin/-linux-mips64le/}"; done
        # - go run build/ci.go archive -arch mips64le -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
 
     # This builder does the Android Maven and Azure uploads
@@ -163,18 +163,18 @@ matrix:
       #  - go run build/ci.go archive -type tar -signer OSX_SIGNING_KEY -upload gethstore/builds
 
         # Build the iOS framework and upload it to CocoaPods and Azure
-        - gem uninstall cocoapods -a -x
-        - gem install cocoapods
+      #  - gem uninstall cocoapods -a -x
+     #   - gem install cocoapods
 
-        - mv ~/.cocoapods/repos/master ~/.cocoapods/repos/master.bak
-        - sed -i '.bak' 's/repo.join/!repo.join/g' $(dirname `gem which cocoapods`)/cocoapods/sources_manager.rb
-        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git clone --depth=1 https://github.com/CocoaPods/Specs.git ~/.cocoapods/repos/master && pod setup --verbose; fi
+     #   - mv ~/.cocoapods/repos/master ~/.cocoapods/repos/master.bak
+      #  - sed -i '.bak' 's/repo.join/!repo.join/g' $(dirname `gem which cocoapods`)/cocoapods/sources_manager.rb
+      #  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git clone --depth=1 https://github.com/CocoaPods/Specs.git ~/.cocoapods/repos/master && pod setup --verbose; fi
 
-        - xctool -version
-        - xcrun simctl list
+     #   - xctool -version
+     #   - xcrun simctl list
 
         # Workaround for https://github.com/golang/go/issues/23749
-        - export CGO_CFLAGS_ALLOW='-fmodules|-fblocks|-fobjc-arc'
+      #  - export CGO_CFLAGS_ALLOW='-fmodules|-fblocks|-fobjc-arc'
        # - go run build/ci.go xcode -signer IOS_SIGNING_KEY -deploy trunk -upload gethstore/builds
 
 #    # This builder does the Azure archive purges to avoid accumulating junk
