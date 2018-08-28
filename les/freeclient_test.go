@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common/mclock"
-	"github.com/ovcharovvladimir/essentiaHybrid/ethdb"
+	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 )
 
 func TestFreeClientPoolL10C100(t *testing.T) {
@@ -45,7 +45,7 @@ const testFreeClientPoolTicks = 500000
 func testFreeClientPool(t *testing.T, connLimit, clientCount int) {
 	var (
 		clock     mclock.Simulated
-		db        = ethdb.NewMemDatabase()
+		db        = essdb.NewMemDatabase()
 		pool      = newFreeClientPool(db, connLimit, 10000, &clock)
 		connected = make([]bool, clientCount)
 		connTicks = make([]int, clientCount)

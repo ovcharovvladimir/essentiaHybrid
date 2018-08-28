@@ -169,8 +169,8 @@ func parseComplete(rawurl string) (*Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u.Scheme != "enode" {
-		return nil, errors.New("invalid URL scheme, want \"enode\"")
+	if u.Scheme != "essnode" {
+		return nil, errors.New("invalid URL scheme, want \"essnode\"")
 	}
 	// Parse the Node ID from the user portion.
 	if u.User == nil {
