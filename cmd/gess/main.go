@@ -332,7 +332,7 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		}
 		var ethereum *ess.Ethereum
 		if err := stack.Service(&ethereum); err != nil {
-			utils.Fatalf("Ethereum service not running: %v", err)
+			utils.Fatalf("Essentia service not running: %v", err)
 		}
 		// Use a reduced number of threads if requested
 		threads := ctx.GlobalInt(utils.MinerLegacyThreadsFlag.Name)

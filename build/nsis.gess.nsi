@@ -29,7 +29,7 @@
 # - sign installer
 CRCCheck on
 
-!define GROUPNAME "Ethereum"
+!define GROUPNAME "Essentia"
 !define APPNAME "Gess"
 !define DESCRIPTION "Official Go implementation of the Essentia protocol"
 !addplugindir .\

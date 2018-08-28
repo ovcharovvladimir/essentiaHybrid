@@ -3,9 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="8c506258-326b-43e1-a6dd-4c63fe475acc" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/esskey/utils.go" afterPath="$PROJECT_DIR$/cmd/esskey/utils.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/nsis.gess.nsi" afterPath="$PROJECT_DIR$/build/nsis.gess.nsi" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/esskey/main.go" afterPath="$PROJECT_DIR$/cmd/esskey/main.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/faucet/faucet.go" afterPath="$PROJECT_DIR$/cmd/faucet/faucet.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/gess/main.go" afterPath="$PROJECT_DIR$/cmd/gess/main.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/puppess/module_faucet.go" afterPath="$PROJECT_DIR$/cmd/puppess/module_faucet.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/swarm/manifest_test.go" afterPath="$PROJECT_DIR$/cmd/swarm/manifest_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/utils/flags.go" afterPath="$PROJECT_DIR$/cmd/utils/flags.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ess/handler.go" afterPath="$PROJECT_DIR$/ess/handler.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/difficulty_test_util.go" afterPath="$PROJECT_DIR$/tests/difficulty_test_util.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/internal/essapi/api.go" afterPath="$PROJECT_DIR$/internal/essapi/api.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/shhclient/client.go" afterPath="$PROJECT_DIR$/whisper/shhclient/client.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/whisperv5/api.go" afterPath="$PROJECT_DIR$/whisper/whisperv5/api.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/whisperv6/api.go" afterPath="$PROJECT_DIR$/whisper/whisperv6/api.go" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -15,112 +24,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="backend.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ess/backend.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2805">
-              <caret line="223" column="0" lean-forward="false" selection-start-line="223" selection-start-column="0" selection-end-line="223" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="consensus.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/consensus/esshash/consensus.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="310" column="16" lean-forward="true" selection-start-line="310" selection-start-column="16" selection-end-line="310" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="utils.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmd/esskey/utils.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-              <folding>
-                <element signature="e#738#986#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="util.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/accounts/abi/bind/util.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="44" column="9" lean-forward="true" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="util_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/accounts/abi/bind/util_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1386">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="difficulty_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/difficulty_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1077">
-              <caret line="74" column="0" lean-forward="true" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="difficulty_test_util.go" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tests/difficulty_test_util.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="870">
-              <caret line="60" column="0" lean-forward="true" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="client.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/whisper/shhclient/client.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="59">
-              <caret line="60" column="27" lean-forward="false" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
-              <folding>
-                <element signature="e#812#1063#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="flags.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmd/utils/flags.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="24402">
-              <caret line="1203" column="0" lean-forward="false" selection-start-line="1203" selection-start-column="0" selection-end-line="1203" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/params/config.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3171">
-              <caret line="156" column="0" lean-forward="false" selection-start-line="156" selection-start-column="0" selection-end-line="156" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375" />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -132,7 +36,6 @@
       <find>1.8.14</find>
       <find>DataDir</find>
       <find>Engine:</find>
-      <find>enode</find>
       <find>enode://</find>
       <find>enode:</find>
       <find>ethash</find>
@@ -146,12 +49,16 @@
       <find>Mo</find>
       <find>Ethereum protocol stopped</find>
       <find>Ethereum protocol stoppe</find>
+      <find>enode</find>
+      <find>Ethereum</find>
     </findStrings>
     <replaceStrings>
       <replace>essnode:</replace>
+      <replace>essnode</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\Users\Sergei\go\src\github.com\ovcharovvladimir\essentiaHybrid\whisper\shhclient</dir>
+      <dir>C:\Users\Sergei\go\src\github.com\ovcharovvladimir\essentiaHybrid</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -162,15 +69,16 @@
       <projects_view />
     </option>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/cmd/utils/flags.go" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/cmd/gess/main.go" />
         <option value="$PROJECT_DIR$/accounts/accounts.go" />
-        <option value="$PROJECT_DIR$/cmd/utils/flags.go" />
         <option value="$PROJECT_DIR$/cmd/gess/consolecmd_test.go" />
         <option value="$PROJECT_DIR$/dashboard/assets.go" />
-        <option value="$PROJECT_DIR$/build/nsis.gess.nsi" />
         <option value="$PROJECT_DIR$/node/defaults.go" />
         <option value="$PROJECT_DIR$/cmd/puppess/module_dashboard.go" />
         <option value="$PROJECT_DIR$/swarm/pss/testdata/snapshot_3.json" />
@@ -196,6 +104,16 @@
         <option value="$PROJECT_DIR$/ess/backend.go" />
         <option value="$PROJECT_DIR$/cmd/esskey/utils.go" />
         <option value="$PROJECT_DIR$/tests/difficulty_test_util.go" />
+        <option value="$PROJECT_DIR$/Makefile" />
+        <option value="$PROJECT_DIR$/whisper/shhclient/client.go" />
+        <option value="$PROJECT_DIR$/whisper/whisperv5/api.go" />
+        <option value="$PROJECT_DIR$/cmd/faucet/faucet.go" />
+        <option value="$PROJECT_DIR$/whisper/whisperv6/api.go" />
+        <option value="$PROJECT_DIR$/cmd/utils/flags.go" />
+        <option value="$PROJECT_DIR$/cmd/swarm/manifest_test.go" />
+        <option value="$PROJECT_DIR$/cmd/puppess/module_faucet.go" />
+        <option value="$PROJECT_DIR$/cmd/esskey/main.go" />
+        <option value="$PROJECT_DIR$/build/nsis.gess.nsi" />
       </list>
     </option>
   </component>
@@ -234,9 +152,9 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -246,8 +164,7 @@
             </path>
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
-              <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
@@ -266,7 +183,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmd/gess" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -280,7 +197,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run">
+  <component name="RunManager" selected="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess">
     <configuration name="All in 'essentiaHybrid'" type="GoTestRunConfiguration" factoryName="Go Test">
       <module name="essentiaHybrid" />
       <working_directory value="$PROJECT_DIR$" />
@@ -446,9 +363,9 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
-        <item index="1" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
-        <item index="2" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess" />
+        <item index="0" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess" />
+        <item index="1" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
+        <item index="2" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
         <item index="3" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess and run" />
         <item index="4" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess/downloader and run" />
       </list>
@@ -469,7 +386,9 @@
       <workItem from="1535046494381" duration="181000" />
       <workItem from="1535046685199" duration="6780000" />
       <workItem from="1535112162379" duration="8826000" />
-      <workItem from="1535265814419" duration="2331000" />
+      <workItem from="1535265814419" duration="5553000" />
+      <workItem from="1535362240175" duration="329000" />
+      <workItem from="1535450970804" duration="1983000" />
     </task>
     <servers />
   </component>
@@ -482,9 +401,9 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22545000" />
+    <option name="totallyTimeSpent" value="28079000" />
   </component>
-  <component name="TodoView">
+  <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
     </todo-panel>
@@ -495,28 +414,27 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1618" height="878" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32960895" sideWeight="0.49740598" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.49481192" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35055867" sideWeight="0.5077821" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39944133" sideWeight="0.18352789" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35055867" sideWeight="0.4922179" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.49481192" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.49740598" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.4922179" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26783398" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2769131" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.48184177" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39944133" sideWeight="0.4766537" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39944133" sideWeight="0.8164721" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -561,94 +479,28 @@
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/consensus/esshash/consensus.go</url>
-          <line>242</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/core/chain_makers.go</url>
           <line>152</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/p2p/discover/node.go</url>
+          <line>164</line>
+          <properties />
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/p2p/discover/node.go</url>
+          <line>179</line>
+          <properties />
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="32" />
+      <option name="time" value="35" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/swarm/pss/testdata/snapshot_3.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="41" column="8" lean-forward="true" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/puppess/module_dashboard.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-101365">
-          <caret line="603" column="52" lean-forward="false" selection-start-line="603" selection-start-column="52" selection-end-line="603" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/bootnode/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="116" column="9" lean-forward="false" selection-start-line="116" selection-start-column="9" selection-end-line="116" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/evm/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-252">
-          <caret line="28" column="37" lean-forward="false" selection-start-line="28" selection-start-column="37" selection-end-line="28" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/evm/runner.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-378">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swarm/pss/ping.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="73" column="33" lean-forward="false" selection-start-line="73" selection-start-column="33" selection-end-line="73" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/p2p/protocols/protocol.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1494">
-          <caret line="131" column="9" lean-forward="false" selection-start-line="131" selection-start-column="4" selection-end-line="131" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mobile/gess.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="121" column="32" lean-forward="false" selection-start-line="121" selection-start-column="32" selection-end-line="121" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/downloader/downloader_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="340" column="39" lean-forward="false" selection-start-line="340" selection-start-column="38" selection-end-line="340" selection-end-column="39" />
-          <folding>
-            <element signature="e#813#1381#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/params/version.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="27" column="1" lean-forward="false" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ess/fetcher/fetcher_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-9342">
@@ -722,13 +574,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Makefile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="19" column="10" lean-forward="false" selection-start-line="19" selection-start-column="10" selection-end-line="19" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build/ci.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="21">
@@ -782,7 +627,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-443">
           <caret line="31" column="5" lean-forward="false" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -851,19 +695,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/utils/flags.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24402">
-          <caret line="1203" column="0" lean-forward="false" selection-start-line="1203" selection-start-column="0" selection-end-line="1203" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/params/config.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3171">
           <caret line="156" column="0" lean-forward="false" selection-start-line="156" selection-start-column="0" selection-end-line="156" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -892,21 +727,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/whisper/shhclient/client.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="60" column="27" lean-forward="false" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
-          <folding>
-            <element signature="e#812#1063#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/accounts/abi/bind/util.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
-          <caret line="44" column="9" lean-forward="true" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
-          <folding />
+          <caret line="44" column="9" lean-forward="false" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -914,23 +738,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1386">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/difficulty_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1077">
-          <caret line="74" column="0" lean-forward="true" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/consensus/esshash/consensus.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="310" column="16" lean-forward="true" selection-start-line="310" selection-start-column="16" selection-end-line="310" selection-end-column="16" />
-          <folding />
+          <caret line="74" column="0" lean-forward="false" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -938,7 +752,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2805">
           <caret line="223" column="0" lean-forward="false" selection-start-line="223" selection-start-column="0" selection-end-line="223" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -946,16 +759,125 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#738#986#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/difficulty_test_util.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="870">
-          <caret line="60" column="0" lean-forward="true" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+        <state relative-caret-position="177">
+          <caret line="27" column="1" lean-forward="false" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisper/shhclient/client.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1009">
+          <caret line="82" column="71" lean-forward="false" selection-start-line="82" selection-start-column="71" selection-end-line="82" selection-end-column="71" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisper/whisperv5/api.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="650">
+          <caret line="99" column="40" lean-forward="false" selection-start-line="99" selection-start-column="40" selection-end-line="99" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swarm/pss/testdata/snapshot_128.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="0" column="125" lean-forward="false" selection-start-line="0" selection-start-column="120" selection-end-line="0" selection-end-column="125" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/whisper/whisperv6/api.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="59" column="14" lean-forward="true" selection-start-line="59" selection-start-column="14" selection-end-line="59" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/faucet/faucet.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2052">
+          <caret line="146" column="48" lean-forward="false" selection-start-line="146" selection-start-column="48" selection-end-line="146" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/p2p/discover/node.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2355">
+          <caret line="38" column="16" lean-forward="false" selection-start-line="38" selection-start-column="6" selection-end-line="38" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Go/src/runtime/asm_amd64.s">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="2334" column="31" lean-forward="false" selection-start-line="2334" selection-start-column="31" selection-end-line="2334" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/consensus/esshash/consensus.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="553" column="26" lean-forward="true" selection-start-line="553" selection-start-column="26" selection-end-line="553" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/swarm/manifest_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="460" column="40" lean-forward="false" selection-start-line="460" selection-start-column="40" selection-end-line="460" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/esskey/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="36" column="46" lean-forward="false" selection-start-line="36" selection-start-column="46" selection-end-line="36" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3087">
+          <caret line="147" column="12" lean-forward="false" selection-start-line="147" selection-start-column="12" selection-end-line="147" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/utils/flags.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="646" column="12" lean-forward="false" selection-start-line="646" selection-start-column="12" selection-end-line="646" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/puppess/module_faucet.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="160" column="17" lean-forward="false" selection-start-line="160" selection-start-column="17" selection-end-line="160" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/nsis.gess.nsi">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="111">
+          <caret line="64" column="48" lean-forward="true" selection-start-line="64" selection-start-column="48" selection-end-line="64" selection-end-column="48" />
           <folding />
         </state>
       </provider>

@@ -65,7 +65,7 @@ var (
 	genesisFlag = flag.String("genesis", "", "Genesis json file to seed the chain with")
 	apiPortFlag = flag.Int("apiport", 8080, "Listener port for the HTTP API connection")
 	ethPortFlag = flag.Int("ethport", 30303, "Listener port for the devp2p connection")
-	bootFlag    = flag.String("bootnodes", "", "Comma separated bootnode enode URLs to seed with")
+	bootFlag    = flag.String("bootnodes", "", "Comma separated bootnode essnode URLs to seed with")
 	netFlag     = flag.Uint64("network", 0, "Network ID to use for the Ethereum protocol")
 	statsFlag   = flag.String("ethstats", "", "Ethstats network monitoring auth string")
 
@@ -144,7 +144,7 @@ func main() {
 	if err = json.Unmarshal(blob, genesis); err != nil {
 		log.Crit("Failed to parse genesis block json", "err", err)
 	}
-	// Convert the bootnodes to internal enode representations
+	// Convert the bootnodes to internal essnode representations
 	var enodes []*discv5.Node
 	for _, boot := range strings.Split(*bootFlag, ",") {
 		if url, err := discv5.ParseNode(boot); err == nil {
