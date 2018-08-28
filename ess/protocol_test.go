@@ -25,7 +25,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-	"github.com/ovcharovvladimir/essentiaHybrid/eth/downloader"
+	"github.com/ovcharovvladimir/essentiaHybrid/ess/downloader"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
 	"github.com/ovcharovvladimir/essentiaHybrid/rlp"
 )

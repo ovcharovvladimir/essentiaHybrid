@@ -32,7 +32,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/common/hexutil"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
-	"github.com/ovcharovvladimir/essentiaHybrid/internal/ethapi"
+	"github.com/ovcharovvladimir/essentiaHybrid/internal/essapi"
 	"github.com/ovcharovvladimir/essentiaHybrid/rlp"
 )
 
@@ -44,7 +44,7 @@ type HeadlessUI struct {
 func (ui *HeadlessUI) OnSignerStartup(info StartupInfo) {
 }
 
-func (ui *HeadlessUI) OnApprovedTx(tx ethapi.SignTransactionResult) {
+func (ui *HeadlessUI) OnApprovedTx(tx essapi.SignTransactionResult) {
 	fmt.Printf("OnApproved called")
 }
 
@@ -276,7 +276,7 @@ func TestSignTx(t *testing.T) {
 
 	var (
 		list      Accounts
-		res, res2 *ethapi.SignTransactionResult
+		res, res2 *essapi.SignTransactionResult
 		err       error
 	)
 

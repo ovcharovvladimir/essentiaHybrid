@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ovcharovvladimir/essentiaHybrid/eth/downloader"
+	"github.com/ovcharovvladimir/essentiaHybrid/ess/downloader"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
 )

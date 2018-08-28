@@ -24,7 +24,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-	"github.com/ovcharovvladimir/essentiaHybrid/eth"
+	"github.com/ovcharovvladimir/essentiaHybrid/ess"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/light"
 )
@@ -90,7 +90,7 @@ func testAccess(t *testing.T, protocol int, fn accessTestFn) {
 	db := essdb.NewMemDatabase()
 	ldb := essdb.NewMemDatabase()
 	odr := NewLesOdr(ldb, rm)
-	odr.SetIndexers(light.NewChtIndexer(db, true, nil), light.NewBloomTrieIndexer(db, true, nil), eth.NewBloomIndexer(db, light.BloomTrieFrequency, light.HelperTrieConfirmations))
+	odr.SetIndexers(light.NewChtIndexer(db, true, nil), light.NewBloomTrieIndexer(db, true, nil), ess.NewBloomIndexer(db, light.BloomTrieFrequency, light.HelperTrieConfirmations))
 
 	pm := newTestProtocolManagerMust(t, false, 4, testChainGen, nil, nil, db)
 	lpm := newTestProtocolManagerMust(t, true, 0, nil, peers, odr, ldb)

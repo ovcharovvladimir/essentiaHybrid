@@ -30,7 +30,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-	"github.com/ovcharovvladimir/essentiaHybrid/eth/downloader"
+	"github.com/ovcharovvladimir/essentiaHybrid/ess/downloader"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/event"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
@@ -448,7 +448,7 @@ func testGetReceipt(t *testing.T, protocol int) {
 	}
 }
 
-// Tests that post eth protocol handshake, DAO fork-enabled clients also execute
+// Tests that post ess protocol handshake, DAO fork-enabled clients also execute
 // a DAO "challenge" verifying each others' DAO fork headers to ensure they're on
 // compatible chains.
 func TestDAOChallengeNoVsNo(t *testing.T)       { testDAOChallenge(t, false, false, false) }

@@ -37,7 +37,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/rpc"
 )
 
-// EthAPIBackend implements ethapi.Backend for full nodes
+// EthAPIBackend implements essapi.Backend for full nodes
 type EthAPIBackend struct {
 	eth *Ethereum
 	gpo *gasprice.Oracle
