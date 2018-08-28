@@ -31,8 +31,8 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 )
 
-// prepare converts an ethash cache or dataset from a byte stream into the internal
-// int representation. All ethash methods work with ints to avoid constant byte to
+// prepare converts an esshash cache or dataset from a byte stream into the internal
+// int representation. All esshash methods work with ints to avoid constant byte to
 // int conversions as well as to handle both little and big endian systems.
 func prepare(dest []uint32, src []byte) {
 	for i := 0; i < len(dest); i++ {
@@ -729,9 +729,9 @@ func TestConcurrentDiskCacheGeneration(t *testing.T) {
 
 		go func(idx int) {
 			defer pend.Done()
-			ethash := New(Config{cachedir, 0, 1, "", 0, 0, ModeNormal}, nil)
-			defer ethash.Close()
-			if err := ethash.VerifySeal(nil, block.Header()); err != nil {
+			esshash := New(Config{cachedir, 0, 1, "", 0, 0, ModeNormal}, nil)
+			defer esshash.Close()
+			if err := esshash.VerifySeal(nil, block.Header()); err != nil {
 				t.Errorf("proc %d: block verification failed: %v", idx, err)
 			}
 		}(i)

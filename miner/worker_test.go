@@ -24,7 +24,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/consensus"
 	"github.com/ovcharovvladimir/essentiaHybrid/consensus/clique"
-	"github.com/ovcharovvladimir/essentiaHybrid/consensus/ethash"
+	"github.com/ovcharovvladimir/essentiaHybrid/consensus/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/core"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
@@ -90,7 +90,7 @@ func newTestWorkerBackend(t *testing.T, chainConfig *params.ChainConfig, engine 
 	case *clique.Clique:
 		gspec.ExtraData = make([]byte, 32+common.AddressLength+65)
 		copy(gspec.ExtraData[32:], testBankAddress[:])
-	case *ethash.Ethash:
+	case *esshash.Ethash:
 	default:
 		t.Fatal("unexpect consensus engine type")
 	}
@@ -125,7 +125,7 @@ func newTestWorker(t *testing.T, chainConfig *params.ChainConfig, engine consens
 }
 
 func TestPendingStateAndBlockEthash(t *testing.T) {
-	testPendingStateAndBlock(t, ethashChainConfig, ethash.NewFaker())
+	testPendingStateAndBlock(t, ethashChainConfig, esshash.NewFaker())
 }
 func TestPendingStateAndBlockClique(t *testing.T) {
 	testPendingStateAndBlock(t, cliqueChainConfig, clique.New(cliqueChainConfig.Clique, essdb.NewMemDatabase()))
@@ -156,7 +156,7 @@ func testPendingStateAndBlock(t *testing.T, chainConfig *params.ChainConfig, eng
 }
 
 func TestEmptyWorkEthash(t *testing.T) {
-	testEmptyWork(t, ethashChainConfig, ethash.NewFaker())
+	testEmptyWork(t, ethashChainConfig, esshash.NewFaker())
 }
 func TestEmptyWorkClique(t *testing.T) {
 	testEmptyWork(t, cliqueChainConfig, clique.New(cliqueChainConfig.Clique, essdb.NewMemDatabase()))
@@ -216,10 +216,10 @@ func testEmptyWork(t *testing.T, chainConfig *params.ChainConfig, engine consens
 }
 
 func TestStreamUncleBlock(t *testing.T) {
-	ethash := ethash.NewFaker()
-	defer ethash.Close()
+	esshash := esshash.NewFaker()
+	defer esshash.Close()
 
-	w, b := newTestWorker(t, ethashChainConfig, ethash)
+	w, b := newTestWorker(t, ethashChainConfig, esshash)
 	defer w.close()
 
 	var taskCh = make(chan struct{})
@@ -272,7 +272,7 @@ func TestStreamUncleBlock(t *testing.T) {
 }
 
 func TestRegenerateMiningBlockEthash(t *testing.T) {
-	testRegenerateMiningBlock(t, ethashChainConfig, ethash.NewFaker())
+	testRegenerateMiningBlock(t, ethashChainConfig, esshash.NewFaker())
 }
 
 func TestRegenerateMiningBlockClique(t *testing.T) {

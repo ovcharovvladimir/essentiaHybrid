@@ -23,7 +23,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-	"github.com/ovcharovvladimir/essentiaHybrid/consensus/ethash"
+	"github.com/ovcharovvladimir/essentiaHybrid/consensus/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
@@ -120,10 +120,10 @@ func TestSetupGenesis(t *testing.T) {
 				// Advance to block #4, past the homestead transition block of customg.
 				genesis := oldcustomg.MustCommit(db)
 
-				bc, _ := NewBlockChain(db, nil, oldcustomg.Config, ethash.NewFullFaker(), vm.Config{})
+				bc, _ := NewBlockChain(db, nil, oldcustomg.Config, esshash.NewFullFaker(), vm.Config{})
 				defer bc.Stop()
 
-				blocks, _ := GenerateChain(oldcustomg.Config, genesis, ethash.NewFaker(), db, 4, nil)
+				blocks, _ := GenerateChain(oldcustomg.Config, genesis, esshash.NewFaker(), db, 4, nil)
 				bc.InsertChain(blocks)
 				bc.CurrentBlock()
 				// This should return a compatibility error.

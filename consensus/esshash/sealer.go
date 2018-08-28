@@ -42,31 +42,31 @@ var (
 
 // Seal implements consensus.Engine, attempting to find a nonce that satisfies
 // the block's difficulty requirements.
-func (ethash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, stop <-chan struct{}) (*types.Block, error) {
+func (esshash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, stop <-chan struct{}) (*types.Block, error) {
 	// If we're running a fake PoW, simply return a 0 nonce immediately
-	if ethash.config.PowMode == ModeFake || ethash.config.PowMode == ModeFullFake {
+	if esshash.config.PowMode == ModeFake || esshash.config.PowMode == ModeFullFake {
 		header := block.Header()
 		header.Nonce, header.MixDigest = types.BlockNonce{}, common.Hash{}
 		return block.WithSeal(header), nil
 	}
 	// If we're running a shared PoW, delegate sealing to it
-	if ethash.shared != nil {
-		return ethash.shared.Seal(chain, block, stop)
+	if esshash.shared != nil {
+		return esshash.shared.Seal(chain, block, stop)
 	}
 	// Create a runner and the multiple search threads it directs
 	abort := make(chan struct{})
 
-	ethash.lock.Lock()
-	threads := ethash.threads
-	if ethash.rand == nil {
+	esshash.lock.Lock()
+	threads := esshash.threads
+	if esshash.rand == nil {
 		seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
 		if err != nil {
-			ethash.lock.Unlock()
+			esshash.lock.Unlock()
 			return nil, err
 		}
-		ethash.rand = rand.New(rand.NewSource(seed.Int64()))
+		esshash.rand = rand.New(rand.NewSource(seed.Int64()))
 	}
-	ethash.lock.Unlock()
+	esshash.lock.Unlock()
 	if threads == 0 {
 		threads = runtime.NumCPU()
 	}
@@ -74,16 +74,16 @@ func (ethash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, stop
 		threads = 0 // Allows disabling local mining without extra logic around local/remote
 	}
 	// Push new work to remote sealer
-	if ethash.workCh != nil {
-		ethash.workCh <- block
+	if esshash.workCh != nil {
+		esshash.workCh <- block
 	}
 	var pend sync.WaitGroup
 	for i := 0; i < threads; i++ {
 		pend.Add(1)
 		go func(id int, nonce uint64) {
 			defer pend.Done()
-			ethash.mine(block, id, nonce, abort, ethash.resultCh)
-		}(i, uint64(ethash.rand.Int63()))
+			esshash.mine(block, id, nonce, abort, esshash.resultCh)
+		}(i, uint64(esshash.rand.Int63()))
 	}
 	// Wait until sealing is terminated or a nonce is found
 	var result *types.Block
@@ -91,14 +91,14 @@ func (ethash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, stop
 	case <-stop:
 		// Outside abort, stop all miner threads
 		close(abort)
-	case result = <-ethash.resultCh:
+	case result = <-esshash.resultCh:
 		// One of the threads found a block, abort all others
 		close(abort)
-	case <-ethash.update:
+	case <-esshash.update:
 		// Thread count was changed on user request, restart
 		close(abort)
 		pend.Wait()
-		return ethash.Seal(chain, block, stop)
+		return esshash.Seal(chain, block, stop)
 	}
 	// Wait for all miners to terminate and return the block
 	pend.Wait()
@@ -107,14 +107,14 @@ func (ethash *Ethash) Seal(chain consensus.ChainReader, block *types.Block, stop
 
 // mine is the actual proof-of-work miner that searches for a nonce starting from
 // seed that results in correct final block difficulty.
-func (ethash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
+func (esshash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
 	// Extract some data from the header
 	var (
 		header  = block.Header()
 		hash    = header.HashNoNonce().Bytes()
 		target  = new(big.Int).Div(two256, header.Difficulty)
 		number  = header.Number.Uint64()
-		dataset = ethash.dataset(number, false)
+		dataset = esshash.dataset(number, false)
 	)
 	// Start generating random nonces until we abort or find a good one
 	var (
@@ -122,21 +122,21 @@ func (ethash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan s
 		nonce    = seed
 	)
 	logger := log.New("miner", id)
-	logger.Trace("Started ethash search for new nonces", "seed", seed)
+	logger.Trace("Started esshash search for new nonces", "seed", seed)
 search:
 	for {
 		select {
 		case <-abort:
 			// Mining terminated, update stats and abort
 			logger.Trace("Ethash nonce search aborted", "attempts", nonce-seed)
-			ethash.hashrate.Mark(attempts)
+			esshash.hashrate.Mark(attempts)
 			break search
 
 		default:
 			// We don't have to update hash rate on every nonce, so update after after 2^X nonces
 			attempts++
 			if (attempts % (1 << 15)) == 0 {
-				ethash.hashrate.Mark(attempts)
+				esshash.hashrate.Mark(attempts)
 				attempts = 0
 			}
 			// Compute the PoW value of this nonce
@@ -165,7 +165,7 @@ search:
 }
 
 // remote is a standalone goroutine to handle remote mining related stuff.
-func (ethash *Ethash) remote(notify []string) {
+func (esshash *Ethash) remote(notify []string) {
 	var (
 		works = make(map[common.Hash]*types.Block)
 		rates = make(map[common.Hash]hashrate)
@@ -239,12 +239,12 @@ func (ethash *Ethash) remote(notify []string) {
 		header.MixDigest = mixDigest
 
 		start := time.Now()
-		if err := ethash.verifySeal(nil, header, true); err != nil {
+		if err := esshash.verifySeal(nil, header, true); err != nil {
 			log.Warn("Invalid proof-of-work submitted", "hash", hash, "elapsed", time.Since(start), "err", err)
 			return false
 		}
 		// Make sure the result channel is created.
-		if ethash.resultCh == nil {
+		if esshash.resultCh == nil {
 			log.Warn("Ethash result channel is empty, submitted mining result is rejected")
 			return false
 		}
@@ -252,7 +252,7 @@ func (ethash *Ethash) remote(notify []string) {
 
 		// Solutions seems to be valid, return to the miner and notify acceptance.
 		select {
-		case ethash.resultCh <- block.WithSeal(header):
+		case esshash.resultCh <- block.WithSeal(header):
 			delete(works, hash)
 			return true
 		default:
@@ -266,7 +266,7 @@ func (ethash *Ethash) remote(notify []string) {
 
 	for {
 		select {
-		case block := <-ethash.workCh:
+		case block := <-esshash.workCh:
 			if currentBlock != nil && block.ParentHash() != currentBlock.ParentHash() {
 				// Start new round mining, throw out all previous work.
 				works = make(map[common.Hash]*types.Block)
@@ -278,7 +278,7 @@ func (ethash *Ethash) remote(notify []string) {
 			// Notify and requested URLs of the new work availability
 			notifyWork()
 
-		case work := <-ethash.fetchWorkCh:
+		case work := <-esshash.fetchWorkCh:
 			// Return current mining work to remote miner.
 			if currentBlock == nil {
 				work.errc <- errNoMiningWork
@@ -286,7 +286,7 @@ func (ethash *Ethash) remote(notify []string) {
 				work.res <- currentWork
 			}
 
-		case result := <-ethash.submitWorkCh:
+		case result := <-esshash.submitWorkCh:
 			// Verify submitted PoW solution based on maintained mining blocks.
 			if submitWork(result.nonce, result.mixDigest, result.hash) {
 				result.errc <- nil
@@ -294,12 +294,12 @@ func (ethash *Ethash) remote(notify []string) {
 				result.errc <- errInvalidSealResult
 			}
 
-		case result := <-ethash.submitRateCh:
+		case result := <-esshash.submitRateCh:
 			// Trace remote sealer's hash rate by submitted value.
 			rates[result.id] = hashrate{rate: result.rate, ping: time.Now()}
 			close(result.done)
 
-		case req := <-ethash.fetchRateCh:
+		case req := <-esshash.fetchRateCh:
 			// Gather all hash rate submitted by remote sealer.
 			var total uint64
 			for _, rate := range rates {
@@ -316,8 +316,8 @@ func (ethash *Ethash) remote(notify []string) {
 				}
 			}
 
-		case errc := <-ethash.exitCh:
-			// Exit remote loop if ethash is closed and return relevant error.
+		case errc := <-esshash.exitCh:
+			// Exit remote loop if esshash is closed and return relevant error.
 			errc <- nil
 			log.Trace("Ethash remote sealer is exiting")
 			return

@@ -120,7 +120,7 @@ type ChainConfig struct {
 	ConstantinopleBlock *big.Int `json:"constantinopleBlock,omitempty"` // Constantinople switch block (nil = no fork, 0 = already activated)
 
 	// Various consensus engines
-	Ethash *EthashConfig `json:"ethash,omitempty"`
+	Ethash *EthashConfig `json:"esshash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
 }
 

@@ -25,7 +25,7 @@ import (
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/common/math"
-	"github.com/ovcharovvladimir/essentiaHybrid/consensus/ethash"
+	"github.com/ovcharovvladimir/essentiaHybrid/consensus/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
@@ -170,11 +170,11 @@ func benchInsertChain(b *testing.B, disk bool, gen func(int, *BlockGen)) {
 		Alloc:  GenesisAlloc{benchRootAddr: {Balance: benchRootFunds}},
 	}
 	genesis := gspec.MustCommit(db)
-	chain, _ := GenerateChain(gspec.Config, genesis, ethash.NewFaker(), db, b.N, gen)
+	chain, _ := GenerateChain(gspec.Config, genesis, esshash.NewFaker(), db, b.N, gen)
 
 	// Time the insertion of the new chain.
 	// State and blocks are stored in the same DB.
-	chainman, _ := NewBlockChain(db, nil, gspec.Config, ethash.NewFaker(), vm.Config{})
+	chainman, _ := NewBlockChain(db, nil, gspec.Config, esshash.NewFaker(), vm.Config{})
 	defer chainman.Stop()
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -286,7 +286,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 		if err != nil {
 			b.Fatalf("error opening database at %v: %v", dir, err)
 		}
-		chain, err := NewBlockChain(db, nil, params.TestChainConfig, ethash.NewFaker(), vm.Config{})
+		chain, err := NewBlockChain(db, nil, params.TestChainConfig, esshash.NewFaker(), vm.Config{})
 		if err != nil {
 			b.Fatalf("error creating chain: %v", err)
 		}

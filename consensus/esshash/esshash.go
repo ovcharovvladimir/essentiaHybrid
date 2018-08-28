@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package ethash implements the ethash proof-of-work consensus engine.
+// Package esshash implements the esshash proof-of-work consensus engine.
 package esshash
 
 import (
@@ -166,7 +166,7 @@ func newlru(what string, maxItems int, new func(epoch uint64) interface{}) *lru 
 		maxItems = 1
 	}
 	cache, _ := simplelru.NewLRU(maxItems, func(key, value interface{}) {
-		log.Trace("Evicted ethash "+what, "epoch", key)
+		log.Trace("Evicted esshash "+what, "epoch", key)
 	})
 	return &lru{what: what, new: new, cache: cache}
 }
@@ -184,14 +184,14 @@ func (lru *lru) get(epoch uint64) (item, future interface{}) {
 		if lru.future > 0 && lru.future == epoch {
 			item = lru.futureItem
 		} else {
-			log.Trace("Requiring new ethash "+lru.what, "epoch", epoch)
+			log.Trace("Requiring new esshash "+lru.what, "epoch", epoch)
 			item = lru.new(epoch)
 		}
 		lru.cache.Add(epoch, item)
 	}
 	// Update the 'future item' if epoch is larger than previously seen.
 	if epoch < maxEpoch-1 && lru.future < epoch+1 {
-		log.Trace("Requiring new future ethash "+lru.what, "epoch", epoch+1)
+		log.Trace("Requiring new future esshash "+lru.what, "epoch", epoch+1)
 		future = lru.new(epoch + 1)
 		lru.future = epoch + 1
 		lru.futureItem = future
@@ -199,7 +199,7 @@ func (lru *lru) get(epoch uint64) (item, future interface{}) {
 	return item, future
 }
 
-// cache wraps an ethash cache with some metadata to allow easier concurrent use.
+// cache wraps an esshash cache with some metadata to allow easier concurrent use.
 type cache struct {
 	epoch uint64    // Epoch for which this cache is relevant
 	dump  *os.File  // File descriptor of the memory mapped cache
@@ -208,7 +208,7 @@ type cache struct {
 	once  sync.Once // Ensures the cache is generated only once
 }
 
-// newCache creates a new ethash verification cache and returns it as a plain Go
+// newCache creates a new esshash verification cache and returns it as a plain Go
 // interface to be usable in an LRU cache.
 func newCache(epoch uint64) interface{} {
 	return &cache{epoch: epoch}
@@ -244,15 +244,15 @@ func (c *cache) generate(dir string, limit int, test bool) {
 		var err error
 		c.dump, c.mmap, c.cache, err = memoryMap(path)
 		if err == nil {
-			logger.Debug("Loaded old ethash cache from disk")
+			logger.Debug("Loaded old esshash cache from disk")
 			return
 		}
-		logger.Debug("Failed to load old ethash cache", "err", err)
+		logger.Debug("Failed to load old esshash cache", "err", err)
 
 		// No previous cache available, create a new cache file to fill
 		c.dump, c.mmap, c.cache, err = memoryMapAndGenerate(path, size, func(buffer []uint32) { generateCache(buffer, c.epoch, seed) })
 		if err != nil {
-			logger.Error("Failed to generate mapped ethash cache", "err", err)
+			logger.Error("Failed to generate mapped esshash cache", "err", err)
 
 			c.cache = make([]uint32, size/4)
 			generateCache(c.cache, c.epoch, seed)
@@ -275,7 +275,7 @@ func (c *cache) finalizer() {
 	}
 }
 
-// dataset wraps an ethash dataset with some metadata to allow easier concurrent use.
+// dataset wraps an esshash dataset with some metadata to allow easier concurrent use.
 type dataset struct {
 	epoch   uint64    // Epoch for which this cache is relevant
 	dump    *os.File  // File descriptor of the memory mapped cache
@@ -285,7 +285,7 @@ type dataset struct {
 	done    uint32    // Atomic flag to determine generation status
 }
 
-// newDataset creates a new ethash mining dataset and returns it as a plain Go
+// newDataset creates a new esshash mining dataset and returns it as a plain Go
 // interface to be usable in an LRU cache.
 func newDataset(epoch uint64) interface{} {
 	return &dataset{epoch: epoch}
@@ -330,10 +330,10 @@ func (d *dataset) generate(dir string, limit int, test bool) {
 		var err error
 		d.dump, d.mmap, d.dataset, err = memoryMap(path)
 		if err == nil {
-			logger.Debug("Loaded old ethash dataset from disk")
+			logger.Debug("Loaded old esshash dataset from disk")
 			return
 		}
-		logger.Debug("Failed to load old ethash dataset", "err", err)
+		logger.Debug("Failed to load old esshash dataset", "err", err)
 
 		// No previous dataset available, create a new dataset file to fill
 		cache := make([]uint32, csize/4)
@@ -341,7 +341,7 @@ func (d *dataset) generate(dir string, limit int, test bool) {
 
 		d.dump, d.mmap, d.dataset, err = memoryMapAndGenerate(path, dsize, func(buffer []uint32) { generateDataset(buffer, d.epoch, cache) })
 		if err != nil {
-			logger.Error("Failed to generate mapped ethash dataset", "err", err)
+			logger.Error("Failed to generate mapped esshash dataset", "err", err)
 
 			d.dataset = make([]uint32, dsize/2)
 			generateDataset(d.dataset, d.epoch, cache)
@@ -371,19 +371,19 @@ func (d *dataset) finalizer() {
 	}
 }
 
-// MakeCache generates a new ethash cache and optionally stores it to disk.
+// MakeCache generates a new esshash cache and optionally stores it to disk.
 func MakeCache(block uint64, dir string) {
 	c := cache{epoch: block / epochLength}
 	c.generate(dir, math.MaxInt32, false)
 }
 
-// MakeDataset generates a new ethash dataset and optionally stores it to disk.
+// MakeDataset generates a new esshash dataset and optionally stores it to disk.
 func MakeDataset(block uint64, dir string) {
 	d := dataset{epoch: block / epochLength}
 	d.generate(dir, math.MaxInt32, false)
 }
 
-// Mode defines the type and amount of PoW verification an ethash engine makes.
+// Mode defines the type and amount of PoW verification an esshash engine makes.
 type Mode uint
 
 const (
@@ -394,7 +394,7 @@ const (
 	ModeFullFake
 )
 
-// Config are the configuration parameters of the ethash.
+// Config are the configuration parameters of the esshash.
 type Config struct {
 	CacheDir       string
 	CachesInMem    int
@@ -429,7 +429,7 @@ type sealWork struct {
 	res  chan [3]string
 }
 
-// Ethash is a consensus engine based on proof-of-work implementing the ethash
+// Ethash is a consensus engine based on proof-of-work implementing the esshash
 // algorithm.
 type Ethash struct {
 	config Config
@@ -461,21 +461,21 @@ type Ethash struct {
 	exitCh    chan chan error // Notification channel to exiting backend threads
 }
 
-// New creates a full sized ethash PoW scheme and starts a background thread for
+// New creates a full sized esshash PoW scheme and starts a background thread for
 // remote mining, also optionally notifying a batch of remote services of new work
 // packages.
 func New(config Config, notify []string) *Ethash {
 	if config.CachesInMem <= 0 {
-		log.Warn("One ethash cache must always be in memory", "requested", config.CachesInMem)
+		log.Warn("One esshash cache must always be in memory", "requested", config.CachesInMem)
 		config.CachesInMem = 1
 	}
 	if config.CacheDir != "" && config.CachesOnDisk > 0 {
-		log.Info("Disk storage enabled for ethash caches", "dir", config.CacheDir, "count", config.CachesOnDisk)
+		log.Info("Disk storage enabled for esshash caches", "dir", config.CacheDir, "count", config.CachesOnDisk)
 	}
 	if config.DatasetDir != "" && config.DatasetsOnDisk > 0 {
-		log.Info("Disk storage enabled for ethash DAGs", "dir", config.DatasetDir, "count", config.DatasetsOnDisk)
+		log.Info("Disk storage enabled for esshash DAGs", "dir", config.DatasetDir, "count", config.DatasetsOnDisk)
 	}
-	ethash := &Ethash{
+	esshash := &Ethash{
 		config:       config,
 		caches:       newlru("cache", config.CachesInMem, newCache),
 		datasets:     newlru("dataset", config.DatasetsInMem, newDataset),
@@ -489,14 +489,14 @@ func New(config Config, notify []string) *Ethash {
 		submitRateCh: make(chan *hashrate),
 		exitCh:       make(chan chan error),
 	}
-	go ethash.remote(notify)
-	return ethash
+	go esshash.remote(notify)
+	return esshash
 }
 
-// NewTester creates a small sized ethash PoW scheme useful only for testing
+// NewTester creates a small sized esshash PoW scheme useful only for testing
 // purposes.
 func NewTester(notify []string) *Ethash {
-	ethash := &Ethash{
+	esshash := &Ethash{
 		config:       Config{PowMode: ModeTest},
 		caches:       newlru("cache", 1, newCache),
 		datasets:     newlru("dataset", 1, newDataset),
@@ -510,11 +510,11 @@ func NewTester(notify []string) *Ethash {
 		submitRateCh: make(chan *hashrate),
 		exitCh:       make(chan chan error),
 	}
-	go ethash.remote(notify)
-	return ethash
+	go esshash.remote(notify)
+	return esshash
 }
 
-// NewFaker creates a ethash consensus engine with a fake PoW scheme that accepts
+// NewFaker creates a esshash consensus engine with a fake PoW scheme that accepts
 // all blocks' seal as valid, though they still have to conform to the Ethereum
 // consensus rules.
 func NewFaker() *Ethash {
@@ -525,7 +525,7 @@ func NewFaker() *Ethash {
 	}
 }
 
-// NewFakeFailer creates a ethash consensus engine with a fake PoW scheme that
+// NewFakeFailer creates a esshash consensus engine with a fake PoW scheme that
 // accepts all blocks as valid apart from the single one specified, though they
 // still have to conform to the Ethereum consensus rules.
 func NewFakeFailer(fail uint64) *Ethash {
@@ -537,7 +537,7 @@ func NewFakeFailer(fail uint64) *Ethash {
 	}
 }
 
-// NewFakeDelayer creates a ethash consensus engine with a fake PoW scheme that
+// NewFakeDelayer creates a esshash consensus engine with a fake PoW scheme that
 // accepts all blocks as valid, but delays verifications by some time, though
 // they still have to conform to the Ethereum consensus rules.
 func NewFakeDelayer(delay time.Duration) *Ethash {
@@ -549,7 +549,7 @@ func NewFakeDelayer(delay time.Duration) *Ethash {
 	}
 }
 
-// NewFullFaker creates an ethash consensus engine with a full fake scheme that
+// NewFullFaker creates an esshash consensus engine with a full fake scheme that
 // accepts all blocks as valid, without checking any consensus rules whatsoever.
 func NewFullFaker() *Ethash {
 	return &Ethash{
@@ -559,24 +559,24 @@ func NewFullFaker() *Ethash {
 	}
 }
 
-// NewShared creates a full sized ethash PoW shared between all requesters running
+// NewShared creates a full sized esshash PoW shared between all requesters running
 // in the same process.
 func NewShared() *Ethash {
 	return &Ethash{shared: sharedEthash}
 }
 
 // Close closes the exit channel to notify all backend threads exiting.
-func (ethash *Ethash) Close() error {
+func (esshash *Ethash) Close() error {
 	var err error
-	ethash.closeOnce.Do(func() {
+	esshash.closeOnce.Do(func() {
 		// Short circuit if the exit channel is not allocated.
-		if ethash.exitCh == nil {
+		if esshash.exitCh == nil {
 			return
 		}
 		errc := make(chan error)
-		ethash.exitCh <- errc
+		esshash.exitCh <- errc
 		err = <-errc
-		close(ethash.exitCh)
+		close(esshash.exitCh)
 	})
 	return err
 }
@@ -584,18 +584,18 @@ func (ethash *Ethash) Close() error {
 // cache tries to retrieve a verification cache for the specified block number
 // by first checking against a list of in-memory caches, then against caches
 // stored on disk, and finally generating one if none can be found.
-func (ethash *Ethash) cache(block uint64) *cache {
+func (esshash *Ethash) cache(block uint64) *cache {
 	epoch := block / epochLength
-	currentI, futureI := ethash.caches.get(epoch)
+	currentI, futureI := esshash.caches.get(epoch)
 	current := currentI.(*cache)
 
 	// Wait for generation finish.
-	current.generate(ethash.config.CacheDir, ethash.config.CachesOnDisk, ethash.config.PowMode == ModeTest)
+	current.generate(esshash.config.CacheDir, esshash.config.CachesOnDisk, esshash.config.PowMode == ModeTest)
 
 	// If we need a new future cache, now's a good time to regenerate it.
 	if futureI != nil {
 		future := futureI.(*cache)
-		go future.generate(ethash.config.CacheDir, ethash.config.CachesOnDisk, ethash.config.PowMode == ModeTest)
+		go future.generate(esshash.config.CacheDir, esshash.config.CachesOnDisk, esshash.config.PowMode == ModeTest)
 	}
 	return current
 }
@@ -606,29 +606,29 @@ func (ethash *Ethash) cache(block uint64) *cache {
 //
 // If async is specified, not only the future but the current DAG is also
 // generates on a background thread.
-func (ethash *Ethash) dataset(block uint64, async bool) *dataset {
-	// Retrieve the requested ethash dataset
+func (esshash *Ethash) dataset(block uint64, async bool) *dataset {
+	// Retrieve the requested esshash dataset
 	epoch := block / epochLength
-	currentI, futureI := ethash.datasets.get(epoch)
+	currentI, futureI := esshash.datasets.get(epoch)
 	current := currentI.(*dataset)
 
 	// If async is specified, generate everything in a background thread
 	if async && !current.generated() {
 		go func() {
-			current.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.PowMode == ModeTest)
+			current.generate(esshash.config.DatasetDir, esshash.config.DatasetsOnDisk, esshash.config.PowMode == ModeTest)
 
 			if futureI != nil {
 				future := futureI.(*dataset)
-				future.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.PowMode == ModeTest)
+				future.generate(esshash.config.DatasetDir, esshash.config.DatasetsOnDisk, esshash.config.PowMode == ModeTest)
 			}
 		}()
 	} else {
 		// Either blocking generation was requested, or already done
-		current.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.PowMode == ModeTest)
+		current.generate(esshash.config.DatasetDir, esshash.config.DatasetsOnDisk, esshash.config.PowMode == ModeTest)
 
 		if futureI != nil {
 			future := futureI.(*dataset)
-			go future.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.PowMode == ModeTest)
+			go future.generate(esshash.config.DatasetDir, esshash.config.DatasetsOnDisk, esshash.config.PowMode == ModeTest)
 		}
 	}
 	return current
@@ -636,11 +636,11 @@ func (ethash *Ethash) dataset(block uint64, async bool) *dataset {
 
 // Threads returns the number of mining threads currently enabled. This doesn't
 // necessarily mean that mining is running!
-func (ethash *Ethash) Threads() int {
-	ethash.lock.Lock()
-	defer ethash.lock.Unlock()
+func (esshash *Ethash) Threads() int {
+	esshash.lock.Lock()
+	defer esshash.lock.Unlock()
 
-	return ethash.threads
+	return esshash.threads
 }
 
 // SetThreads updates the number of mining threads currently enabled. Calling
@@ -648,19 +648,19 @@ func (ethash *Ethash) Threads() int {
 // specified, the miner will use all cores of the machine. Setting a thread
 // count below zero is allowed and will cause the miner to idle, without any
 // work being done.
-func (ethash *Ethash) SetThreads(threads int) {
-	ethash.lock.Lock()
-	defer ethash.lock.Unlock()
+func (esshash *Ethash) SetThreads(threads int) {
+	esshash.lock.Lock()
+	defer esshash.lock.Unlock()
 
 	// If we're running a shared PoW, set the thread count on that instead
-	if ethash.shared != nil {
-		ethash.shared.SetThreads(threads)
+	if esshash.shared != nil {
+		esshash.shared.SetThreads(threads)
 		return
 	}
 	// Update the threads and ping any running seal to pull in any changes
-	ethash.threads = threads
+	esshash.threads = threads
 	select {
-	case ethash.update <- struct{}{}:
+	case esshash.update <- struct{}{}:
 	default:
 	}
 }
@@ -669,39 +669,39 @@ func (ethash *Ethash) SetThreads(threads int) {
 // per second over the last minute.
 // Note the returned hashrate includes local hashrate, but also includes the total
 // hashrate of all remote miner.
-func (ethash *Ethash) Hashrate() float64 {
-	// Short circuit if we are run the ethash in normal/test mode.
-	if ethash.config.PowMode != ModeNormal && ethash.config.PowMode != ModeTest {
-		return ethash.hashrate.Rate1()
+func (esshash *Ethash) Hashrate() float64 {
+	// Short circuit if we are run the esshash in normal/test mode.
+	if esshash.config.PowMode != ModeNormal && esshash.config.PowMode != ModeTest {
+		return esshash.hashrate.Rate1()
 	}
 	var res = make(chan uint64, 1)
 
 	select {
-	case ethash.fetchRateCh <- res:
-	case <-ethash.exitCh:
-		// Return local hashrate only if ethash is stopped.
-		return ethash.hashrate.Rate1()
+	case esshash.fetchRateCh <- res:
+	case <-esshash.exitCh:
+		// Return local hashrate only if esshash is stopped.
+		return esshash.hashrate.Rate1()
 	}
 
 	// Gather total submitted hash rate of remote sealers.
-	return ethash.hashrate.Rate1() + float64(<-res)
+	return esshash.hashrate.Rate1() + float64(<-res)
 }
 
 // APIs implements consensus.Engine, returning the user facing RPC APIs.
-func (ethash *Ethash) APIs(chain consensus.ChainReader) []rpc.API {
-	// In order to ensure backward compatibility, we exposes ethash RPC APIs
-	// to both eth and ethash namespaces.
+func (esshash *Ethash) APIs(chain consensus.ChainReader) []rpc.API {
+	// In order to ensure backward compatibility, we exposes esshash RPC APIs
+	// to both eth and esshash namespaces.
 	return []rpc.API{
 		{
 			Namespace: "eth",
 			Version:   "1.0",
-			Service:   &API{ethash},
+			Service:   &API{esshash},
 			Public:    true,
 		},
 		{
-			Namespace: "ethash",
+			Namespace: "esshash",
 			Version:   "1.0",
-			Service:   &API{ethash},
+			Service:   &API{esshash},
 			Public:    true,
 		},
 	}

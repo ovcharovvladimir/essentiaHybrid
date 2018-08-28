@@ -34,11 +34,11 @@ var (
 	makecacheCommand = cli.Command{
 		Action:    utils.MigrateFlags(makecache),
 		Name:      "makecache",
-		Usage:     "Generate ethash verification cache (for testing)",
+		Usage:     "Generate esshash verification cache (for testing)",
 		ArgsUsage: "<blockNum> <outputDir>",
 		Category:  "MISCELLANEOUS COMMANDS",
 		Description: `
-The makecache command generates an ethash cache in <outputDir>.
+The makecache command generates an esshash cache in <outputDir>.
 
 This command exists to support the system testing project.
 Regular users do not need to execute it.
@@ -47,11 +47,11 @@ Regular users do not need to execute it.
 	makedagCommand = cli.Command{
 		Action:    utils.MigrateFlags(makedag),
 		Name:      "makedag",
-		Usage:     "Generate ethash mining DAG (for testing)",
+		Usage:     "Generate esshash mining DAG (for testing)",
 		ArgsUsage: "<blockNum> <outputDir>",
 		Category:  "MISCELLANEOUS COMMANDS",
 		Description: `
-The makedag command generates an ethash DAG in <outputDir>.
+The makedag command generates an esshash DAG in <outputDir>.
 
 This command exists to support the system testing project.
 Regular users do not need to execute it.

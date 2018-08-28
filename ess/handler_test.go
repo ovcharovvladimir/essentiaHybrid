@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-	"github.com/ovcharovvladimir/essentiaHybrid/consensus/ethash"
+	"github.com/ovcharovvladimir/essentiaHybrid/consensus/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/core"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/state"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
@@ -467,7 +467,7 @@ func testDAOChallenge(t *testing.T, localForked, remoteForked bool, timeout bool
 	// Create a DAO aware protocol manager
 	var (
 		evmux         = new(event.TypeMux)
-		pow           = ethash.NewFaker()
+		pow           = esshash.NewFaker()
 		db            = essdb.NewMemDatabase()
 		config        = &params.ChainConfig{DAOForkBlock: big.NewInt(1), DAOForkSupport: localForked}
 		gspec         = &core.Genesis{Config: config}
@@ -496,7 +496,7 @@ func testDAOChallenge(t *testing.T, localForked, remoteForked bool, timeout bool
 	}
 	// Create a block to reply to the challenge if no timeout is simulated
 	if !timeout {
-		blocks, _ := core.GenerateChain(&params.ChainConfig{}, genesis, ethash.NewFaker(), db, 1, func(i int, block *core.BlockGen) {
+		blocks, _ := core.GenerateChain(&params.ChainConfig{}, genesis, esshash.NewFaker(), db, 1, func(i int, block *core.BlockGen) {
 			if remoteForked {
 				block.SetExtra(params.DAOForkBlockExtra)
 			}

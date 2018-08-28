@@ -30,20 +30,20 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 )
 
-// Tests that ethash works correctly in test mode.
+// Tests that esshash works correctly in test mode.
 func TestTestMode(t *testing.T) {
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 
-	ethash := NewTester(nil)
-	defer ethash.Close()
+	esshash := NewTester(nil)
+	defer esshash.Close()
 
-	block, err := ethash.Seal(nil, types.NewBlockWithHeader(header), nil)
+	block, err := esshash.Seal(nil, types.NewBlockWithHeader(header), nil)
 	if err != nil {
 		t.Fatalf("failed to seal block: %v", err)
 	}
 	header.Nonce = types.EncodeNonce(block.Nonce())
 	header.MixDigest = block.MixDigest()
-	if err := ethash.VerifySeal(nil, header); err != nil {
+	if err := esshash.VerifySeal(nil, header); err != nil {
 		t.Fatalf("unexpected verification error: %v", err)
 	}
 }
@@ -51,7 +51,7 @@ func TestTestMode(t *testing.T) {
 // This test checks that cache lru logic doesn't crash under load.
 // It reproduces https://github.com/ovcharovvladimir/essentiaHybrid/issues/14943
 func TestCacheFileEvict(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "ethash-test")
+	tmpdir, err := ioutil.TempDir("", "esshash-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,10 +85,10 @@ func verifyTest(wg *sync.WaitGroup, e *Ethash, workerIndex, epochs int) {
 }
 
 func TestRemoteSealer(t *testing.T) {
-	ethash := NewTester(nil)
-	defer ethash.Close()
+	esshash := NewTester(nil)
+	defer esshash.Close()
 
-	api := &API{ethash}
+	api := &API{esshash}
 	if _, err := api.GetWork(); err != errNoMiningWork {
 		t.Error("expect to return an error indicate there is no mining work")
 	}
@@ -96,7 +96,7 @@ func TestRemoteSealer(t *testing.T) {
 	block := types.NewBlockWithHeader(header)
 
 	// Push new work.
-	ethash.Seal(nil, block, nil)
+	esshash.Seal(nil, block, nil)
 
 	var (
 		work [3]string
@@ -112,7 +112,7 @@ func TestRemoteSealer(t *testing.T) {
 	// Push new block with same block number to replace the original one.
 	header = &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(1000)}
 	block = types.NewBlockWithHeader(header)
-	ethash.Seal(nil, block, nil)
+	esshash.Seal(nil, block, nil)
 
 	if work, err = api.GetWork(); err != nil || work[0] != block.HashNoNonce().Hex() {
 		t.Error("expect to return the latest pushed work")
@@ -120,7 +120,7 @@ func TestRemoteSealer(t *testing.T) {
 	// Push block with higher block number.
 	newHead := &types.Header{Number: big.NewInt(2), Difficulty: big.NewInt(100)}
 	newBlock := types.NewBlockWithHeader(newHead)
-	ethash.Seal(nil, newBlock, nil)
+	esshash.Seal(nil, newBlock, nil)
 
 	if res := api.SubmitWork(types.BlockNonce{}, block.HashNoNonce(), common.Hash{}); res {
 		t.Error("expect to return false when submit a stale solution")
@@ -133,36 +133,36 @@ func TestHashRate(t *testing.T) {
 		expect   uint64
 		ids      = []common.Hash{common.HexToHash("a"), common.HexToHash("b"), common.HexToHash("c")}
 	)
-	ethash := NewTester(nil)
-	defer ethash.Close()
+	esshash := NewTester(nil)
+	defer esshash.Close()
 
-	if tot := ethash.Hashrate(); tot != 0 {
+	if tot := esshash.Hashrate(); tot != 0 {
 		t.Error("expect the result should be zero")
 	}
 
-	api := &API{ethash}
+	api := &API{esshash}
 	for i := 0; i < len(hashrate); i += 1 {
 		if res := api.SubmitHashRate(hashrate[i], ids[i]); !res {
 			t.Error("remote miner submit hashrate failed")
 		}
 		expect += uint64(hashrate[i])
 	}
-	if tot := ethash.Hashrate(); tot != float64(expect) {
+	if tot := esshash.Hashrate(); tot != float64(expect) {
 		t.Error("expect total hashrate should be same")
 	}
 }
 
 func TestClosedRemoteSealer(t *testing.T) {
-	ethash := NewTester(nil)
+	esshash := NewTester(nil)
 	time.Sleep(1 * time.Second) // ensure exit channel is listening
-	ethash.Close()
+	esshash.Close()
 
-	api := &API{ethash}
+	api := &API{esshash}
 	if _, err := api.GetWork(); err != errEthashStopped {
-		t.Error("expect to return an error to indicate ethash is stopped")
+		t.Error("expect to return an error to indicate esshash is stopped")
 	}
 
 	if res := api.SubmitHashRate(hexutil.Uint64(100), common.HexToHash("a")); res {
-		t.Error("expect to return false when submit hashrate to a stopped ethash")
+		t.Error("expect to return false when submit hashrate to a stopped esshash")
 	}
 }

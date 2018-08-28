@@ -37,7 +37,7 @@ import (
 var DefaultConfig = Config{
 	SyncMode: downloader.FastSync,
 	Ethash: esshash.Config{
-		CacheDir:       "ethash",
+		CacheDir:       "esshash",
 		CachesInMem:    2,
 		CachesOnDisk:   3,
 		DatasetsInMem:  1,

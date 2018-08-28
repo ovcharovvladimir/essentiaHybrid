@@ -40,15 +40,15 @@ func TestRemoteNotify(t *testing.T) {
 
 	go server.Serve(listener)
 
-	// Create the custom ethash engine
-	ethash := NewTester([]string{"http://" + listener.Addr().String()})
-	defer ethash.Close()
+	// Create the custom esshash engine
+	esshash := NewTester([]string{"http://" + listener.Addr().String()})
+	defer esshash.Close()
 
 	// Stream a work task and ensure the notification bubbles out
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
 
-	ethash.Seal(nil, block, nil)
+	esshash.Seal(nil, block, nil)
 	select {
 	case work := <-sink:
 		if want := header.HashNoNonce().Hex(); work[0] != want {
@@ -94,16 +94,16 @@ func TestRemoteMultiNotify(t *testing.T) {
 
 	go server.Serve(listener)
 
-	// Create the custom ethash engine
-	ethash := NewTester([]string{"http://" + listener.Addr().String()})
-	defer ethash.Close()
+	// Create the custom esshash engine
+	esshash := NewTester([]string{"http://" + listener.Addr().String()})
+	defer esshash.Close()
 
 	// Stream a lot of work task and ensure all the notifications bubble out
 	for i := 0; i < cap(sink); i++ {
 		header := &types.Header{Number: big.NewInt(int64(i)), Difficulty: big.NewInt(100)}
 		block := types.NewBlockWithHeader(header)
 
-		ethash.Seal(nil, block, nil)
+		esshash.Seal(nil, block, nil)
 	}
 	for i := 0; i < cap(sink); i++ {
 		select {

@@ -70,10 +70,10 @@ func (w *wizard) deployNode(boot bool) {
 	if w.conf.Genesis.Config.Ethash != nil && !boot {
 		fmt.Println()
 		if infos.ethashdir == "" {
-			fmt.Printf("Where should the ethash mining DAGs be stored on the remote machine?\n")
+			fmt.Printf("Where should the esshash mining DAGs be stored on the remote machine?\n")
 			infos.ethashdir = w.readString()
 		} else {
-			fmt.Printf("Where should the ethash mining DAGs be stored on the remote machine? (default = %s)\n", infos.ethashdir)
+			fmt.Printf("Where should the esshash mining DAGs be stored on the remote machine? (default = %s)\n", infos.ethashdir)
 			infos.ethashdir = w.readDefaultString(infos.ethashdir)
 		}
 	}
