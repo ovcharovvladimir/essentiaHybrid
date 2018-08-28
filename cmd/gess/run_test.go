@@ -27,7 +27,7 @@ import (
 )
 
 func tmpdir(t *testing.T) string {
-	dir, err := ioutil.TempDir("", "geth-test")
+	dir, err := ioutil.TempDir("", "gess-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +44,7 @@ type testgeth struct {
 
 func init() {
 	// Run the app if we've been exec'd as "geth-test" in runGeth.
-	reexec.Register("geth-test", func() {
+	reexec.Register("gess-test", func() {
 		if err := app.Run(os.Args); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

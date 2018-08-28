@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8c506258-326b-43e1-a6dd-4c63fe475acc" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/les/handler_test.go" afterPath="$PROJECT_DIR$/les/handler_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/keystore/keystore_plain_test.go" afterPath="$PROJECT_DIR$/accounts/keystore/keystore_plain_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/gess/run_test.go" afterPath="$PROJECT_DIR$/cmd/gess/run_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mobile/android_test.go" afterPath="$PROJECT_DIR$/mobile/android_test.go" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -11,55 +14,16 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/essentiaHybrid$accountcmd_test_go.coverage" NAME="accountcmd_test.go Coverage Results" MODIFIED="1535461793119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="GoCoverage" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="cliui.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/core/cliui.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="236" column="41" lean-forward="false" selection-start-line="236" selection-start-column="41" selection-end-line="236" selection-end-column="41" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="stdioui.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/core/stdioui.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="100" column="35" lean-forward="false" selection-start-line="100" selection-start-column="35" selection-end-line="100" selection-end-column="35" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rules.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/rules/rules.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="237" column="36" lean-forward="false" selection-start-line="237" selection-start-column="36" selection-end-line="237" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rules_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/rules/rules_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-544">
-              <caret line="31" column="1" lean-forward="false" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
-              <folding>
-                <element signature="e#741#1200#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="accountcmd_test.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cmd/gess/accountcmd_test.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="248" column="23" lean-forward="false" selection-start-line="248" selection-start-column="23" selection-end-line="248" selection-end-column="23" />
+            <state relative-caret-position="132">
+              <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
               <folding>
                 <element signature="e#738#837#0" expanded="true" />
               </folding>
@@ -67,54 +31,141 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="consensus_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/consensus/esshash/consensus_test.go">
+      <file leaf-file-name="test_cmd.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/internal/cmdtest/test_cmd.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="76" column="73" lean-forward="false" selection-start-line="76" selection-start-column="73" selection-end-line="76" selection-end-column="73" />
+            <state relative-caret-position="-1809">
+              <caret line="40" column="5" lean-forward="false" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="console_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/console/console_test.go">
+      <file leaf-file-name=".travis.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.travis.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="137">
-              <caret line="198" column="30" lean-forward="false" selection-start-line="198" selection-start-column="30" selection-end-line="198" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="consolecmd_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmd/gess/consolecmd_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="43" column="17" lean-forward="false" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="handler_test.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/les/handler_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="537" column="91" lean-forward="false" selection-start-line="537" selection-start-column="91" selection-end-line="537" selection-end-column="91" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="version.go" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/swarm/version/version.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-503">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="231">
+              <caret line="44" column="17" lean-forward="true" selection-start-line="44" selection-start-column="17" selection-end-line="44" selection-end-column="17" />
               <folding>
-                <element signature="e#810#827#0" expanded="true" />
+                <marker date="1535463698517" expanded="true" signature="29:40" ph="github.co…o-ethereum" />
+                <marker date="1535463698517" expanded="true" signature="84:7897" ph="matrix: &lt;1 key&gt;" />
+                <marker date="1535463698517" expanded="true" signature="94:7897" ph="include: &lt;10 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="181:396" ph="script: &lt;5 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="348:396" ph="go run bu…T_PACKAGES" />
+                <marker date="1535463698517" expanded="true" signature="517:732" ph="script: &lt;5 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="684:732" ph="go run bu…T_PACKAGES" />
+                <marker date="1535463698517" expanded="true" signature="771:965" ph="script: &lt;3 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="917:965" ph="go run bu…T_PACKAGES" />
+                <marker date="1535463698517" expanded="true" signature="1286:1291" ph="linux" />
+                <marker date="1535463698517" expanded="true" signature="1303:1309" ph="trusty" />
+                <marker date="1535463698517" expanded="true" signature="1321:1327" ph="1.10.x" />
+                <marker date="1535463698517" expanded="true" signature="1335:1361" ph="env: &lt;1 item&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1351:1361" ph="ubuntu-ppa" />
+                <marker date="1535463698517" expanded="true" signature="1369:1400" ph="git: &lt;1 key&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1395:1400" ph="false" />
+                <marker date="1535463698517" expanded="true" signature="1439:1576" ph="addons: &lt;1 key&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1456:1576" ph="apt: &lt;1 key&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1472:1576" ph="packages: &lt;4 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1497:1507" ph="devscripts" />
+                <marker date="1535463698517" expanded="true" signature="1523:1532" ph="debhelper" />
+                <marker date="1535463698517" expanded="true" signature="1548:1552" ph="dput" />
+                <marker date="1535463698517" expanded="true" signature="1568:1576" ph="fakeroot" />
+                <marker date="1535463698517" expanded="true" signature="1584:1717" ph="script: &lt;1 item&gt;" />
+                <marker date="1535463698517" expanded="true" signature="1603:1717" ph="go run bu…m/ethereum" />
+                <marker date="1535463698517" expanded="true" signature="2021:3549" ph="script: &lt;14 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="2142:2229" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="2288:2385" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="2860:2965" ph="GOARM=5 g…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="3058:3163" ph="GOARM=6 g…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="3258:3363" ph="GOARM=7 g…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="3450:3549" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="3806:5072" ph="script: &lt;12 items&gt;" />
+                <marker date="1535463698517" expanded="true" signature="4021:4119" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="4334:4434" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="4649:4749" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="4970:5072" ph="go run bu…ore/builds" />
+                <marker date="1535463698517" expanded="true" signature="7665:7670" ph="linux" />
+                <marker date="1535463698517" expanded="true" signature="7684:7690" ph="trusty" />
+                <marker date="1535463698517" expanded="true" signature="7702:7708" ph="1.10.x" />
+                <marker date="1535463698517" expanded="true" signature="7716:7743" ph="env: &lt;1 item&gt;" />
+                <marker date="1535463698517" expanded="true" signature="7732:7743" ph="azure-purge" />
+                <marker date="1535463698517" expanded="true" signature="7751:7782" ph="git: &lt;1 key&gt;" />
+                <marker date="1535463698517" expanded="true" signature="7777:7782" ph="false" />
+                <marker date="1535463698517" expanded="true" signature="7821:7897" ph="script: &lt;1 item&gt;" />
+                <marker date="1535463698517" expanded="true" signature="7840:7897" ph="go run bu…s -days 14" />
+                <marker date="1535463698517" expanded="true" signature="7930:7994" ph="urls: &lt;1 item&gt;" />
+                <marker date="1535463698517" expanded="true" signature="7945:7994" ph="https://w…48c5e03445" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="keystore_plain_test.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/accounts/keystore/keystore_plain_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="34" column="38" lean-forward="false" selection-start-line="34" selection-start-column="38" selection-end-line="34" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="android_test.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mobile/android_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="186" column="46" lean-forward="false" selection-start-line="186" selection-start-column="46" selection-end-line="186" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="genesis_test.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cmd/gess/genesis_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="99" column="10" lean-forward="false" selection-start-line="99" selection-start-column="10" selection-end-line="99" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run_test.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cmd/gess/run_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="186">
+              <caret line="67" column="28" lean-forward="false" selection-start-line="67" selection-start-column="28" selection-end-line="67" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="command_windows.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/pkg/reexec/command_windows.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="147">
+              <caret line="9" column="15" lean-forward="true" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="reexec.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/pkg/reexec/reexec.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="174">
+              <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="path.go" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Go/src/path/filepath/path.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="237">
+              <caret line="435" column="0" lean-forward="false" selection-start-line="435" selection-start-column="0" selection-end-line="435" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -123,9 +174,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Constantinople</find>
-      <find>version</find>
-      <find>VERSION:</find>
       <find>TestCalcDifficulty</find>
       <find>VerifyHeader</find>
       <find>testnet</find>
@@ -148,11 +196,14 @@
       <find>rung</find>
       <find>CalcDifficulty</find>
       <find>/essentiaHybrid/internal/ethapi</find>
-      <find>runGeth</find>
       <find>ethapi</find>
       <find>rungeth</find>
       <find>essash</find>
       <find>RunGeth</find>
+      <find>test_cmd</find>
+      <find>TestAccountList</find>
+      <find>geth-</find>
+      <find>runGeth</find>
     </findStrings>
     <replaceStrings>
       <replace>essnode:</replace>
@@ -184,9 +235,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/cmd/gess/misccmd.go" />
-        <option value="$PROJECT_DIR$/cmd/puppess/wizard_node.go" />
-        <option value="$PROJECT_DIR$/consensus/esshash/algorithm.go" />
         <option value="$PROJECT_DIR$/consensus/esshash/algorithm_test.go" />
         <option value="$PROJECT_DIR$/consensus/esshash/api.go" />
         <option value="$PROJECT_DIR$/consensus/esshash/consensus.go" />
@@ -215,7 +263,6 @@
         <option value="$PROJECT_DIR$/les/odr_test.go" />
         <option value="$PROJECT_DIR$/ess/handler_test.go" />
         <option value="$PROJECT_DIR$/ess/sync_test.go" />
-        <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/cmd/gess/accountcmd_test.go" />
         <option value="$PROJECT_DIR$/signer/core/api_test.go" />
         <option value="$PROJECT_DIR$/ess/backend.go" />
@@ -235,6 +282,10 @@
         <option value="$PROJECT_DIR$/signer/rules/rules_test.go" />
         <option value="$PROJECT_DIR$/cmd/gess/consolecmd_test.go" />
         <option value="$PROJECT_DIR$/les/handler_test.go" />
+        <option value="$PROJECT_DIR$/cmd/gess/run_test.go" />
+        <option value="$PROJECT_DIR$/accounts/keystore/keystore_plain_test.go" />
+        <option value="$PROJECT_DIR$/mobile/android_test.go" />
+        <option value="$PROJECT_DIR$/.travis.yml" />
       </list>
     </option>
   </component>
@@ -251,7 +302,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="126" />
     <option name="y" value="4" />
     <option name="width" value="1400" />
@@ -286,13 +337,13 @@
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
               <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="swarm" type="462c0819:PsiDirectoryNode" />
+              <item name="cmd" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
               <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="swarm" type="462c0819:PsiDirectoryNode" />
-              <item name="version" type="462c0819:PsiDirectoryNode" />
+              <item name="cmd" type="462c0819:PsiDirectoryNode" />
+              <item name="gess" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -325,7 +376,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess">
+  <component name="RunManager" selected="Go Test.accountcmd_test.go">
     <configuration name="All in 'essentiaHybrid'" type="GoTestRunConfiguration" factoryName="Go Test">
       <module name="essentiaHybrid" />
       <working_directory value="$PROJECT_DIR$" />
@@ -370,15 +421,6 @@
       <filePath value="$PROJECT_DIR$/" />
       <kind value="PACKAGE" />
       <package value="github.com/ovcharovvladimir/essentiaHybrid/ess" />
-      <output_directory value="C:\Users\Sergei\go\src\github.com\ovcharovvladimir\essentiaHybrid\build\bin" />
-    </configuration>
-    <configuration name="Build github.com/ovcharovvladimir/essentiaHybrid/ess/downloader and run" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
-      <module name="essentiaHybrid" />
-      <working_directory value="$PROJECT_DIR$/" />
-      <go_parameters value="-i" />
-      <filePath value="$PROJECT_DIR$/" />
-      <kind value="PACKAGE" />
-      <package value="github.com/ovcharovvladimir/essentiaHybrid/ess/downloader" />
       <output_directory value="C:\Users\Sergei\go\src\github.com\ovcharovvladimir\essentiaHybrid\build\bin" />
     </configuration>
     <configuration name="Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
@@ -480,22 +522,31 @@
       <properties />
       <listeners />
     </configuration>
+    <configuration name="accountcmd_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true">
+      <module name="essentiaHybrid" />
+      <working_directory value="$PROJECT_DIR$/cmd/gess" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <package value="github.com/ovcharovvladimir/essentiaHybrid" />
+      <filePath value="$PROJECT_DIR$/cmd/gess/accountcmd_test.go" />
+    </configuration>
     <list size="7">
       <item index="0" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/accounts and run" />
       <item index="1" class="java.lang.String" itemvalue="Go Test.All in 'essentiaHybrid'" />
       <item index="2" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess" />
-      <item index="3" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess/downloader and run" />
-      <item index="4" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess and run" />
-      <item index="5" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
-      <item index="6" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
+      <item index="3" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess and run" />
+      <item index="4" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
+      <item index="5" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
+      <item index="6" class="java.lang.String" itemvalue="Go Test.accountcmd_test.go" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess" />
-        <item index="1" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
-        <item index="2" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
-        <item index="3" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess and run" />
-        <item index="4" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess/downloader and run" />
+        <item index="0" class="java.lang.String" itemvalue="Go Test.accountcmd_test.go" />
+        <item index="1" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/gess" />
+        <item index="2" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/tests and run" />
+        <item index="3" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/cmd/esskey and run" />
+        <item index="4" class="java.lang.String" itemvalue="Go Application.Build github.com/ovcharovvladimir/essentiaHybrid/ess and run" />
       </list>
     </recent_temporary>
   </component>
@@ -516,7 +567,7 @@
       <workItem from="1535112162379" duration="8826000" />
       <workItem from="1535265814419" duration="5553000" />
       <workItem from="1535362240175" duration="329000" />
-      <workItem from="1535450970804" duration="7807000" />
+      <workItem from="1535450970804" duration="10982000" />
     </task>
     <servers />
   </component>
@@ -527,9 +578,30 @@
     <history-entry file="All_in_'essentiaHybrid' - 2018.08.23 at 20h 47m 43s.xml">
       <configuration name="All in 'essentiaHybrid'" configurationId="GoTestRunConfiguration" />
     </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 04m 48s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 10m 02s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 10m 25s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 14m 51s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 17m 03s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 18m 29s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="accountcmd_test_go - 2018.08.28 at 16h 25m 52s.xml">
+      <configuration name="accountcmd_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33903000" />
+    <option name="totallyTimeSpent" value="37078000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -541,7 +613,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1618" height="878" extended-state="7" />
+    <frame x="-9" y="-9" width="1618" height="878" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -549,10 +621,11 @@
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32960895" sideWeight="0.5233463" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35055867" sideWeight="0.25680932" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35055867" sideWeight="0.8994812" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35055867" sideWeight="0.74319065" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.49481192" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0843061" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.4922179" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -563,7 +636,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39944133" sideWeight="0.80869" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39944133" sideWeight="0.6990921" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -624,110 +697,60 @@
           <properties />
           <option name="timeStamp" value="35" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/gess/run_test.go</url>
+          <line>46</line>
+          <properties />
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/gess/accountcmd_test.go</url>
+          <line>45</line>
+          <properties />
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/gess/accountcmd_test.go</url>
+          <line>69</line>
+          <properties />
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/gess/run_test.go</url>
+          <line>49</line>
+          <properties />
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/cmdtest/test_cmd.go</url>
+          <line>57</line>
+          <properties />
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/gess/run_test.go</url>
+          <line>94</line>
+          <properties />
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/cmdtest/test_cmd.go</url>
+          <line>69</line>
+          <properties />
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/cmdtest/test_cmd.go</url>
+          <line>72</line>
+          <properties />
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="36" />
+      <option name="time" value="51" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ess/config.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="39" column="25" lean-forward="false" selection-start-line="39" selection-start-column="25" selection-end-line="39" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_create.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="31" column="7" lean-forward="false" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_deep_calls.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="94" column="7" lean-forward="false" selection-start-line="94" selection-start-column="7" selection-end-line="94" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_delegatecall.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="47" column="7" lean-forward="false" selection-start-line="47" selection-start-column="7" selection-end-line="47" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_inner_create_oog_outer_throw.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="39" column="7" lean-forward="false" selection-start-line="39" selection-start-column="7" selection-end-line="39" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_inner_throw_outer_revert.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="42" column="7" lean-forward="false" selection-start-line="42" selection-start-column="7" selection-end-line="42" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_oog.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="33" column="7" lean-forward="false" selection-start-line="33" selection-start-column="7" selection-end-line="33" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_revert.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="31" column="7" lean-forward="false" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_simple.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="42" column="7" lean-forward="false" selection-start-line="42" selection-start-column="7" selection-end-line="42" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/tracers/testdata/call_tracer_throw.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="35" column="7" lean-forward="false" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/internal/web3ext/web3ext.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="114" column="15" lean-forward="false" selection-start-line="114" selection-start-column="15" selection-end-line="114" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/light/lightchain_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="40" column="94" lean-forward="false" selection-start-line="40" selection-start-column="94" selection-end-line="40" selection-end-column="94" />
-          <folding>
-            <element signature="e#808#1240#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/light/odr_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
@@ -848,28 +871,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-976">
-          <caret line="67" column="20" lean-forward="true" selection-start-line="67" selection-start-column="20" selection-end-line="67" selection-end-column="20" />
-          <folding>
-            <marker date="1535458261649" expanded="true" signature="29:40" ph="github.co…o-ethereum" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cmd/gess/accountcmd.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3816">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/gess/run_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="65" column="5" lean-forward="false" selection-start-line="65" selection-start-column="5" selection-end-line="65" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -1008,16 +1013,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/gess/accountcmd_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="248" column="23" lean-forward="false" selection-start-line="248" selection-start-column="23" selection-end-line="248" selection-end-column="23" />
-          <folding>
-            <element signature="e#738#837#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/consensus/esshash/consensus_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="166">
@@ -1056,6 +1051,177 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#810#827#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/hd_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1260">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/url_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-504">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Go/src/testing/testing.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="745" column="0" lean-forward="false" selection-start-line="745" selection-start-column="0" selection-end-line="745" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/gess/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-882">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Go/src/io/ioutil/tempfile.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="75" column="0" lean-forward="false" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Go/src/path/filepath/path.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="435" column="0" lean-forward="false" selection-start-line="435" selection-start-column="0" selection-end-line="435" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/pkg/reexec/reexec.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/pkg/reexec/command_windows.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="9" column="15" lean-forward="true" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/gess/accountcmd_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+          <folding>
+            <element signature="e#738#837#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/keystore/keystore_plain_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="34" column="38" lean-forward="false" selection-start-line="34" selection-start-column="38" selection-end-line="34" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mobile/android_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="186" column="46" lean-forward="false" selection-start-line="186" selection-start-column="46" selection-end-line="186" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/gess/genesis_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="99" column="10" lean-forward="false" selection-start-line="99" selection-start-column="10" selection-end-line="99" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/gess/run_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="67" column="28" lean-forward="false" selection-start-line="67" selection-start-column="28" selection-end-line="67" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/internal/cmdtest/test_cmd.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1809">
+          <caret line="40" column="5" lean-forward="false" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="44" column="17" lean-forward="true" selection-start-line="44" selection-start-column="17" selection-end-line="44" selection-end-column="17" />
+          <folding>
+            <marker date="1535463698517" expanded="true" signature="29:40" ph="github.co…o-ethereum" />
+            <marker date="1535463698517" expanded="true" signature="84:7897" ph="matrix: &lt;1 key&gt;" />
+            <marker date="1535463698517" expanded="true" signature="94:7897" ph="include: &lt;10 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="181:396" ph="script: &lt;5 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="348:396" ph="go run bu…T_PACKAGES" />
+            <marker date="1535463698517" expanded="true" signature="517:732" ph="script: &lt;5 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="684:732" ph="go run bu…T_PACKAGES" />
+            <marker date="1535463698517" expanded="true" signature="771:965" ph="script: &lt;3 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="917:965" ph="go run bu…T_PACKAGES" />
+            <marker date="1535463698517" expanded="true" signature="1286:1291" ph="linux" />
+            <marker date="1535463698517" expanded="true" signature="1303:1309" ph="trusty" />
+            <marker date="1535463698517" expanded="true" signature="1321:1327" ph="1.10.x" />
+            <marker date="1535463698517" expanded="true" signature="1335:1361" ph="env: &lt;1 item&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1351:1361" ph="ubuntu-ppa" />
+            <marker date="1535463698517" expanded="true" signature="1369:1400" ph="git: &lt;1 key&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1395:1400" ph="false" />
+            <marker date="1535463698517" expanded="true" signature="1439:1576" ph="addons: &lt;1 key&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1456:1576" ph="apt: &lt;1 key&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1472:1576" ph="packages: &lt;4 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1497:1507" ph="devscripts" />
+            <marker date="1535463698517" expanded="true" signature="1523:1532" ph="debhelper" />
+            <marker date="1535463698517" expanded="true" signature="1548:1552" ph="dput" />
+            <marker date="1535463698517" expanded="true" signature="1568:1576" ph="fakeroot" />
+            <marker date="1535463698517" expanded="true" signature="1584:1717" ph="script: &lt;1 item&gt;" />
+            <marker date="1535463698517" expanded="true" signature="1603:1717" ph="go run bu…m/ethereum" />
+            <marker date="1535463698517" expanded="true" signature="2021:3549" ph="script: &lt;14 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="2142:2229" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="2288:2385" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="2860:2965" ph="GOARM=5 g…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="3058:3163" ph="GOARM=6 g…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="3258:3363" ph="GOARM=7 g…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="3450:3549" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="3806:5072" ph="script: &lt;12 items&gt;" />
+            <marker date="1535463698517" expanded="true" signature="4021:4119" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="4334:4434" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="4649:4749" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="4970:5072" ph="go run bu…ore/builds" />
+            <marker date="1535463698517" expanded="true" signature="7665:7670" ph="linux" />
+            <marker date="1535463698517" expanded="true" signature="7684:7690" ph="trusty" />
+            <marker date="1535463698517" expanded="true" signature="7702:7708" ph="1.10.x" />
+            <marker date="1535463698517" expanded="true" signature="7716:7743" ph="env: &lt;1 item&gt;" />
+            <marker date="1535463698517" expanded="true" signature="7732:7743" ph="azure-purge" />
+            <marker date="1535463698517" expanded="true" signature="7751:7782" ph="git: &lt;1 key&gt;" />
+            <marker date="1535463698517" expanded="true" signature="7777:7782" ph="false" />
+            <marker date="1535463698517" expanded="true" signature="7821:7897" ph="script: &lt;1 item&gt;" />
+            <marker date="1535463698517" expanded="true" signature="7840:7897" ph="go run bu…s -days 14" />
+            <marker date="1535463698517" expanded="true" signature="7930:7994" ph="urls: &lt;1 item&gt;" />
+            <marker date="1535463698517" expanded="true" signature="7945:7994" ph="https://w…48c5e03445" />
           </folding>
         </state>
       </provider>
