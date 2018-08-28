@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8c506258-326b-43e1-a6dd-4c63fe475acc" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/gess/consolecmd_test.go" afterPath="$PROJECT_DIR$/cmd/gess/consolecmd_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/les/handler_test.go" afterPath="$PROJECT_DIR$/les/handler_test.go" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,26 +13,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="api.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/core/api.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="77" column="20" lean-forward="false" selection-start-line="77" selection-start-column="20" selection-end-line="77" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="auditlog.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/signer/core/auditlog.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="48" column="102" lean-forward="false" selection-start-line="48" selection-start-column="102" selection-end-line="48" selection-end-column="102" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="cliui.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/signer/core/cliui.go">
           <provider selected="true" editor-type-id="text-editor">
@@ -107,7 +87,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="consolecmd_test.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="consolecmd_test.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cmd/gess/consolecmd_test.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="125">
@@ -117,12 +97,32 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="handler_test.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/les/handler_test.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="149">
+              <caret line="537" column="91" lean-forward="false" selection-start-line="537" selection-start-column="91" selection-end-line="537" selection-end-column="91" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="version.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/swarm/version/version.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-503">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#810#827#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>enode://</find>
-      <find>enode:</find>
       <find>Constantinople</find>
       <find>version</find>
       <find>VERSION:</find>
@@ -151,6 +151,8 @@
       <find>runGeth</find>
       <find>ethapi</find>
       <find>rungeth</find>
+      <find>essash</find>
+      <find>RunGeth</find>
     </findStrings>
     <replaceStrings>
       <replace>essnode:</replace>
@@ -160,8 +162,8 @@
       <replace>ess</replace>
       <replace>RunGeth</replace>
       <replace>Essentia</replace>
-      <replace>runGeth</replace>
       <replace>essapi</replace>
+      <replace>runGeth</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\Users\Sergei\go\src\github.com\ovcharovvladimir\essentiaHybrid\whisper\shhclient</dir>
@@ -182,7 +184,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/p2p/discv5/node_test.go" />
         <option value="$PROJECT_DIR$/cmd/gess/misccmd.go" />
         <option value="$PROJECT_DIR$/cmd/puppess/wizard_node.go" />
         <option value="$PROJECT_DIR$/consensus/esshash/algorithm.go" />
@@ -233,6 +234,7 @@
         <option value="$PROJECT_DIR$/signer/rules/rules.go" />
         <option value="$PROJECT_DIR$/signer/rules/rules_test.go" />
         <option value="$PROJECT_DIR$/cmd/gess/consolecmd_test.go" />
+        <option value="$PROJECT_DIR$/les/handler_test.go" />
       </list>
     </option>
   </component>
@@ -249,7 +251,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="126" />
     <option name="y" value="4" />
     <option name="width" value="1400" />
@@ -284,18 +286,13 @@
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
               <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
+              <item name="swarm" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
               <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
-              <item name="gess" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
-              <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
-              <item name="console" type="462c0819:PsiDirectoryNode" />
+              <item name="swarm" type="462c0819:PsiDirectoryNode" />
+              <item name="version" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -519,7 +516,7 @@
       <workItem from="1535112162379" duration="8826000" />
       <workItem from="1535265814419" duration="5553000" />
       <workItem from="1535362240175" duration="329000" />
-      <workItem from="1535450970804" duration="7257000" />
+      <workItem from="1535450970804" duration="7807000" />
     </task>
     <servers />
   </component>
@@ -532,7 +529,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33353000" />
+    <option name="totallyTimeSpent" value="33903000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -544,7 +541,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1618" height="878" extended-state="6" />
+    <frame x="-9" y="-9" width="1618" height="878" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -633,22 +630,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/core/dao_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="22" column="58" lean-forward="false" selection-start-line="22" selection-start-column="58" selection-end-line="22" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/genesis_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="25" column="58" lean-forward="false" selection-start-line="25" selection-start-column="58" selection-end-line="25" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ess/config.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
@@ -1058,6 +1039,24 @@
         <state relative-caret-position="125">
           <caret line="43" column="17" lean-forward="false" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/les/handler_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="537" column="91" lean-forward="false" selection-start-line="537" selection-start-column="91" selection-end-line="537" selection-end-column="91" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swarm/version/version.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-503">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#810#827#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

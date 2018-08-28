@@ -535,7 +535,7 @@ func TestTransactionStatusLes2(t *testing.T) {
 	test(tx3, false, txStatus{Status: core.TxStatusPending})
 
 	// generate and add a block with tx1 and tx2 included
-	gchain, _ := core.GenerateChain(params.TestChainConfig, chain.GetBlockByNumber(0), essash.NewFaker(), db, 1, func(i int, block *core.BlockGen) {
+	gchain, _ := core.GenerateChain(params.TestChainConfig, chain.GetBlockByNumber(0), esshash.NewFaker(), db, 1, func(i int, block *core.BlockGen) {
 		block.AddTx(tx1)
 		block.AddTx(tx2)
 	})
