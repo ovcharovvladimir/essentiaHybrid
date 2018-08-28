@@ -26,23 +26,12 @@ matrix:
         - go run build/ci.go install
       #  - go run build/ci.go test -coverage $TEST_PACKAGES
 
-    - os: osx
-      go: 1.10.x
-      script:
-        - unset -f cd # workaround for https://github.com/travis-ci/travis-ci/issues/8703
-        - go run build/ci.go install
-       # - go run build/ci.go test -coverage $TEST_PACKAGES
-
-    # This builder only tests code linters on latest version of Go
-    - os: linux
-      dist: trusty
-      go: 1.10.x
-      env:
-        - lint
-      git:
-        submodules: false # avoid cloning ethereum/tests
-      script:
-        - go run build/ci.go lint
+#    - os: osx
+#      go: 1.10.x
+ #     script:
+ #       - unset -f cd # workaround for https://github.com/travis-ci/travis-ci/issues/8703
+ #       - go run build/ci.go install
+ #      # - go run build/ci.go test -coverage $TEST_PACKAGES
 #
    # This builder does the Ubuntu PPA upload
  #   - os: linux
@@ -158,7 +147,7 @@ matrix:
 
         - mkdir -p $GOPATH/src/github.com/ethereum
         - ln -s `pwd` $GOPATH/src/github.com/ethereum
-        - go run build/ci.go aar -signer ANDROID_SIGNING_KEY -deploy https://oss.sonatype.org -upload gethstore/builds
+  #      - go run build/ci.go aar -signer ANDROID_SIGNING_KEY -deploy https://oss.sonatype.org -upload gethstore/builds
 
     # This builder does the OSX Azure, iOS CocoaPods and iOS Azure uploads
     - os: osx
@@ -171,7 +160,7 @@ matrix:
         submodules: false # avoid cloning ethereum/tests
       script:
         - go run build/ci.go install
-        - go run build/ci.go archive -type tar -signer OSX_SIGNING_KEY -upload gethstore/builds
+      #  - go run build/ci.go archive -type tar -signer OSX_SIGNING_KEY -upload gethstore/builds
 
         # Build the iOS framework and upload it to CocoaPods and Azure
         - gem uninstall cocoapods -a -x
@@ -186,7 +175,7 @@ matrix:
 
         # Workaround for https://github.com/golang/go/issues/23749
         - export CGO_CFLAGS_ALLOW='-fmodules|-fblocks|-fobjc-arc'
-        - go run build/ci.go xcode -signer IOS_SIGNING_KEY -deploy trunk -upload gethstore/builds
+       # - go run build/ci.go xcode -signer IOS_SIGNING_KEY -deploy trunk -upload gethstore/builds
 
 #    # This builder does the Azure archive purges to avoid accumulating junk
 #    - os: linux
