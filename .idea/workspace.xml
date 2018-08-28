@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c506258-326b-43e1-a6dd-4c63fe475acc" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/nsis.gess.nsi" afterPath="$PROJECT_DIR$/build/nsis.gess.nsi" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/esskey/main.go" afterPath="$PROJECT_DIR$/cmd/esskey/main.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/faucet/faucet.go" afterPath="$PROJECT_DIR$/cmd/faucet/faucet.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/gess/main.go" afterPath="$PROJECT_DIR$/cmd/gess/main.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/puppess/module_faucet.go" afterPath="$PROJECT_DIR$/cmd/puppess/module_faucet.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/swarm/manifest_test.go" afterPath="$PROJECT_DIR$/cmd/swarm/manifest_test.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd/utils/flags.go" afterPath="$PROJECT_DIR$/cmd/utils/flags.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ess/handler.go" afterPath="$PROJECT_DIR$/ess/handler.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/internal/essapi/api.go" afterPath="$PROJECT_DIR$/internal/essapi/api.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/shhclient/client.go" afterPath="$PROJECT_DIR$/whisper/shhclient/client.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/whisperv5/api.go" afterPath="$PROJECT_DIR$/whisper/whisperv5/api.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/whisper/whisperv6/api.go" afterPath="$PROJECT_DIR$/whisper/whisperv6/api.go" />
-    </list>
+    <list default="true" id="8c506258-326b-43e1-a6dd-4c63fe475acc" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,7 +10,28 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+      <file leaf-file-name="appveyor.yml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/appveyor.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-450">
+              <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cmd/gess/main.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="339">
+              <caret line="31" column="16" lean-forward="false" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="47" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -49,8 +56,8 @@
       <find>Mo</find>
       <find>Ethereum protocol stopped</find>
       <find>Ethereum protocol stoppe</find>
-      <find>enode</find>
       <find>Ethereum</find>
+      <find>enode</find>
     </findStrings>
     <replaceStrings>
       <replace>essnode:</replace>
@@ -114,6 +121,7 @@
         <option value="$PROJECT_DIR$/cmd/puppess/module_faucet.go" />
         <option value="$PROJECT_DIR$/cmd/esskey/main.go" />
         <option value="$PROJECT_DIR$/build/nsis.gess.nsi" />
+        <option value="$PROJECT_DIR$/.travis.yml" />
       </list>
     </option>
   </component>
@@ -164,7 +172,14 @@
             </path>
             <path>
               <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
+              <item name="cmd" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="essentiaHybrid" type="b2602c69:ProjectViewProjectNode" />
+              <item name="essentiaHybrid" type="462c0819:PsiDirectoryNode" />
+              <item name="cmd" type="462c0819:PsiDirectoryNode" />
+              <item name="gess" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -388,7 +403,7 @@
       <workItem from="1535112162379" duration="8826000" />
       <workItem from="1535265814419" duration="5553000" />
       <workItem from="1535362240175" duration="329000" />
-      <workItem from="1535450970804" duration="1983000" />
+      <workItem from="1535450970804" duration="2892000" />
     </task>
     <servers />
   </component>
@@ -401,7 +416,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28079000" />
+    <option name="totallyTimeSpent" value="28988000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -414,6 +429,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1618" height="878" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.49481192" order="6" side_tool="false" content_ui="tabs" />
@@ -427,7 +443,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.4922179" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2769131" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2769131" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.48184177" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -501,23 +517,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ess/fetcher/fetcher_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9342">
-          <caret line="50" column="0" lean-forward="true" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
-          <folding>
-            <element signature="e#810#1268#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ess/filters/filter_system_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8112">
-          <caret line="220" column="16" lean-forward="true" selection-start-line="220" selection-start-column="16" selection-end-line="220" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ess/filters/filter_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3933">
@@ -648,13 +647,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="69">
           <caret line="34" column="50" lean-forward="true" selection-start-line="34" selection-start-column="50" selection-end-line="34" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmd/gess/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="260" column="0" lean-forward="false" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -878,6 +870,32 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="111">
           <caret line="64" column="48" lean-forward="true" selection-start-line="64" selection-start-column="48" selection-end-line="64" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cmd/gess/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="31" column="16" lean-forward="false" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="99">
+          <caret line="203" column="36" lean-forward="false" selection-start-line="203" selection-start-column="35" selection-end-line="203" selection-end-column="36" />
+          <folding>
+            <marker date="1535455022464" expanded="true" signature="29:40" ph="github.co…o-ethereum" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/appveyor.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-450">
+          <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
           <folding />
         </state>
       </provider>
