@@ -42,6 +42,8 @@ func MustRun(cmd *exec.Cmd) {
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		if err := cmd.Run(); err != nil {
+			cmd.Stderr = &out
+			fmt.Printf("Build Error: %q\n", out.String())
 			log.Fatal(err)
 		}
 	}
