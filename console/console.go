@@ -275,12 +275,12 @@ func (c *Console) AutoCompleteInput(line string, pos int) (string, []string, str
 // console's available modules.
 func (c *Console) Welcome() {
 	// Print some generic Geth metadata
-	fmt.Fprintf(c.printer, "Welcome to the Geth JavaScript console!\n\n")
+	fmt.Fprintf(c.printer, "Welcome to the Masternode JavaScript console!\n")
 	c.jsre.Run(`
 		console.log("instance: " + web3.version.node);
-		console.log("coinbase: " + eth.coinbase);
-		console.log("at block: " + eth.blockNumber + " (" + new Date(1000 * eth.getBlock(eth.blockNumber).timestamp) + ")");
-		console.log(" datadir: " + admin.datadir);
+		//console.log("coinbase: " + eth.coinbase);
+		//console.log("at block: " + eth.blockNumber + " (" + new Date(1000 * eth.getBlock(eth.blockNumber).timestamp) + ")");
+		//console.log(" datadir: " + admin.datadir);
 	`)
 	// List all the supported modules for the user to call
 	if apis, err := c.client.SupportedModules(); err == nil {
@@ -291,7 +291,7 @@ func (c *Console) Welcome() {
 		sort.Strings(modules)
 		fmt.Fprintln(c.printer, " modules:", strings.Join(modules, " "))
 	}
-	fmt.Fprintln(c.printer)
+	//	fmt.Fprintln(c.printer)
 }
 
 // Evaluate executes code and pretty prints the result to the specified output

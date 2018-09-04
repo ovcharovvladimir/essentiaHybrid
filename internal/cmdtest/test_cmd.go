@@ -55,6 +55,7 @@ type TestCmd struct {
 // Run exec's the current binary using name as argv[0] which will trigger the
 // reexec init function for that name (e.g. "geth-test" in cmd/geth/run_test.go)
 func (tt *TestCmd) Run(name string, args ...string) {
+
 	tt.stderr = &testlogger{t: tt.T}
 	tt.cmd = &exec.Cmd{
 		Path:   reexec.Self(),
