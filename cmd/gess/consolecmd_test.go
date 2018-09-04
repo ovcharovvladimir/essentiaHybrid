@@ -19,8 +19,9 @@ package main
 import (
 	"crypto/rand"
 	"math/big"
-	"os"
-	"path/filepath"
+
+	//"os"
+	//"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -37,78 +38,78 @@ const (
 
 // Tests that a node embedded within a console can be started up properly and
 // then terminated by closing the input stream.
-func TestConsoleWelcome(t *testing.T) {
-	//TODO:Fix console wellcome message
-	return
-	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
-
-	// Start a geth console, make sure it's cleaned up and terminate the console
-	geth := runGeth(t,
-		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
-		"--etherbase", coinbase, "--shh",
-		"console")
-
-	// Gather all the infos the welcome message needs to contain
-	geth.SetTemplateFunc("goos", func() string { return runtime.GOOS })
-	geth.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
-	geth.SetTemplateFunc("gover", runtime.Version)
-	geth.SetTemplateFunc("gethver", func() string { return params.VersionWithMeta })
-	geth.SetTemplateFunc("niltime", func() string { return time.Unix(0, 0).Format(time.RFC1123) })
-	geth.SetTemplateFunc("apis", func() string { return ipcAPIs })
-
-	// Verify the actual welcome message to the required template
-	geth.Expect(`
-Welcome to the Masternode JavaScript console!
-instance: Gess/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
- modules: {{apis}}
-
-> {{.InputLine "exit"}}
-`)
-	geth.ExpectExit()
-}
+//func TestConsoleWelcome(t *testing.T) {
+//	//TODO:Fix console wellcome message
+//	return
+//	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
+//
+//	// Start a geth console, make sure it's cleaned up and terminate the console
+//	geth := runGeth(t,
+//		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
+//		"--etherbase", coinbase, "--shh",
+//		"console")
+//
+//	// Gather all the infos the welcome message needs to contain
+//	geth.SetTemplateFunc("goos", func() string { return runtime.GOOS })
+//	geth.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
+//	geth.SetTemplateFunc("gover", runtime.Version)
+//	geth.SetTemplateFunc("gethver", func() string { return params.VersionWithMeta })
+//	geth.SetTemplateFunc("niltime", func() string { return time.Unix(0, 0).Format(time.RFC1123) })
+//	geth.SetTemplateFunc("apis", func() string { return ipcAPIs })
+//
+//	// Verify the actual welcome message to the required template
+//	geth.Expect(`
+//Welcome to the Masternode JavaScript console!
+//instance: Gess/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
+// modules: {{apis}}
+//
+//> {{.InputLine "exit"}}
+//`)
+//	geth.ExpectExit()
+//}
 
 // Tests that a console can be attached to a running node via various means.
-func TestIPCAttachWelcome(t *testing.T) {
-	//TODO:Fix console wellcome message
-	return
-	// Configure the instance for IPC attachement
-	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
-	var ipc string
-	if runtime.GOOS == "windows" {
-		ipc = `\\.\pipe\gess` + strconv.Itoa(trulyRandInt(100000, 999999))
-	} else {
-		ws := tmpdir(t)
-		defer os.RemoveAll(ws)
-		ipc = filepath.Join(ws, "gess.ipc")
-	}
-	// Note: we need --shh because testAttachWelcome checks for default
-	// list of ipc modules and shh is included there.
-	geth := runGeth(t,
-		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
-		"--etherbase", coinbase, "--shh", "--ipcpath", ipc)
+//func TestIPCAttachWelcome(t *testing.T) {
+//	//TODO:Fix console wellcome message
+//	return
+//	// Configure the instance for IPC attachement
+//	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
+//	var ipc string
+//	if runtime.GOOS == "windows" {
+//		ipc = `\\.\pipe\gess` + strconv.Itoa(trulyRandInt(100000, 999999))
+//	} else {
+//		ws := tmpdir(t)
+//		defer os.RemoveAll(ws)
+//		ipc = filepath.Join(ws, "gess.ipc")
+//	}
+//	// Note: we need --shh because testAttachWelcome checks for default
+//	// list of ipc modules and shh is included there.
+//	geth := runGeth(t,
+//		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
+//		"--etherbase", coinbase, "--shh", "--ipcpath", ipc)
+//
+//	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
+//	testAttachWelcome(t, geth, "ipc:"+ipc, ipcAPIs)
+//
+//	geth.Interrupt()
+//	geth.ExpectExit()
+//}
 
-	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
-	testAttachWelcome(t, geth, "ipc:"+ipc, ipcAPIs)
-
-	geth.Interrupt()
-	geth.ExpectExit()
-}
-
-func TestHTTPAttachWelcome(t *testing.T) {
-	//TODO:Fix console wellcome message
-	return
-	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
-	port := strconv.Itoa(trulyRandInt(1024, 65536)) // Yeah, sometimes this will fail, sorry :P
-	geth := runGeth(t,
-		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
-		"--etherbase", coinbase, "--rpc", "--rpcport", port)
-
-	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
-	testAttachWelcome(t, geth, "http://localhost:"+port, httpAPIs)
-
-	geth.Interrupt()
-	geth.ExpectExit()
-}
+//func TestHTTPAttachWelcome(t *testing.T) {
+//	//TODO:Fix console wellcome message
+//	return
+//	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
+//	port := strconv.Itoa(trulyRandInt(1024, 65536)) // Yeah, sometimes this will fail, sorry :P
+//	geth := runGeth(t,
+//		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
+//		"--etherbase", coinbase, "--rpc", "--rpcport", port)
+//
+//	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
+//	testAttachWelcome(t, geth, "http://localhost:"+port, httpAPIs)
+//
+//	geth.Interrupt()
+//	geth.ExpectExit()
+//}
 
 func TestWSAttachWelcome(t *testing.T) {
 	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
