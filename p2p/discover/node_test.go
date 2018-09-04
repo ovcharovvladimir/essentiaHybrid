@@ -60,7 +60,7 @@ var parseNodeTests = []struct {
 }{
 	{
 		rawurl:    "http://foobar",
-		wantError: `invalid URL scheme, want "enode"`,
+		wantError: `invalid URL scheme, want "essnode"`,
 	},
 	{
 		rawurl:    "essnode://01010101@123.124.125.126:3",
