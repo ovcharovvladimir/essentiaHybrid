@@ -166,7 +166,7 @@ func TestWelcome(t *testing.T) {
 
 	tester.console.Welcome()
 
-	output := tester.output.String()
+	//output := tester.output.String()
 	//if want := "Welcome to the Masternode JavaScript console!\n"; !strings.Contains(output, want) {
 	//	t.Fatalf("console output missing welcome message: have\n%s\nwant also %s", output, want)
 	//}
