@@ -40,3 +40,11 @@ echo Test work clien for log server
 ./clmon Project Module "Short send to srver" Status
 ```
 
+## Примечание :
+При вызове третьего параметра если в нем содержится несколько слов - его необходимо брать в кавычки.
+
+```
+./clmon Project Module "**Этот параметр нужно брать в кавычки**" Status
+```
+
+
