@@ -28,7 +28,7 @@ go build -o clmon
 
 
 ## Пример проверки
-## test.sh
+## Test.sh
 
 ```sh
 #!/bin/bash
