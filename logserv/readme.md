@@ -2,12 +2,18 @@
 
 
 Для тестирования можно вызвать файл с обязательными параметрами
-1. **Project**       - имя проекта
-2. **Module**        - Имя модуля
-3. "**Short send**"  - краткое сообщение для мониторинга
-4. **Status**        - Статус сообщения (Info, Warn, Error)
 
-## Start.sh
+|#|Arg|Description|
+|--|--|--|
+|1.| **Project**|имя проекта|
+|2.| **Module** |Имя модуля|
+|3.| "**Short send**"|краткое сообщение для мониторинга|
+|4.| **Status**|Статус сообщения (Info, Warn, Error)|
+
+
+
+## Building
+### Start.sh
 ```sh
 #!/bin/bash
 
@@ -28,7 +34,7 @@ go build -o clmon
 
 
 ## Пример проверки
-## Test.sh
+### Test.sh
 
 ```sh
 #!/bin/bash
