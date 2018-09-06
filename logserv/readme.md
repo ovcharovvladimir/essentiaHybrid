@@ -7,7 +7,28 @@
 3. "**Short send**"  - краткое сообщение для мониторинга
 4. **Status**        - Статус сообщения (Info, Warn, Error)
 
+## Start.sh
+```sh
+#!/bin/bash
+
+
+clear
+echo Start building...
+
+# Enviroument
+export GOPATH=$HOME/app
+#export GOPATH=$PWD
+export GOROOT=$HOME/go
+export PATH=$PATH:$GOROOT/bin
+
+# Start
+go build -o clmon
+./clmon Prrysm Modul Text info
+```
+
+
 ## Пример проверки
+## test.sh
 
 ```sh
 #!/bin/bash
