@@ -2,3 +2,7 @@
 /build/bin
 
 \.directory
+
+bin/
+
+cmd/bootnode/bootnode

@@ -19,12 +19,21 @@ matrix:
       dist: trusty
       sudo: required
       go: 1.10.x
+      env: LATEST=true
+      allow_failures:
+        - go: tip
+      before_install:
+        - sudo apt-get install gox
+        # gox simplifies building for multiple architectures
+        - go get github.com/mitchellh/gox  
+      
       script:
         - sudo modprobe fuse
         - sudo chmod 666 /dev/fuse
         - sudo chown root:$USER /etc/fuse.conf
         - go run build/ci.go install
       #  - go run build/ci.go test -coverage $TEST_PACKAGES
+        -
 
 #    - os: osx
 #      go: 1.10.x
