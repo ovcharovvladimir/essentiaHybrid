@@ -107,6 +107,7 @@ func main() {
 	}
 
 	realaddr := conn.LocalAddr().(*net.UDPAddr)
+
 	if natm != nil {
 		if !realaddr.IP.IsLoopback() {
 			go nat.Map(natm, nil, "udp", realaddr.Port, realaddr.Port, "essentia discovery")

@@ -193,7 +193,7 @@ func gatherChildren(n node, children *[]common.Hash) {
 	case valueNode, nil:
 
 	default:
-		panic(fmt.Sprintf("unknown node type: %T", n))
+		panic(fmt.Sprintf("gatherChildren -> unknown node type: %T", n))
 	}
 }
 
@@ -219,7 +219,7 @@ func simplifyNode(n node) node {
 		return n
 
 	default:
-		panic(fmt.Sprintf("unknown node type: %T", n))
+		panic(fmt.Sprintf("simplifyNode -> unknown node type: %T", n))
 	}
 }
 
@@ -257,7 +257,7 @@ func expandNode(hash hashNode, n node, cachegen uint16) node {
 		return n
 
 	default:
-		panic(fmt.Sprintf("unknown node type: %T", n))
+		panic(fmt.Sprintf("expandNode -> unknown node type: %T", n))
 	}
 }
 

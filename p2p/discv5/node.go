@@ -203,6 +203,7 @@ func parseComplete(rawurl string) (*Node, error) {
 			return nil, errors.New("invalid discport in query")
 		}
 	}
+	
 	return NewNode(id, ip, uint16(udpPort), uint16(tcpPort)), nil
 }
 

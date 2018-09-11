@@ -194,6 +194,7 @@ func (s *Sync) Process(results []SyncResult) (bool, int, error) {
 		request.data = item.Data
 
 		// Create and schedule a request for all the children nodes
+
 		requests, err := s.children(request, node)
 		if err != nil {
 			return committed, i, err
@@ -272,7 +273,7 @@ func (s *Sync) children(req *request, object node) ([]*request, error) {
 			}
 		}
 	default:
-		panic(fmt.Sprintf("unknown node: %+v", node))
+		panic(fmt.Sprintf("-> unknown node: %+v", node))
 	}
 	// Iterate over the children, and request all unknown ones
 	requests := make([]*request, 0, len(children))

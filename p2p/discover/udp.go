@@ -22,6 +22,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net"
 	"time"
 
@@ -68,6 +69,7 @@ type (
 		Version    uint
 		From, To   rpcEndpoint
 		Expiration uint64
+		Nonse      []byte
 		// Ignore additional fields (for forward compatibility).
 		Rest []rlp.RawValue `rlp:"tail"`
 	}
@@ -81,6 +83,7 @@ type (
 
 		ReplyTok   []byte // This contains the hash of the ping packet.
 		Expiration uint64 // Absolute timestamp at which the packet becomes invalid.
+		Nonse      []byte
 		// Ignore additional fields (for forward compatibility).
 		Rest []rlp.RawValue `rlp:"tail"`
 	}
@@ -276,9 +279,14 @@ func (t *udp) ping(toid NodeID, toaddr *net.UDPAddr) error {
 // sendPing sends a ping message to the given node and invokes the callback
 // when the reply arrives.
 func (t *udp) sendPing(toid NodeID, toaddr *net.UDPAddr, callback func()) <-chan error {
+	var e []byte
+	e = eid()
+	n := string(e[:])
+	n = n + toaddr.IP.String()
 	req := &ping{
 		Version:    4,
 		From:       t.ourEndpoint,
+		Nonse:      crypto.Keccak256([]byte(n)),
 		To:         makeEndpoint(toaddr, 0), // TODO: maybe use known TCP port from DB
 		Expiration: uint64(time.Now().Add(expiration).Unix()),
 	}
@@ -490,6 +498,7 @@ func (t *udp) send(toaddr *net.UDPAddr, ptype byte, req packet) ([]byte, error) 
 	if err != nil {
 		return hash, err
 	}
+
 	return hash, t.write(toaddr, req.name(), packet)
 }
 
@@ -577,6 +586,7 @@ func decodePacket(buf []byte) (packet, NodeID, []byte, error) {
 		return nil, NodeID{}, hash, err
 	}
 	var req packet
+
 	switch ptype := sigdata[0]; ptype {
 	case pingPacket:
 		req = new(ping)
@@ -598,28 +608,45 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 	if expired(req.Expiration) {
 		return errExpired
 	}
-	t.send(from, pongPacket, &pong{
-		To:         makeEndpoint(from, req.From.TCP),
-		ReplyTok:   mac,
-		Expiration: uint64(time.Now().Add(expiration).Unix()),
-	})
+	n := string(req.Nonse[:])
+	n = n + req.From.IP.String()
+	cn := crypto.Keccak256([]byte(n))
+
+	var pp pong
+		pp.To = makeEndpoint(from, req.From.TCP)
+		pp.ReplyTok = mac
+		pp.Nonse = cn
+		pp.Expiration = uint64(time.Now().Add(expiration).Unix())
+
+	t.send(from, pongPacket, &pp)
 	t.handleReply(fromID, pingPacket, req)
 
 	// Add the node to the table. Before doing so, ensure that we have a recent enough pong
 	// recorded in the database so their findnode requests will be accepted later.
-	n := NewNode(fromID, from.IP, uint16(from.Port), req.From.TCP)
-	if time.Since(t.db.lastPongReceived(fromID)) > nodeDBNodeExpiration {
-		t.sendPing(fromID, from, func() { t.addThroughPing(n) })
-	} else {
-		t.addThroughPing(n)
+	ex := string(req.Nonse[:])
+	ex = ex + req.From.IP.String()
+	exa := crypto.Keccak256([]byte(ex))
+
+
+	rs := bytes.Compare(pp.Nonse, exa)
+	if rs == 0 {
+		log.Trace("Essentia node founded","ip",from.IP)
+		n := NewNode(fromID, from.IP, uint16(from.Port), req.From.TCP)
+		if time.Since(t.db.lastPongReceived(fromID)) > nodeDBNodeExpiration {
+			t.sendPing(fromID, from, func() { t.addThroughPing(n) })
+		} else {
+			t.addThroughPing(n)
+		}
+		t.db.updateLastPingReceived(fromID, time.Now())
 	}
-	t.db.updateLastPingReceived(fromID, time.Now())
+	
 	return nil
 }
 
 func (req *ping) name() string { return "PING/v4" }
 
 func (req *pong) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) error {
+
 	if expired(req.Expiration) {
 		return errExpired
 	}
@@ -686,4 +713,17 @@ func (req *neighbors) name() string { return "NEIGHBORS/v4" }
 
 func expired(ts uint64) bool {
 	return time.Unix(int64(ts), 0).Before(time.Now())
+}
+
+func eid() []byte {
+	bytes := make([]byte, 5)
+	for i := 0; i < 5; i++ {
+		bytes[i] = byte(randInt(0, 255))
+	}
+
+	return bytes
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
 }
