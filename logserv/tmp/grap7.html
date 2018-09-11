@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+	      <title>Admin</title>
+	      {{template "libs"}}
+              <style>
+
+.node circle {
+  fill: #999;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.node--internal circle {
+  fill: #555;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-opacity: 0.4;
+  stroke-width: 1.5px;
+}
+
+form {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+label {
+  display: block;
+}
+
+</style>
+</head>
+
+<body>
+  {{template "header"}}
+<div class="container">
+
+
+<svg width="960" height="2400"></svg>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+
+<script>
+
+chart = {
+  const svg = d3.select(DOM.svg(width, height));
+
+  svg.append("g")
+      .call(xAxis);
+
+  svg.append("g")
+      .call(yAxis);
+
+  const g = svg.append("g")
+      .attr("stroke-linecap", "round")
+      .attr("stroke", "black")
+    .selectAll("g")
+    .data(data)
+    .enter().append("g")
+      .attr("transform", d => `translate(${x(d.date)},0)`)
+      .attr("stroke", d => d.open > d.close ? d3.schemeSet1[0]
+          : d.close > d.open ? d3.schemeSet1[2]
+          : d3.schemeSet1[8]);
+
+  g.append("line")
+      .attr("y1", d => y(d.low))
+      .attr("y2", d => y(d.high));
+
+  g.append("line")
+      .attr("y1", d => y(d.open))
+      .attr("y2", d => y(d.close))
+      .attr("stroke-width", x.bandwidth());
+
+  g.append("title")
+      .text(d => `${formatDate(d.date)}
+Open: ${formatValue(d.open)}
+Close: ${formatValue(d.close)} (${formatChange(d.open, d.close)})
+Low: ${formatValue(d.low)}
+High: ${formatValue(d.high)}`);
+
+  return svg.node();
+}
+
+
+data = (await d3.csv(`https://gist.githubusercontent.com/mbostock/696604b8395aa68d0e7dcd74abd21dbb/raw/55c17dab8461cde25ca8c735543fba839b0c940b/AAPL.csv`, d => {
+  const date = parseDate(d["Date"]);
+  return {
+    date,
+    high: +d["High"],
+    low: +d["Low"],
+    open: +d["Open"],
+    close: +d["Close"]
+  };
+})).slice(-120)
+
+</script>
+
+</div>
+{{template "footer"}}
+
+
+
+</html>
+

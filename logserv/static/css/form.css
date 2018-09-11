@@ -1,0 +1,26 @@
+      */
+          body        {margin:10px;}
+          html        {color: #3B3B3B; font-size:10px; font-family:Calibri;}
+          td1         {border: 1px gray solid; padding:5px;}
+         .ddblock     {padding:10px;}
+         .hhd1        {border:1px gray solid; padding:5px; background-color: #E7E7E7; font-weight: bold;}
+         .hdsf1       {color: #3366FF;	font-weight: bold;	font-size:17px;}
+         .btn-group   {width:350px}
+         .mb          {width:800px; left:50%; margin-left:-400px; position: absolute; top: 10%;   box-shadow: -1px 5px 10px rgba(0,0,0,0.5);      }
+		     .drop-shadow { -webkit-box-shadow: -1px 5px 10px rgba(0,0,0,0.5);box-shadow: -1px 5px 10px rgba(0,0,0,0.5);}
+         .container.drop-shadow {padding-left:0; padding-right:0;}
+		     .btn         {width:100px;} 
+
+		     #contact label{display: inline-block;	width: 100px;	text-align: right;}
+         #contact_submit{	padding-left: 100px;}
+         #contact div{	margin-top: 1em;}
+         textarea{	vertical-align: top;	height: 5em;}
+		 
+		     .error{	display: none;	margin-left: 10px;}		
+         .error_show{	color: red;	margin-left: 10px;}
+         .notificationwindow{display:none;  background-color:  #F0F0F0;  position:absolute; top:40%; width: 500px; margin-left: -250px;  left: 50%; padding:10px; border-radius: 5px; border: 3px solid #676767;             	                  box-shadow:        -2px 5px 15px #CCC; }
+
+	       .notificationwindow p  {color: #CCC; font-weight : bold; }	                  
+         .notificationwindow h4 {color: #990000; text-align  : center;}	                  
+         #liclass li a          {display:     block; font-weight: bold; transition: width 3s;} 
+         #liclass li a:hover    {color       : #676768;}

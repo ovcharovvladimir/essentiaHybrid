@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+	      <title>Tasks</title>
+
+	      <style type="text/css">
+	      	     .card{margin: 10px;}
+	      	     .Отозван{color:red;font-size:20px;}
+	      	     .Установлен{color:green;font-weight:bold;}
+	      	     .br_Установлен{background-color:#C5C5C5;}
+	      	     table>tbody{font-size:14px;}
+	      	     table>thead{background-color:#013ADF; color:white;}
+	      	     /*table>thead>tr>th{text-align: center;}*/
+	      	     table th{text-align: center;}
+	      	     .clcentr{text-align: center;}
+	      	     h41{color:#009999!important; font-weight:bold; font-size: 27px;}
+	      	     tbody tr:hover {
+                          background: #00CC66!important; /* Цвет фона при наведении */
+                          color: #fff; /* Цвет текста при наведении */
+                 }
+
+	      </style>
+
+	      {{template "libs"}}
+
+	      <script type="text/javascript">
+				function Tst(){
+					     return "ffff";
+				}        
+
+                    // Table css
+					$(document).ready(function() {
+						
+					      $('#rls').DataTable({
+
+								          "language": {
+														"decimal":      ",",
+														"thousands":    ".",
+														"search":       "Поиск ",
+														"lengthMenu":   "Display _MENU_ records per page",
+                                                        "zeroRecords":  "По Вашим условия ничего не найдено - Извините. ",
+                                                        "info":         "Showing page _PAGE_ of _PAGES_",
+                                                        "infoEmpty":    "No records available",
+                                                        "infoFiltered": "(filtered from _MAX_ total records)"
+													},
+
+								        "scrollY":        "600px",
+                                        "scrollCollapse": true,
+								        "paging":         false,
+								        "ordering":       true,
+								        "info":           false,
+								        "order":          [[ 2, "desc" ]],
+								        "dom":            '<"toolbar">frtip'
+
+
+								    });
+
+                                       $("div.toolbar").html('<h41>{{.Title}} </h41> <p style="font-size:12px;">{{.Descript}} : {{.Datrep}}</p>');
+					});
+	      </script>
+    </head>
+
+<body>
+    {{template "header"}}
+	<br>
+	<div class="container-fluid">
+							         	      
+
+							         	      <table id="rls" class="table table-bordered table-striped table-hover table-sm" style="width:95%;">
+							         	         <thead>
+							         	      	   <tr>
+								         	       	    <th class="clcentr">Create time </th>
+								         	       	    <th class="clcentr">Project     </th>
+								         	       	    <th class="clcentr">Module      </th>
+								         	       	    <th>Description </th>
+								         	       	    <th class="clcentr">Block Id    </th>
+                                                        <th class="clcentr">Account     </th>
+                                                        <th>Status</th>
+								         	       	</tr>
+								         	     </thead> 
+
+
+								         	     <tbody>
+								         	      	{{range .Dts}}
+									         	       <tr>
+									         	       	    <td style="width: 150px;"> {{.Datetime}}   </td>
+	                                                        <td style="width: 180px;"> {{.Project}}    </td>
+	                                                        <td style="width: 150px;"> {{.Module}}     </td>
+	                                                        <td style="width: auto;">  {{.Operation}}  </td>
+	                                                        <td style="width: 250px;"> {{.BlockId}}    </td>
+                                                            <td style="width: 150px;"> {{.AccountId}}  </td>
+                                                            <td style="width: 100px;"> <span class="{{.Status}}"> {{.Status}}</span> </td>
+									         	       	</tr> 
+									         	  	{{end}}
+								         	  	</tbody>
+							         	  	  </table>
+</div>							         	  	  
+       {{template "footer"}}
+
+</html>
+
