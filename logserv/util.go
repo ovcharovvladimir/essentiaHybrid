@@ -42,7 +42,6 @@ func Prn(Info string){
 
 
 /***************************************************************
-  Author      Savchenko Arthur
   Company     Essentia
   Description Error
   Time        11-12-2017
