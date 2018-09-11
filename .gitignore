@@ -6,3 +6,9 @@
 bin/
 
 cmd/bootnode/bootnode
+
+scripts/bootnode
+
+scripts/gess
+
+scripts/key1\.bin
