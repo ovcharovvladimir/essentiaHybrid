@@ -7,10 +7,6 @@ matrix:
       dist: trusty
       sudo: required
       go: 1.9.x
-      before_install:
-        - go get -u github.com/dancannon/gorethink
-        - go get -u github.com/sirupsen/logrus
-        - go get -u github.com/x-cray/logrus-prefixed-formatter
       script:
         - sudo modprobe fuse
         - sudo chmod 666 /dev/fuse
@@ -77,10 +73,6 @@ matrix:
         apt:
           packages:
             - gcc-multilib
-      before_install:
-        - go get -u github.com/dancannon/gorethink
-        - go get -u github.com/sirupsen/logrus
-        - go get -u github.com/x-cray/logrus-prefixed-formatter
       script:
         # Build for the primary platforms that Trusty can manage
         - go run build/ci.go install
