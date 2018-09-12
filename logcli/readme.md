@@ -55,7 +55,7 @@ echo Test work clien for log server
 // 
 func Test_os(){
 	 
-	 cmd:= exec.Command("./clmon",  "Prizm", "Module", "Пример передачи сообщения на сервер", "info", "x03003hdhd0304mkdsdsffssdfdsxcvbfddghh454sdf","Acc092","2018-12-09 12:45")
+	 cmd:= exec.Command("./clmon",  "Prizm", "Module", "Пример передачи сообщения на сервер", "info", "0x37cc62924b876a043bad996399d3bc15f0f629f01e1ef6c457b1b486681a568c","Acc092","2018-12-09 12:45")
 	 err:= cmd.Run()
 
 	 if err!=nil{
