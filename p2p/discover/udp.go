@@ -613,10 +613,10 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 	cn := crypto.Keccak256([]byte(n))
 
 	var pp pong
-		pp.To = makeEndpoint(from, req.From.TCP)
-		pp.ReplyTok = mac
-		pp.Nonse = cn
-		pp.Expiration = uint64(time.Now().Add(expiration).Unix())
+	pp.To = makeEndpoint(from, req.From.TCP)
+	pp.ReplyTok = mac
+	pp.Nonse = cn
+	pp.Expiration = uint64(time.Now().Add(expiration).Unix())
 
 	t.send(from, pongPacket, &pp)
 	t.handleReply(fromID, pingPacket, req)
@@ -626,11 +626,10 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 	ex := string(req.Nonse[:])
 	ex = ex + req.From.IP.String()
 	exa := crypto.Keccak256([]byte(ex))
-
-
+	log.Trace("Essentia ", "exa", string(exa[:]), "pp", string(pp.Nonse[:]))
 	rs := bytes.Compare(pp.Nonse, exa)
 	if rs == 0 {
-		log.Trace("Essentia node founded","ip",from.IP)
+		log.Trace("Essentia node founded", "ip", from.IP)
 		n := NewNode(fromID, from.IP, uint16(from.Port), req.From.TCP)
 		if time.Since(t.db.lastPongReceived(fromID)) > nodeDBNodeExpiration {
 			t.sendPing(fromID, from, func() { t.addThroughPing(n) })
@@ -639,7 +638,7 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 		}
 		t.db.updateLastPingReceived(fromID, time.Now())
 	}
-	
+
 	return nil
 }
 
@@ -670,7 +669,7 @@ func (req *findnode) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte
 		// and UDP port of the target as the source address. The recipient of the findnode
 		// packet would then send a neighbors packet (which is a much bigger packet than
 		// findnode) to the victim.
-		return errUnknownNode
+		//return errUnknownNode
 	}
 	target := crypto.Keccak256Hash(req.Target[:])
 	t.mutex.Lock()

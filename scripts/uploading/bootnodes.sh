@@ -5,8 +5,9 @@ RED='\033[1;31m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("18.217.9.146" "18.191.42.39" "18.223.101.201" "Upload" "Quit")
+options=("18.217.9.146" "18.191.42.39" "18.223.101.201" "Upload" "Start All" "Quit")
 echo "Availible bootnodes:"
+
 print_list(){
 for ((i = 0; i < ${#options[@]}; ++i)); do
     # bash arrays are 0-indexed
@@ -16,9 +17,11 @@ done
 }
 upload(){
 
-for ((i = 0; i < ${#options[@]}-2; ++i)); do
+for ((i = 0; i < ${#options[@]}-3; ++i)); do
     echo -e "* ${RED} ${options[$i]} ${NC} *"
+     ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo pkill bootnode
      ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo mkdir -p /home/release
+     ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo rm -rv /home/release/*  
      echo ". Files Uploading"
      idx=$((i+1))
       echo "******** bootnode "
@@ -29,8 +32,26 @@ for ((i = 0; i < ${#options[@]}-2; ++i)); do
      echo "------------------"
      
     echo "- DONE -"
+
 done
 }
+start_process(){
+
+for ((i = 0; i < ${#options[@]}-3; ++i)); do
+   echo -e "* Starting bootnode ${RED} ${options[$i]} ${NC} *"
+    ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo pkill bootnode
+    ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
+    ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
+   echo "Press Ctrl+C to continue loading ..."
+   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
+
+ done  
+}
+
+
+
+
 echo "**********************************************************"
 PS3='Select bootnodes:' 
 select opt in "${options[@]}"
@@ -58,8 +79,13 @@ do
 	"Upload")
 		upload
 		print_list
-	    ;;		
-        "Quit")
+	    ;;	
+    "Start All")
+
+        start_process
+		print_list
+	    ;;	
+        "Quit")     
             break
             ;;
         *) echo "invalid option $REPLY";;
