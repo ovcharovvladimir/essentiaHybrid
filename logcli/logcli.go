@@ -1,7 +1,8 @@
 /****************************************************************************************
- *  ESSENTIA CLIENT MONITOR
+ *	ESSENTIA CLIENT MONITOR
  *  Copyright ESSENTIA  (2018)
- *  DATE : 06/09/2018
+ *  12-09-2018 
+ *  Ver 0.001 
  ****************************************************************************************/
 package main
 
@@ -12,9 +13,8 @@ import (
 	"os"
 )
 
-// Change this addres
 var(
-    ipserv="http://111.222.333.444:55555"
+    ipserv="http://18.223.111.231:5898"
 )
 
 
@@ -25,23 +25,25 @@ var(
 func main() {
      
      // Args
-     arg    :=os.Args
-     Project:=arg[1]
-     Module :=arg[2]
-     Text   :=arg[3]
-     Status :=arg[4]
+     arg       :=os.Args
+     Project   :=arg[1]
+     Module    :=arg[2]
+     Operation :=arg[3]
+     Status    :=arg[4]
+     BlockId   :=arg[5]
+     AccountId :=arg[6]
   
-     Send_Info(Project,Module, Text, Status)
+     Send_Info(Project, Module, Text, Status)
 }
 
-
 // *************************************************************
-// Send to log server information
+//  Send to log server information
+//  Send_Info("EssentiaHybrid", "worker", "", "Info","ccc34554zxcxzcaddfdf3445cvdv","acc12344")
 // *************************************************************
-func Send_Info(Proj,Module,Text,Status string ){
-
-    url    := ipserv+"/api/add/"+Proj+"*"+Module+"*"+Text+"*"+Status
-	re,errr:= http.NewRequest("GET", url, nil)
+func Send_Info(Project, Module, Operation, Status, BlockId, AccountId string ){
+    ipserv := "http://18.223.111.231:5898"
+    url    :=  ipserv+"/api/add/"+Project+"*"+Module+"*"+Text+"*"+Status+"*"+BlockId+"*"+AccountId
+	re,errr:=  http.NewRequest("GET", url, nil)
 	
 	if errr!=nil{
        fmt.Println(errr.Error()) 

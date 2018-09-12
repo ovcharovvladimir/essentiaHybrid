@@ -7,7 +7,8 @@ import (
 
 //************************************************************
 //  Name    : Gloabal Variables for connection 
-//  Date    : 10-11-2018
+//  Date    : is a snippet.
+//  Author  : Svachenko Arthr
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
@@ -29,7 +30,7 @@ var (
 //************************************************************
 //  Name    : Base Type 
 //  Date    : 10-09-2018
-//  Author  : Svachenko Arthur
+//  Author  : Svachenko Arthr
 //  Company : Essentia
 //  Number  : 
 //  Module  : Declaration inetrfaces & structure & other type
@@ -47,7 +48,7 @@ type Mil []int64
 //************************************************************
 //  Name    : Structure monitor data 
 //  Date    : 09-10-2018
-//  Author  : Svachenko Arthur
+//  Author  : Svachenko Arthr
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
@@ -77,7 +78,7 @@ func (L *LogStruct) Sys(){
 //************************************************************
 //  Name    : Base vars global level 
 //  Date    : 09-10-2018
-//  Author  : Svachenko Arthur
+//  Author  : Svachenko Arthr
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
@@ -146,12 +147,10 @@ Html=`
             <a href="/" class="btn btn-primary my-2">Home</a>
             <a href="/rep/log/100"  class="btn btn-primary my-2">Report</a>
             <a href="/rep/json/100" class="btn btn-primary my-2">Json</a>
-
-
             <hr>
             <a href="/db/start/"   class="btn btn-secondary my-2">Create database</a>
-            <a href="/db/delete/"  class="btn btn-secondary my-2">Clear log</a>
-            <a href="/api/add/essentia-hybrid*Reward*sample notification description*Info"   class="btn btn-secondary my-2">Sample insert</a>
+            <a href="/db/del/"     class="btn btn-warning   my-2">Clear log</a>
+            <a href="/api/add/essentia-hybrid*Reward*sample notification description*Info*BlockId*AccountId*CreateTime"   class="btn btn-secondary my-2">Sample insert</a>
     </div>
 
     </main>

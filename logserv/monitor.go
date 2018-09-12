@@ -1,11 +1,10 @@
 /**********************************************************************************************************************************************************************************************
- *	★ ESSENTIA MONITOR
- *   	Copyright Softinform (2018)
- *
- *      https://github.com/DisposaBoy/GoSublime
+ * ESSENTIA MONITOR
+ * (c) Copyright Essentia (2018)
+ * https://github.com/DisposaBoy/GoSublime
+ * DATE : 
  ***********************************************************************************************************************************************************************************************/
 package main
-
 
 import (
 	"net/http"
@@ -18,9 +17,8 @@ import (
 	"html/template"
     "path"
     "os/exec"
-    r "github.com/dancannon/gorethink"
+  r "github.com/dancannon/gorethink"
 )
-
 
 /***************************************************************************************************************************************
  *   Title        : Connection to DB
@@ -28,7 +26,7 @@ import (
  * 	 Date         : 2018-10-11
  *	 Description  : Initialization DB Connect
  *   Author       : Savchenko Arthur
-  ****************************************************************************************************************************************/
+ ****************************************************************************************************************************************/
 func init() {
 	session, err := r.Connect(r.ConnectOpts{Database: "wrk"})
 
@@ -56,36 +54,34 @@ func main() {
     flag.Parse()	
     
     // Route
-	http.HandleFunc("/",                                  StartPage)                          // Регистрация в сервисе
-    http.HandleFunc("/login/",                            Login)                              // Регистрация в сервисе
-    http.HandleFunc("/static/",                           StaticPage)                         // Link to static page
+	http.HandleFunc("/",                      StartPage)        // Start Page
+    http.HandleFunc("/login/",                Login)            // Registartion
+    http.HandleFunc("/static/",               StaticPage)       // Link to static page
 
     // DB
-	http.HandleFunc("/db/start/",                         Db_Prepea)                          // Создание базы
-	http.HandleFunc("/db/del/",                           Db_Delete)                          // Clear базы
+	http.HandleFunc("/db/start/",             Db_Prepea)        // Created database
+	http.HandleFunc("/db/del/",               Db_Delete)        // Clear базы
 
     // Test
-	http.HandleFunc("/tst/add/",                          Db_testlog)                         // Test add record
-	http.HandleFunc("/tst/cli/",                          Test_os)                            // Test call client monitor
+	http.HandleFunc("/tst/add/",              Db_testlog)       // Test add record
+	http.HandleFunc("/tst/cli/",              Test_os)          // Test call client monitor
 	
 	// Admin panel
-	http.HandleFunc("/api/admin/",                        Admin_panel)                        // Admin panel 
-	http.HandleFunc("/api/test/add/",                     AddInf)                             // Add inf to log
-	http.HandleFunc("/api/add/",                          AddInfStr)                          // Add inf to log
-	http.HandleFunc("/api/view/",                         Log1)                               // View inf to log
+	http.HandleFunc("/api/admin/",            Admin_panel)      // Admin panel 
+	http.HandleFunc("/api/test/add/",         AddInf)           // Add inf to log test
+	http.HandleFunc("/api/add/",              AddInfStr)        // Add inf to log
 
 	// Reports 
-	http.HandleFunc("/rep/test/",                         Rep_log)                            // Test 
-	http.HandleFunc("/rep/log/",                          Rep_log_journal)                    // View in HTML report
-    http.HandleFunc("/rep/json/",                         Rep_log_json)                       // Export to json format
-    http.HandleFunc("/rep/graph/",                        Rep_graph)                          // Export to json format
+	http.HandleFunc("/rep/test/",             Rep_log)          // Test login operation
+	http.HandleFunc("/rep/log/",              Rep_log_journal)  // View in HTML report
+    http.HandleFunc("/rep/json/",             Rep_log_json)     // Export to json format
+    http.HandleFunc("/rep/graph/",            Rep_graph)        // Export to json format
 
     // Cli
-    http.HandleFunc("/cli/send/",                         Cli_send)                           // Export to json format    
-    
-    
+    http.HandleFunc("/cli/send/",             Cli_send)         // Export to json format    
+        
     // Info
-    Inf("main", "Server is started on the port "+ *Port, "i")
+    Inf("main", "Server is started on the port " + *Port, "i")
 
 	err:=http.ListenAndServe(*Port, nil)
 	if err!=nil{
@@ -145,7 +141,6 @@ func Db_Prepea(w http.ResponseWriter, req *http.Request) {
      Inf("db prepea","Database and log table was created!" , "i")
 }
 
-
 /********************************************************************************************************************************
  *  TITLE             : Подготовка базы данных 
  *  DESCRIPTION       : Delete table
@@ -157,7 +152,6 @@ func Db_Delete(w http.ResponseWriter, req *http.Request) {
      s:=[]byte("Таблица полность очищена.")
      w.Write(s)
 }
-
 
 /********************************************************************************************************************************
  *  TITLE             : Test insert
@@ -172,14 +166,15 @@ func Db_testlog(w http.ResponseWriter, req *http.Request) {
      Dat.Operation  = "Test initial operation"	
      Dat.Project    = "Block-chain-beacon"
      Dat.Module     = "RewardCount"
-     Dat.Datetime   = CurTime 
-     Dat.Status     = "Warning"
-     Dat.BlockId    = "123-34774-345-xcvxcvcvv-234343"
+     Dat.Datetime   =  CurTime 
+     Dat.Status     = "Info"
+     Dat.BlockId    = "000015783b764259d382017d91a36d206d0600e2cbb3567748f46a33fe9297cf"
      Dat.AccountId  = "AccountID/ContractID"
      Dat.CreateTime = time.Now().Format("2006-01-02 14:55") 
     
-     Inf("test", Dat.BlockId,  "w")
-
+     Inf("db test", Dat.BlockId,  "w")
+     
+     // Test add in database
      Db_LogAdd(Dat)      
 }
 
@@ -297,13 +292,11 @@ func AddInfStr(w http.ResponseWriter, req *http.Request) {
       Dat.CreateTime  = t[6]
       Dat.Sys()
 
-      // Var 2 
-      // Dt:=LogStruct{t[0],t[1],t[2],t[3], CurTime,"ddd"}
-
       s:=time.Now()
 
       // Add to database log
       go Db_LogAdd(Dat)     
+
       
       // Check time insert
       if Chk {      
@@ -448,7 +441,6 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
     if p!=""{
        l=Sti(p) 
     } 
-
 		
 	var response []Mst
 	res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0])
@@ -463,7 +455,7 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
 
     // Check error
 	if er != nil {
-		Inf("Rep-json", "Error read data form table log",  "w") 
+		Inf("Rep JSON", "Error read data form table log",  "w") 
 	} else {
 		data, _ := json.Marshal(response)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -486,34 +478,29 @@ func Admin_panel(w http.ResponseWriter, req *http.Request) {
 //  Number  : Creator page from template
 //  Module  : GPage
 //************************************************************
-func PG(PageNameHtml string, Title string, Description string, Data []Mst,  w http.ResponseWriter, req *http.Request) {
+func PG(PageNameHtml, Title, Description string, Data []Mst,  w http.ResponseWriter, req *http.Request) {
 	   Dt        := Mst{"Dts": Data, "Title": Title, "Descript": Description, "Datrep": CTM()}
 	   fp        := path.Join("tmp", PageNameHtml)                  
 	   tmpl, err := template.ParseFiles(fp, "tmp/main.html")  
 	   Err(err, "Error events template execute.")
-   	   errf       := tmpl.Execute(w, Dt)
+   	   errf      := tmpl.Execute(w, Dt)
 	   Err(errf, "Error events template execute.")
 }
 
 // **********************************************************
 //  Call from client
 // **********************************************************
-func Log1(w http.ResponseWriter, req *http.Request) {
-}
-
-// **********************************************************
-//  Call from client
-// **********************************************************
 func Cli_send(w http.ResponseWriter, req *http.Request) {
-     go Send_Info("Prysm","Reward","Samples text","Infotest")
+
+     go Send_Info("Prysm","Reward","Samples text","Infotest","X0afdfdfdsxzcvdfgffffdgfgfdgdfgdfdfqerert","AccountID",CTM())
      Inf("Cli send", "Send to server ", "i")     
 }
 
 // *************************************************************
 // Send to log server information
 // *************************************************************
-func Send_Info(Proj,Module,Text,Status string ){
-    url    := "http://18.223.111.231:5898/api/add/"+Proj+"*"+Module+"*"+Text+"*"+Status
+func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID,CreateTime string ){
+    url    := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
 	re,_   := http.NewRequest("GET", url, nil)
 	res, _ := http.DefaultClient.Do(re)
 	defer res.Body.Close()
@@ -523,19 +510,16 @@ func Send_Info(Proj,Module,Text,Status string ){
 // Send to log server information
 // Old version wit return data form server
 // *************************************************************
-func Send_Info_old(Proj,Module,Text,Status string ){
-    url   := "http://18.223.111.231:5898/api/add/"+Proj+"*"+Module+"*"+Text+"*"+Status
+func Send_Info_old(Project, Module, Opertion, Status,BlockId,AccountID,CreateTime string  ){
+    url    := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
 	re,_  := http.NewRequest("GET", url, nil)
 
 	re.Header.Add("cache-control", "no-cache")
 	re.Header.Add("Service-token", "d41aee26-cc94-E9ff-e9a5-f0701845624b")
 
 	res, _ := http.DefaultClient.Do(re)
-
 	defer res.Body.Close()
-	
 	body, _ := ioutil.ReadAll(res.Body)
-
 	fmt.Println(res)
 	fmt.Println(string(body))
 }
@@ -569,4 +553,3 @@ func Rep_graph(w http.ResponseWriter, req *http.Request){
      p := req.URL.Path[len("/rep/graph/"):]
      PG("grap"+p+".html", "Admi Panel", "Administrtion and monitoring", nil, w,req)
 }
-
