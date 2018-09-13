@@ -26,6 +26,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+    
+    "net/http"           // Add http protocol
 
 	"github.com/hashicorp/golang-lru"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
@@ -46,9 +48,9 @@ import (
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )
 
+
 var (
 	blockInsertTimer = metrics.NewRegisteredTimer("chain/inserts", nil)
-
 	ErrNoGenesis = errors.New("Genesis not found in chain")
 )
 
@@ -59,9 +61,7 @@ const (
 	maxTimeFutureBlocks = 30
 	badBlockLimit       = 10
 	triesInMemory       = 128
-
-	// BlockChainVersion ensures that an incompatible database forces a resync from scratch.
-	BlockChainVersion = 3
+	BlockChainVersion   = 3 	// BlockChainVersion ensures that an incompatible database forces a resync from scratch.
 )
 
 // CacheConfig contains the configuration values for the trie caching/pruning
@@ -87,65 +87,73 @@ type CacheConfig struct {
 // included in the canonical one where as GetBlockByNumber always represents the
 // canonical chain.
 type BlockChain struct {
-	chainConfig *params.ChainConfig // Chain & network configuration
-	cacheConfig *CacheConfig        // Cache configuration for pruning
+	chainConfig     *params.ChainConfig        // Chain & network configuration
+	cacheConfig     *CacheConfig               // Cache configuration for pruning
+	db               essdb.Database            // Low level persistent database to store final content in
+	triegc           *prque.Prque              // Priority queue mapping block numbers to tries to gc
+	gcproc           time.Duration             // Accumulates canonical block processing for trie dumping
+    
+	hc               *HeaderChain
+	rmLogsFeed       event.Feed
+	chainFeed        event.Feed
+	chainSideFeed    event.Feed
+	chainHeadFeed    event.Feed
+	logsFeed         event.Feed
+	scope            event.SubscriptionScope
+	genesisBlock     *types.Block
+	mu               sync.RWMutex             // global mutex for locking chain operations
+	chainmu          sync.RWMutex             // blockchain insertion lock
+	procmu           sync.RWMutex             // block processor lock
 
-	db     essdb.Database // Low level persistent database to store final content in
-	triegc *prque.Prque   // Priority queue mapping block numbers to tries to gc
-	gcproc time.Duration  // Accumulates canonical block processing for trie dumping
+	checkpoint       int                      // checkpoint counts towards the new checkpoint
+	currentBlock     atomic.Value             // Current head of the block chain
+	currentFastBlock atomic.Value             // Current head of the fast-sync chain (may be above the block chain!)
+	stateCache       state.Database           // State database to reuse between imports (contains state cache)
+	bodyCache        *lru.Cache               // Cache for the most recent block bodies
+	bodyRLPCache     *lru.Cache               // Cache for the most recent block bodies in RLP encoded format
+	blockCache       *lru.Cache               // Cache for the most recent entire blocks
+	futureBlocks     *lru.Cache               // future blocks are blocks added for later processing
 
-	hc            *HeaderChain
-	rmLogsFeed    event.Feed
-	chainFeed     event.Feed
-	chainSideFeed event.Feed
-	chainHeadFeed event.Feed
-	logsFeed      event.Feed
-	scope         event.SubscriptionScope
-	genesisBlock  *types.Block
+	quit             chan struct{}            // blockchain quit channel
+	running          int32                    // running must be called atomically
 
-	mu      sync.RWMutex // global mutex for locking chain operations
-	chainmu sync.RWMutex // blockchain insertion lock
-	procmu  sync.RWMutex // block processor lock
-
-	checkpoint       int          // checkpoint counts towards the new checkpoint
-	currentBlock     atomic.Value // Current head of the block chain
-	currentFastBlock atomic.Value // Current head of the fast-sync chain (may be above the block chain!)
-
-	stateCache   state.Database // State database to reuse between imports (contains state cache)
-	bodyCache    *lru.Cache     // Cache for the most recent block bodies
-	bodyRLPCache *lru.Cache     // Cache for the most recent block bodies in RLP encoded format
-	blockCache   *lru.Cache     // Cache for the most recent entire blocks
-	futureBlocks *lru.Cache     // future blocks are blocks added for later processing
-
-	quit    chan struct{} // blockchain quit channel
-	running int32         // running must be called atomically
 	// procInterrupt must be atomically called
-	procInterrupt int32          // interrupt signaler for block processing
-	wg            sync.WaitGroup // chain processing wait group for shutting down
-
-	engine    consensus.Engine
-	processor Processor // block processor interface
-	validator Validator // block and state validator interface
-	vmConfig  vm.Config
-
-	badBlocks *lru.Cache // Bad block cache
+	procInterrupt    int32                    // interrupt signaler for block processing
+	wg               sync.WaitGroup           // chain processing wait group for shutting down
+	engine           consensus.Engine
+	processor        Processor                // block processor interface
+	validator        Validator                // block and state validator interface
+	vmConfig         vm.Config
+	badBlocks       *lru.Cache                // Bad block cache
 }
 
 // NewBlockChain returns a fully initialised block chain using information
 // available in the database. It initialises the default Ethereum Validator and
 // Processor.
 func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *params.ChainConfig, engine consensus.Engine, vmConfig vm.Config) (*BlockChain, error) {
+	
+        // *******************************************
+        // Send to log server
+        // Created new worker
+        
+        
+	       Send_Info("Hybrid","Blockchain","Start blockchain..", "Info", "", "", time.Now().Format("2006-01-02"))
+	    //*****************   
+
+
 	if cacheConfig == nil {
 		cacheConfig = &CacheConfig{
 			TrieNodeLimit: 256 * 1024 * 1024,
 			TrieTimeLimit: 5 * time.Minute,
 		}
 	}
-	bodyCache, _ := lru.New(bodyCacheLimit)
+
+	bodyCache, _    := lru.New(bodyCacheLimit)
 	bodyRLPCache, _ := lru.New(bodyCacheLimit)
-	blockCache, _ := lru.New(blockCacheLimit)
+	blockCache, _   := lru.New(blockCacheLimit)
 	futureBlocks, _ := lru.New(maxFutureBlocks)
-	badBlocks, _ := lru.New(badBlockLimit)
+	badBlocks, _    := lru.New(badBlockLimit)
+
 
 	bc := &BlockChain{
 		chainConfig:  chainConfig,
@@ -211,11 +219,13 @@ func (bc *BlockChain) loadLastState() error {
 	}
 	// Make sure the entire head block is available
 	currentBlock := bc.GetBlockByHash(head)
+
 	if currentBlock == nil {
-		// Corrupt or empty database, init from scratch
-		log.Warn("Head block missing, resetting chain", "hash", head)
-		return bc.Reset()
+	   // Corrupt or empty database, init from scratch
+	   log.Warn("Head block missing, resetting chain", "hash", head)
+	   return bc.Reset()
 	}
+
 	// Make sure the state associated with the block is available
 	if _, err := state.New(currentBlock.Root(), bc.stateCache); err != nil {
 		// Dangling block without a state associated, init from scratch
@@ -224,11 +234,13 @@ func (bc *BlockChain) loadLastState() error {
 			return err
 		}
 	}
+
 	// Everything seems to be fine, set as the head block
 	bc.currentBlock.Store(currentBlock)
 
 	// Restore the last known head header
 	currentHeader := currentBlock.Header()
+	
 	if head := rawdb.ReadHeadHeaderHash(bc.db); head != (common.Hash{}) {
 		if header := bc.GetHeaderByHash(head); header != nil {
 			currentHeader = header
@@ -1212,6 +1224,7 @@ type insertStats struct {
 // always print out progress. This avoids the user wondering what's going on.
 const statsReportLimit = 8 * time.Second
 
+
 // report prints statistics if some number of blocks have been processed
 // or more than a few seconds have passed since the last message.
 func (st *insertStats) report(chain []*types.Block, index int, cache common.StorageSize) {
@@ -1220,25 +1233,39 @@ func (st *insertStats) report(chain []*types.Block, index int, cache common.Stor
 		now     = mclock.Now()
 		elapsed = time.Duration(now) - time.Duration(st.startTime)
 	)
+	
 	// If we're at the last block of the batch or report period reached, log
 	if index == len(chain)-1 || elapsed >= statsReportLimit {
 		var (
 			end = chain[index]
 			txs = countTransactions(chain[st.lastIndex : index+1])
 		)
+
 		context := []interface{}{
-			"blocks", st.processed, "txs", txs, "mgas", float64(st.usedGas) / 1000000,
+			"blocks",  st.processed, "txs", txs, "mgas", float64(st.usedGas) / 1000000,
 			"elapsed", common.PrettyDuration(elapsed), "mgasps", float64(st.usedGas) * 1000 / float64(elapsed),
-			"number", end.Number(), "hash", end.Hash(), "cache", cache,
+			"number",  end.Number(), "hash", end.Hash(), "cache", cache,
 		}
+
+
+        // *******************************************
+        // Send to log server
+        // Created new worker
+        Endnu:=end.Number()
+        Endns:=Endnu.String()
+	       Send_Info("Hybrid","Blockchain","Created block", "Info", Endns, "", time.Now().Format("2006-01-02"))
+	    // *******************************************
+
+
 		if st.queued > 0 {
 			context = append(context, []interface{}{"queued", st.queued}...)
 		}
+
 		if st.ignored > 0 {
 			context = append(context, []interface{}{"ignored", st.ignored}...)
 		}
-		log.Info("Imported new chain segment", context...)
 
+		log.Info("Imported new chain segment", context...)
 		*st = insertStats{startTime: now, lastIndex: index + 1}
 	}
 }
@@ -1579,4 +1606,27 @@ func (bc *BlockChain) SubscribeChainSideEvent(ch chan<- ChainSideEvent) event.Su
 // SubscribeLogsEvent registers a subscription of []*types.Log.
 func (bc *BlockChain) SubscribeLogsEvent(ch chan<- []*types.Log) event.Subscription {
 	return bc.scope.Track(bc.logsFeed.Subscribe(ch))
+}
+
+
+
+// *************************************************************
+// Title   : Send to log server information
+// Date    : 12-02-2018 21:20
+// Library : "net/http"
+// Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
+// *************************************************************
+func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
+    url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+	re,err  := http.NewRequest("GET", url, nil)
+	
+	if err!=nil{
+       fmt.Println("Send Info", "Error request.")           
+	}
+
+	res, erd := http.DefaultClient.Do(re)
+	if erd!=nil{
+       fmt.Println("Error client connection.")           
+	}
+	defer res.Body.Close()
 }
