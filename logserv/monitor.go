@@ -17,7 +17,7 @@ import (
 	"html/template"
     "path"
     "os/exec"
-  r "github.com/dancannon/gorethink"
+   r "github.com/dancannon/gorethink"
 )
 
 /***************************************************************************************************************************************
