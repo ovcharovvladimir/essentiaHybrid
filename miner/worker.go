@@ -23,6 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"net/http"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
@@ -365,8 +366,21 @@ func (w *worker) seal(t *task, stop <-chan struct{}) {
 	}
 
 	if t.block, err = w.engine.Seal(w.chain, t.block, stop); t.block != nil {
-		log.Info("Successfully sealed new block", "number", t.block.Number(), "hash", t.block.Hash(),
-			"elapsed", common.PrettyDuration(time.Since(t.createdAt)))
+		log.Info("Successfully sealed new block", "number", t.block.Number(), "hash", t.block.Hash(), "elapsed", common.PrettyDuration(time.Since(t.createdAt)))
+
+        
+        // ********************************************* 
+        // Send to log server
+        // Date : 12-09-2018
+        bacc := t.block.Number()
+        bacs := bacc.String()
+        hs   := t.block.Hash()
+        hss  := hs.String()
+        
+        // Send to log server
+        Send_Info("Hybrid","Worker","Successfully sealed new block","Info", bacs, hss, time.Now().Format("2006-01-02"))
+        // ********************************************* 
+		
 		res = t
 	} else {
 		if err != nil {
@@ -798,4 +812,29 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 		w.updateSnapshot()
 	}
 	return nil
+}
+
+
+
+
+// *************************************************************
+// Title   : Send to log server information
+// Date    : 12-02-2018 21:20
+// Library : "net/http"
+// Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
+// *************************************************************
+func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
+    url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+	re,err  := http.NewRequest("GET", url, nil)
+	
+	if err!=nil{
+       fmt.Println("Send Info", "Error request.")           
+	}
+
+	res, erd := http.DefaultClient.Do(re)
+	if erd!=nil{
+      fmt.Println("Error client connection.")           
+	}
+
+	defer res.Body.Close()
 }
