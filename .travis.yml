@@ -75,7 +75,7 @@ matrix:
           packages:
             - gcc-multilib
       script:
-      - go get ./...
+        - go get ./...
         # Build for the primary platforms that Trusty can manage
         - go run build/ci.go install
        # - go run build/ci.go archive -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
