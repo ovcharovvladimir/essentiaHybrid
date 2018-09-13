@@ -33,7 +33,7 @@ func main() {
      BlockId   :=arg[5]
      AccountId :=arg[6]
   
-     Send_Info(Project, Module, Text, Status)
+     Send_Info(Project, Module, Operation, Status, BlockId,AccountId)
 }
 
 // *************************************************************
@@ -42,7 +42,7 @@ func main() {
 // *************************************************************
 func Send_Info(Project, Module, Operation, Status, BlockId, AccountId string ){
     ipserv := "http://18.223.111.231:5898"
-    url    :=  ipserv+"/api/add/"+Project+"*"+Module+"*"+Text+"*"+Status+"*"+BlockId+"*"+AccountId
+    url    :=  ipserv+"/api/add/"+Project+"*"+Module+"*"+Operation+"*"+Status+"*"+BlockId+"*"+AccountId
 	re,errr:=  http.NewRequest("GET", url, nil)
 	
 	if errr!=nil{
