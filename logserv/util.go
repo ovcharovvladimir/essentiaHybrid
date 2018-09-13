@@ -2,8 +2,7 @@ package main
 
 import(
    "github.com/sirupsen/logrus"
-   
-   prefixed "github.com/x-cray/logrus-prefixed-formatter"
+    prefixed "github.com/x-cray/logrus-prefixed-formatter"
    "fmt"
    "time"
    "log"
@@ -94,8 +93,8 @@ func Stf(StrParameter string) float64 {
  * Конвертация Int to Str
  ****************************************************/
 func InttoStr(Ints int) string {
-	//str := strconv.FormatInt(Intt64, 10)      // Выдает конвертацию 2000-wqut
-	//str := strconv.Itoa64(Int64)              // use base 10 for sanity purpose
+	//str := strconv.FormatInt(Intt64, 10)      
+	//str := strconv.Itoa64(Int64)              
 	str := fmt.Sprintf("%d", Ints)
 	return str
 }
@@ -104,8 +103,8 @@ func InttoStr(Ints int) string {
  * Конвертация Int64 to Str
  *****************************************************/
 func Int64toStr(Int64 int64) string {
-	//str := strconv.FormatInt(Intt64, 10)      // Выдает конвертацию 2000-wqut
-	//str := strconv.Itoa64(Int64)              // use base 10 for sanity purpose
+	//str := strconv.FormatInt(Intt64, 10)      
+	//str := strconv.Itoa64(Int64)              
 	str := fmt.Sprintf("%d", Int64)
 	return str
 }

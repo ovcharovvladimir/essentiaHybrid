@@ -178,6 +178,7 @@ func main() {
 		log.Fatal("need subcommand as first argument")
 	}
 	switch os.Args[1] {
+	
 	case "install":
 		doInstall(os.Args[2:])
 	case "test":
