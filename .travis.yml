@@ -11,6 +11,7 @@ matrix:
         - sudo modprobe fuse
         - sudo chmod 666 /dev/fuse
         - sudo chown root:$USER /etc/fuse.conf
+        - go get ./...
         - go run build/ci.go install
         - go run build/ci.go test -coverage $TEST_PACKAGES
 
@@ -74,6 +75,7 @@ matrix:
           packages:
             - gcc-multilib
       script:
+      - go get ./...
         # Build for the primary platforms that Trusty can manage
         - go run build/ci.go install
        # - go run build/ci.go archive -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
