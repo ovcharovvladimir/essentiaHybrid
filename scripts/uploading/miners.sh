@@ -33,13 +33,14 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
     ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo pkill gess
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
-   echo "Press Ctrl+C to continue loading ..."
-   echo  --password /home/release/pass.txt account new
+
    ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.essentia
    ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.esshash
+   echo  --password /home/release/pass.txt account new
    ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/gess  --testnet --password /home/release/pass.txt account new
-   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo /home/release/gess --mine --minerthreads=4 --testnet
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/gess  --mine --minerthreads=4 --testnet
+   wait
+   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} nohup sudo  /home/release/gess  --mine --minerthreads=4 --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo  /home/release/gess  --mine --minerthreads=4 --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]}  > /dev/null 2>&1 &
     echo -e "* ${GREEN} DONE ${NC} *"
  done  
 }
@@ -72,7 +73,7 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
  done  
 }
 echo "**********************************************************"
-PS3='Select miners:' 
+PS3='Select:' 
 select opt in "${options[@]}"
 do
     case $opt in

@@ -32,9 +32,9 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
     ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo pkill gess
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
-   echo "Press Ctrl+C to continue loading ..."
-   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo /home/release/gess --verbosity 4 --nat extip:${options[$i]} --rpc --rpcaddr $ip4 --testnet 
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/gess  --verbosity 5 --nat extip:${options[$i]} --testnet --rpc --rpcaddr $ip4 console
+   echo     ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/gess  --testnet --rpc --rpcaddr $ip4 --nat extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/gess  --testnet --rpc --rpcaddr $ip4 --nat extip:${options[$i]} > /dev/null 2>&1 &
+   
     echo -e "* ${GREEN} DONE ${NC} *"
  done  
 }
@@ -67,7 +67,7 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
  done  
 }
 echo "**********************************************************"
-PS3='Select miners:' 
+PS3='Select:' 
 select opt in "${options[@]}"
 do
     case $opt in

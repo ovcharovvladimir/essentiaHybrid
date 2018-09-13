@@ -30,8 +30,8 @@ import (
 
 // Constants to match up protocol versions and messages
 const (
-	eth62 = 12
-	eth63 = 13
+	eth62 = 62
+	eth63 = 63
 )
 
 // ProtocolName is the official short name of the protocol used during capability negotiation.

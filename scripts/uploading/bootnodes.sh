@@ -43,8 +43,8 @@ for ((i = 0; i < ${#options[@]}-3; ++i)); do
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
    echo "Press Ctrl+C to continue loading ..."
-   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
+   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} nohup  sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} > /dev/null 2>&1 &
 
  done  
 }
@@ -53,7 +53,7 @@ for ((i = 0; i < ${#options[@]}-3; ++i)); do
 
 
 echo "**********************************************************"
-PS3='Select bootnodes:' 
+PS3='Select:' 
 select opt in "${options[@]}"
 do
     case $opt in

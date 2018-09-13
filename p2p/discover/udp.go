@@ -669,7 +669,7 @@ func (req *findnode) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte
 		// and UDP port of the target as the source address. The recipient of the findnode
 		// packet would then send a neighbors packet (which is a much bigger packet than
 		// findnode) to the victim.
-		//return errUnknownNode
+		return errUnknownNode
 	}
 	target := crypto.Keccak256Hash(req.Target[:])
 	t.mutex.Lock()

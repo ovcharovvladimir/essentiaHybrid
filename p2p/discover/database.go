@@ -285,8 +285,9 @@ func (db *nodeDB) lastPongReceived(id NodeID) time.Time {
 
 // hasBond reports whether the given node is considered bonded.
 func (db *nodeDB) hasBond(id NodeID) bool {
-	log.Trace("LPR", "db", db.lastPongReceived(id), "exp", nodeDBNodeExpiration)
-	return time.Since(db.lastPongReceived(id)) < nodeDBNodeExpiration
+	sinse := time.Since(db.lastPongReceived(id))
+	log.Debug("Bond", "sinse", sinse, "exp", nodeDBNodeExpiration)
+	return sinse < nodeDBNodeExpiration
 }
 
 // updateLastPongReceived updates the last pong time of a node.
