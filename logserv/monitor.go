@@ -446,8 +446,7 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
 	res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0])
 
 	if er != nil {
-	   panic("Error rerturn document from table ...")
-	   return
+       Inf("Rep JSON", "Error read table",  "e") 
 	}
 
 	defer res.Close()
@@ -504,14 +503,14 @@ func Cli_send(w http.ResponseWriter, req *http.Request) {
 // Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
 // *************************************************************
 func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
-    url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-	re,err  := http.NewRequest("GET", url, nil)
+    url      := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+	req,  err  := http.NewRequest("GET", url, nil)
 	
 	if err!=nil{
        Inf("Send Info", "Error request.", "e")           
 	}
 
-	res, erd := http.DefaultClient.Do(re)
+	res, erd := http.DefaultClient.Do(req)
 	if erd!=nil{
        Inf("Send Info", "Error client connection.", "e")           
 	}
@@ -525,15 +524,14 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 // *************************************************************
 func Send_Info_old(Project, Module, Opertion, Status,BlockId,AccountID,CreateTime string  ){
     url    := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-	re,_  := http.NewRequest("GET", url, nil)
+	req,_  := http.NewRequest("GET", url, nil)
 
-	re.Header.Add("cache-control", "no-cache")
-	re.Header.Add("Service-token", "d41aee26-cc94-E9ff-e9a5-f0701845624b")
+	req.Header.Add("cache-control", "no-cache")
+	req.Header.Add("Service-token", "d41aee26-cc94-E9ff-e9a5-f0701845624b")
 
-	res, _ := http.DefaultClient.Do(re)
+	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(res)
 	fmt.Println(string(body))
 }
 
