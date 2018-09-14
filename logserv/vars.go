@@ -7,8 +7,8 @@ import (
 
 //************************************************************
 //  Name    : Gloabal Variables for connection 
-//  Date    : is a snippet.
-//  Author  : Svachenko Arthr
+//  Date    : 10-09-2018
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
@@ -30,7 +30,7 @@ var (
 //************************************************************
 //  Name    : Base Type 
 //  Date    : 10-09-2018
-//  Author  : Svachenko Arthr
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : 
 //  Module  : Declaration inetrfaces & structure & other type
@@ -48,7 +48,7 @@ type Mil []int64
 //************************************************************
 //  Name    : Structure monitor data 
 //  Date    : 09-10-2018
-//  Author  : Svachenko Arthr
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
@@ -78,7 +78,7 @@ func (L *LogStruct) Sys(){
 //************************************************************
 //  Name    : Base vars global level 
 //  Date    : 09-10-2018
-//  Author  : Svachenko Arthr
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : 
 //  Module  : 
