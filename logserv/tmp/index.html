@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+	      <title>Admin</title>
+	      {{template "libs"}}
+
+           <style type="text/css">
+           	   .bth{weight:200px; width: 200px;}
+           </style>
+            
+          
+          <script type="text/javascript">
+
+                  
+
+
+                  function Tst(Ur){
+                    
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Обновление количества расчетными данными сервиса. </H4>");
+							               $("#Notifys").slideUp(1000).delay(500).fadeIn(300);
+							               },
+							success: function(data) {
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                $("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+
+
+          	      function Tst_add(){
+                     var Ur= "/api/add/essentia-hybrid*Reward*sample%20notification%20description*Info*BlockId*AccountId*CreateTime";
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Обновление количества расчетными данными сервиса. </H4>");
+							               $("#Notifys").slideUp(1000).delay(500).fadeIn(300);
+							               },
+							success: function(data) {
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                $("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+
+
+          	      function Tst_delete(){
+                     var Ur= "/db/del/";
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Очистка всех записей </H4>");
+							               $("#Notifys").slideUp(1000).delay(3000).fadeIn(300);
+							               },
+							success: function(datas,data) {
+								            $("#Notifys").html("<H1>"+ datas +"</H1>");
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                //$("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+          </script>
+
+    </head>
+
+<body>
+    {{template "header"}}
+	<br>
+
+
+
+	<div class="container">
+			<h2 id="Notifys"></h2>
+            <h3>Основные действия</h3> 
+            <p>
+            	Представлены инструменты для работы с сервисом. 
+            </p>	
+	   
+
+
+
+
+				<div class="list-group">
+				  
+				  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Основные возможности системы</h5>
+				      <small>3 days ago</small>
+				    </div>
+				    <p class="mb-1">
+				    	Логгер - сервис предназначен для фиксирования основных действий других систем в реестре.
+				    	Сбор информации для дальнейшего анализ работы других систем.
+				    </p>
+				    <small>Логгирование операций</small>
+				  </a>
+
+				  <a href="/rep/log/50" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Журнал логирования</h5>
+				      <small class="text-muted">Table</small>
+				    </div>
+				    <p class="mb-1">
+				          Просмотр журнала логирования (50 последних записей)
+				    </p>
+				    <small class="text-muted">Количество записей отображенияможно менять в ручном варианте.</small>
+				  </a>
+				  
+				  <a href="/rep/json/20" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Журнал (JSON формат)</h5>
+				      <small class="text-muted">JSON</small>
+				    </div>
+				    <p class="mb-1">Просмотр журнала в JSON формате </p>
+				    <small class="text-muted">By default you see 20 records</small>
+				  </a>
+
+				  
+				  <a href="/rep/graph/1" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Графики </h5>
+				      <small class="text-muted">Графический</small>
+				    </div>
+				    <p class="mb-1">Анализ с помощью графиков </p>
+				    <small class="text-muted">Графики разных видов</small>
+				  </a>
+
+				  
+				  <a href="#" onclick="Tst('tst/add/')" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Добавление тестовых строк в таблицу анализа</h5>
+				      <small class="text-muted">Тестовая функция</small>
+				    </div>
+				    <p class="mb-1">Добавление тестовой записи в журнал </p>
+				    <small class="text-muted">By default you see 1 record</small>
+				  </a>
+			  
+				  <a href="#admin" onclick="alert('Only Administrotors!')" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Удаление данных из таблицы </h5>
+				      <small class="text-muted">Администрирование</small>
+				    </div>
+				    <p class="mb-1">Данные будут удалены все и без возможности восстановления!</p>
+				    <small class="text-muted">Внимание!</small>
+				  </a>
+
+				  <a href="#admin" onclick="alert('In Progress....')" class="list-group-item list-group-item-action flex-column align-items-start">
+				    <div class="d-flex w-100 justify-content-between">
+				      <h5 class="mb-1">Возможность подключения telegram bot </h5>
+				      <small class="text-muted">Администрирование</small>
+				    </div>
+				    <p class="mb-1">Данная функция в стадии разработки</p>
+				    <small class="text-muted">Draft version</small>
+				  </a>
+
+				</div>
+
+
+<!-- 
+	   <table class="table table-streeped">
+	   	    <tr>
+				<td> <a href="/rep/log/50" class="btn btn-info">Журнал логирования<br></td>
+				<td>Просмотр журнала логирования (50 последних записей) </td>
+            </tr>
+
+         	<tr>
+				<td>  <a href="/rep/json/20" class="btn btn-info">Журнал (JSON формат)</a> <br></td>
+				<td>Просомтр журнала в JSON формате </td>
+			</tr>
+
+            <tr>
+				<td>  <a href="/rep/graph/" class="btn btn-info">Журнал (JSON формат)</a> <br></td>
+				<td>Просомтр журнала в JSON формате </td>
+			</tr>
+
+
+			<tr>
+				<td> <button type="button" class="btn btn-success" onclick="Tst('tst/add/')">Добавление записи</button> <br></td>
+				<td>Добавление в базу тестовой строки готовой</td>
+			</tr>
+
+			<tr>
+				<td> <button type="button" class="btn btn-success" onclick="Tst_add()">Добавление записи</button> <br></td>
+				<td>Добавление в базу тестовой строки</td>
+            </tr>
+            <tr>
+                <td><button type="button" class="btn btn-warn btn-sm"  onclick="Tst_delete()">Очистка всех записей</button> <br></td>
+                <td>Очистка всех записей</td>
+            </tr>
+  </table>
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     </div>							         	  	  
+    {{template "footer"}}
+</html>
+

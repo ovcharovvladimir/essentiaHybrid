@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+	      <title>Admin</title>
+	      {{template "libs"}}
+          
+          <script type="text/javascript">
+
+                  function Tst(Ur){
+                    
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Обновление количества расчетными данными сервиса. </H4>");
+							               $("#Notifys").slideUp(1000).delay(500).fadeIn(300);
+							               },
+							success: function(data) {
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                $("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+
+
+          	      function Tst_add(){
+                     var Ur= "/api/add/essentia-hybrid*Reward*sample%20notification%20description*Info*BlockId*AccountId*CreateTime";
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Обновление количества расчетными данными сервиса. </H4>");
+							               $("#Notifys").slideUp(1000).delay(500).fadeIn(300);
+							               },
+							success: function(data) {
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                $("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+
+
+          	      function Tst_delete(){
+                     var Ur= "/db/del/";
+							$.ajax({ url : Ur,
+							               async : true,
+							               cache : true,
+							               beforeSend: function(){ 
+							               $("#Notifys").html("<H4> Очистка всех записей </H4>");
+							               $("#Notifys").slideUp(1000).delay(3000).fadeIn(300);
+							               },
+							success: function(datas,data) {
+								            $("#Notifys").html("<H1>"+ datas +"</H1>");
+							                $("#Notifys").show(2000).delay(5000).hide(100); 
+							                //$("#aplanner").load(location.href + " #aplanner").fadeIn("slow"); 
+							                },
+							fail: function() { 
+							                $("#Pnot").html("Ошибка при расчете. Проверьте подключение к интеренту и настройки для расчета потребности.");
+							                $("#Notifys").show(2000); 
+							},
+							always: function() { 
+							                 $("#Notifys").delay(500).hide(100); 
+							},
+
+							ajaxStop: function() { 
+
+							                     } 
+							});
+          	      }
+          </script>
+
+    </head>
+
+<body>
+    {{template "header"}}
+	<br>
+
+
+
+	<div class="container">
+			<h2 id="Notifys"></h2>
+            <h3>Admin panel</h3> 
+	   
+	   <table class="table table-sm">
+	  
+			<tr>
+				<td> <button type="button" class="btn btn-success btn-sm" onclick="Tst('tst/add/')">Добавление записи</button> <br></td>
+				<td>Добавление в базу тестовой строки готовой</td>
+			</tr>
+
+			<tr>
+				<td> <button type="button" class="btn btn-success btn-sm" onclick="Tst_add()">Добавление записи</button> <br></td>
+				<td>Добавление в базу тестовой строки</td>
+            </tr>
+            <tr>
+                <td><button type="button" class="btn btn-warn btn-sm"     onclick="Tst_delete()">Очистка всех записей</button> <br></td>
+                <td>Очистка всех записей</td>
+           </tr>
+       </table>
+      <!--
+       <h2>Пример графиков</h2>
+       <a href="/rep/graph/1" target="_blank">Пример графика 1</a><br>
+       <a href="/rep/graph/2" target="_blank">Пример графика 2</a><br>
+       <a href="/rep/graph/3" target="_blank">Пример графика 3</a><br>
+       <a href="/rep/graph/4" target="_blank">Пример графика 4</a><br>
+       <a href="/rep/graph/5" target="_blank">Пример графика 5</a><br>
+       <a href="/rep/graph/6" target="_blank">Пример графика 6</a><br>
+ -->
+        <!--
+            <div class="btn-group">
+			  <button type="button" class="btn btn-success">Caluclation Need</button>
+			
+			  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			    <span class="caret"></span>
+			    <span class="sr-only">Toggle Dropdown</span>
+			  </button>
+			  
+			  <ul class="dropdown-menu" role="menu">
+			    <li><a href="http://10.0.3.24:5555/need/calc/3500000" target="_blank">Calc 3500000</a></li>
+			    <li><a href="http://10.0.3.24:5555/need/calc/3565506" target="_blank">Calc 3565506</a></li>
+			    <li><a href="http://10.0.3.24:5555/need/calc/3565509" target="_blank">Calc 3565509</a></li>
+			    <li><a href="http://10.0.3.24:5555/need/calc/3565510" target="_blank">Calc 3565510</a><br></li>
+			  </ul>
+			 </div>
+            </div>
+        -->
+     </div>							         	  	  
+    {{template "footer"}}
+</html>
+

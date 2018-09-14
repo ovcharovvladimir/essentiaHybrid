@@ -1,9 +1,9 @@
-/**********************************************************************************************************************************************************************************************
+/*****************************************************************************
  * ESSENTIA MONITOR
  * (c) Copyright Essentia (2018)
  * https://github.com/DisposaBoy/GoSublime
  * DATE : 
- ***********************************************************************************************************************************************************************************************/
+ *****************************************************************************/
 package main
 
 import (
@@ -20,13 +20,13 @@ import (
    r "github.com/dancannon/gorethink"
 )
 
-/***************************************************************************************************************************************
+/*****************************************************************************
  *   Title        : Connection to DB
  *   Initialisation Service
  * 	 Date         : 2018-10-11
  *	 Description  : Initialization DB Connect
  *   Author       : Savchenko Arthur
- ****************************************************************************************************************************************/
+ *****************************************************************************/
 func init() {
 	session, err := r.Connect(r.ConnectOpts{Database: "wrk"})
 
@@ -43,11 +43,11 @@ func init() {
     Inf("init", "Session is created.",  "i")
 }
 
-/*******************************************************************************************************************************
+/*****************************************************************************
  * DATETIME         : 28-07-2015 12:44
  * DESCRIPTION      : Стартовая процедура
  * NOTES            : Запуск сервиса с параметрами
- *******************************************************************************************************************************/
+ *****************************************************************************/
 func main() {
     // Flags
     Port:=flag.String("Port",":5898", "Input Pleas Port for service. By default 5898.")	
@@ -57,6 +57,8 @@ func main() {
 	http.HandleFunc("/",                      StartPage)        // Start Page
     http.HandleFunc("/login/",                Login)            // Registartion
     http.HandleFunc("/static/",               StaticPage)       // Link to static page
+    http.HandleFunc("/info/",                 InfoPage)       // Link to static page
+    http.HandleFunc("/about/",                AboutPage)       // Link to static page
 
     // DB
 	http.HandleFunc("/db/start/",             Db_Prepea)        // Created database
@@ -72,15 +74,16 @@ func main() {
 	http.HandleFunc("/api/add/",              AddInfStr)        // Add inf to log
 
 	// Reports 
-	http.HandleFunc("/rep/test/",             Rep_log)          // Test login operation
+	http.HandleFunc("/rep/test/",             Rep_log_test)     // Test login operation
 	http.HandleFunc("/rep/log/",              Rep_log_journal)  // View in HTML report
     http.HandleFunc("/rep/json/",             Rep_log_json)     // Export to json format
-    http.HandleFunc("/rep/graph/",            Rep_graph)        // Export to json format
+    http.HandleFunc("/rep/graph/",            Rep_graph)        // Simple graph page
+    http.HandleFunc("/rep/count/",            Rep_count)        // Count rec in table
 
     // Cli
     http.HandleFunc("/cli/send/",             Cli_send)         // Export to json format    
         
-    // Info
+    // Information about load server...
     Inf("main", "Server is started on the port " + *Port, "i")
 
 	err:=http.ListenAndServe(*Port, nil)
@@ -90,11 +93,16 @@ func main() {
 	}
 }
 
-/********************************************************************************************************************************
- *   Static Page
- *
- *   /static/....
- *********************************************************************************************************************************/
+
+//************************************************************
+//  Name    : Static pages and library CSS, Javascrip and etc... 
+//  Date    : 12-09-2018
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : /static/....
+//************************************************************
 func StaticPage(w http.ResponseWriter, r *http.Request) {
 	// Allows
 	w.Header().Set("Access-Control-Allow-Origin", "*") 
@@ -110,42 +118,58 @@ func StaticPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, r.URL.Path[1:])
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Start page
- *  DESCRIPTION       : Start page with description
- *  DATE              : 05.09.2018 15:37
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Start page
+//  Date    : 05.09.2018 15:37
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : /
+//************************************************************
 func StartPage(w http.ResponseWriter, req *http.Request) {
-     s:=Html
-     w.Write([]byte(s))
+     // w.Write([]byte(Html))
+      PG("index.html", "Log Journal", "View report journal log.", nil, w, req)	
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Log test
- *  DESCRIPTION       : Вход в сервис
- *  DATE              : 05.09.2018 17:37
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Loging page (Draft)
+//  Date    : 05.09.2018 17:37
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : 
+//************************************************************
 func Login(w http.ResponseWriter, req *http.Request) {
      fmt.Println("Ok")
      w.Write([]byte("OK"))
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Подготовка базы данных 
- *  DESCRIPTION       : Вход в сервис
- *  DATE              : 05.09.2018 15:37
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Prepea data for work in databale
+//  Date    : 06.09.2018 15:37
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : db/start/
+//************************************************************
 func Db_Prepea(w http.ResponseWriter, req *http.Request) {
      r.DBCreate("wrk").Exec(sessionArray[0])      
      r.DB("wrk").TableCreate("log").Exec(sessionArray[0])
      Inf("db prepea","Database and log table was created!" , "i")
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Подготовка базы данных 
- *  DESCRIPTION       : Delete table
- *  DATE              : 05.09.2018 15:37
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Delete data in databale
+//  Date    : 07.09.2018 19:37
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : /db/del/
+//************************************************************
 func Db_Delete(w http.ResponseWriter, req *http.Request) {
      go r.DB("wrk").Table("log").Delete().Exec(sessionArray[0])
      Inf("db delete","Database log was be clear!" , "i")
@@ -153,16 +177,20 @@ func Db_Delete(w http.ResponseWriter, req *http.Request) {
      w.Write(s)
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Test insert
- *  DESCRIPTION       : Add to table test information
- *  DATE              : 05.09.2018 15:37
- *  URL               :                                 
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Test insert record to database
+//  Date    : 07.09.2018 11:37
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : /tst/add/
+//************************************************************
 func Db_testlog(w http.ResponseWriter, req *http.Request) {
      
      var Dat LogStruct
 
+     // charge of data
      Dat.Operation  = "Test initial operation"	
      Dat.Project    = "Block-chain-beacon"
      Dat.Module     = "RewardCount"
@@ -171,11 +199,10 @@ func Db_testlog(w http.ResponseWriter, req *http.Request) {
      Dat.BlockId    = "000015783b764259d382017d91a36d206d0600e2cbb3567748f46a33fe9297cf"
      Dat.AccountId  = "AccountID/ContractID"
      Dat.CreateTime = time.Now().Format("2006-01-02 14:55") 
-    
-     Inf("db test", Dat.BlockId,  "w")
      
      // Test add in database
      Db_LogAdd(Dat)      
+     Inf("db test", Dat.BlockId,  "i")
 }
 
 //************************************************************
@@ -183,7 +210,8 @@ func Db_testlog(w http.ResponseWriter, req *http.Request) {
 //  Date    : 05-09-2018 15:37
 //  Company : Essentia
 //  Number  : 
-//  Module  : 
+//  Module  : Monitoring
+//  Path    : 
 //************************************************************
 func Db_LogAdd(Dat LogStruct){
 	 Conflictrule := r.InsertOpts{Conflict: "replace", Durability:"soft", ReturnChanges: false}
@@ -199,28 +227,20 @@ func Db_LogAdd(Dat LogStruct){
     }() 
 }
 
-/********************************************************************************************************************************
- *  TITLE             : Delete all records 
- *  DESCRIPTION       : Clear log
- *  DATE              : 05.09.2018 18:37
- **********************************************************************************************************************************/
-func DbLogDelete(Dat LogStruct){
-	 r.DB("wrk").Table("log").Delete().Exec(sessionArray[0])
-	 fmt.Println("Information was deleted...")
-}
-
-/********************************************************************************************************************************
- *  TITLE             : Добавление информации в таблицу в формате JSON
- *  DESCRIPTION       : Вход в сервис
- *  DATE              : 05.09.2018 15:37
- *                                 
- **********************************************************************************************************************************/
+//************************************************************
+//  Name    : Добавление информации в таблицу в формате JSON
+//  Date    : 05.09.2018 15:37
+//  Company : Essentia
+//  Number  : 
+//  Module  : Monitoring
+//  Path    : 
+//************************************************************
 func AddInf(w http.ResponseWriter, req *http.Request) {
     
     // Data
     m := make(map[string]interface{})
 
-    // Conflict rule 
+    // Conflict rule for dpuble index field
     Conflictrule := r.InsertOpts{Conflict: "replace", Durability:"soft", ReturnChanges: false}
 
 	// Чтение тела документа
@@ -235,8 +255,7 @@ func AddInf(w http.ResponseWriter, req *http.Request) {
 	// Load data 
 	errj := json.Unmarshal([]byte(reads), &m)
 
-	// Замена значений полей в структуре новыми сформироваными значениями даты времени
-	// Замена счетчика текущим значением
+	// Adding unix time in automatically mode
 	u     := time.Now().UnixNano() / 1000000 
 	u_str := time.Unix(0, u*1000000).Format("2006-01-02T15:04:05.000")
 
@@ -245,23 +264,23 @@ func AddInf(w http.ResponseWriter, req *http.Request) {
 
 	// Check error
 	if errj != nil {
-	   Inf("Add inf", "Document Dont have body ....",  "e")
+	   Inf("Add inf", "Document don't have body.",  "e")
 	}
 
     // Add new document
-	erri:=r.DB("wrk").Table("log").Insert(m,Conflictrule).Exec(sessionArray[0])
+	erri:=r.DB("wrk").Table("log").Insert(m, Conflictrule).Exec(sessionArray[0])
 
     // Check error
 	if erri != nil {
-	   Inf("Add doc", "Error insert to log table",  "e")
+	   Inf("Add doc", "Error insert message to log table",  "e")
 	}
 
-	Inf("Add inf", "Succeseful adding record to database",  "i")
+    // Ok insert
+	Inf("Add inf", "Succeseful adding record to log table.",  "i")
 }
 
-
 //************************************************************
-//  Name    : Основная процедурадобавления записи в лог таблицу 
+//  Name    : Основная процедура добавления записи в лог таблицу 
 //  Date    : 05-10-2018 12:57
 //  Company : Essentia
 //  Number  : A01
@@ -277,7 +296,7 @@ func AddInfStr(w http.ResponseWriter, req *http.Request) {
       t := strings.Split(p, "*")
 
       // Chek count parameters
-      if len(t)==1{
+      if len(t)==1 {
          Inf("Add Rec to log.", "Bad parameters",  "f")     	
          return
       }
@@ -309,9 +328,17 @@ func AddInfStr(w http.ResponseWriter, req *http.Request) {
 }
 
 // **********************************************************
-// Report view log
+// Name       : Report view log journal (test)
+// Date       : 12-09-2018
+// Company    : Essentia
+// Author     : Svachenko Arthur
+// Module     : monitor 
+// URL        : /rep/log/  
+// Usage      : /rep/log/10   - manula set get records  
+// By Default : Get 100 records in reverse order
 // **********************************************************
-func Rep_log(w http.ResponseWriter, req *http.Request) {
+
+func Rep_log_test(w http.ResponseWriter, req *http.Request) {
     
     // Cтруктура
 	type Inventory struct {
@@ -385,7 +412,6 @@ func Rep_log(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(208)
 	}
 
-
 	err = tmpl.Execute(w, sweaters)
 
 	// Error
@@ -396,12 +422,18 @@ func Rep_log(w http.ResponseWriter, req *http.Request) {
 }	
 
 // **********************************************************
-// Report view log
-// URL :/rep/log/
+// Name       : Report view log journal
+// Date       : 14-09-2018
+// Company    : Essentia
+// Author     : Svachenko Arthur
+// Module     : monitor 
+// URL        : /rep/log/  
+// Usage      : /rep/log/10   - manula set get records  
+// By Default : Get 100 records in reverse order
 // **********************************************************
 func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
-	  p := req.URL.Path[len("/rep/log/"):]
-      l := 100
+	   p := req.URL.Path[len("/rep/log/"):]
+       l := 100
     
        // Check param
        if p!=""{
@@ -417,26 +449,26 @@ func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
 	   }
    
 	   defer Rk.Close()
-
 	   Rk.All(&Data)
-   
-	   Dt        := Mst{"Dts": Data, "Title": "Log journal", "Descript": "Log", "Datrep": CTM()}
-	   fp        := path.Join("tmp", "journal.html")                  
-	   tmpl, err := template.ParseFiles(fp, "tmp/main.html")  
-	   Err(err, "Error events template execute.")
-   
-	   errf       := tmpl.Execute(w, Dt)
-	   Err(errf, "Error events template execute.")
+      
+       // Get page
+       PG("journal.html", "Log Journal", "View report journal log.", Data, w, req)
 }
 
 // **********************************************************
-// Report view log
-// URL :/rep/json/
+// Name       : Report view log journal in format JSON
+// Date       : 14-09-2018
+// Company    : Essentia
+// Author     : Svachenko Arthur
+// Module     : monitor 
+// URL        : /rep/json/  
+// Usage      : /rep/json/10   - manula set get records  
+// By Default : Get 100 records in reverse order
 // **********************************************************
 func Rep_log_json(w http.ResponseWriter, req *http.Request) {
 
     p := req.URL.Path[len("/rep/json/"):]
-    l :=100
+    l := 100
     
     if p!=""{
        l=Sti(p) 
@@ -463,47 +495,45 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
 }
 
 // **********************************************************
-// Report view log
-// URL : /rep/admin/
+// Name       : Admin panel page
+// Date       : 14-09-2018 12:01
+// Company    : Essentia
+// Author     : Svachenko Arthur
+// Module     : monitor 
+// URL        : /rep/admin/
+// Usage      : 
 // **********************************************************
 func Admin_panel(w http.ResponseWriter, req *http.Request) {
      PG("adm.html", "Admi Panel", "Administrtion and monitoring", nil, w,req)
 }
 
+
+
 //************************************************************
-//  Name    : PG PAge Generator
+//  Name    : Test call from client
 //  Date    : 10-09-2018 15:56
+//  Author  : Svachenko Arthur
 //  Company : Essentia
-//  Number  : Creator page from template
-//  Module  : GPage
+//  Number  : monitor
+//  Module  : 
+//  Params  : 
 //************************************************************
-func PG(PageNameHtml, Title, Description string, Data []Mst,  w http.ResponseWriter, req *http.Request) {
-	   Dt        := Mst{"Dts": Data, "Title": Title, "Descript": Description, "Datrep": CTM()}
-	   fp        := path.Join("tmp", PageNameHtml)                  
-	   tmpl, err := template.ParseFiles(fp, "tmp/main.html")  
-	   Err(err, "Error events template execute.")
-   	   errf      := tmpl.Execute(w, Dt)
-	   Err(errf, "Error events template execute.")
-}
-
-// **********************************************************
-//  Call from client
-// **********************************************************
 func Cli_send(w http.ResponseWriter, req *http.Request) {
-
      go Send_Info("Prysm","Reward","Samples text","Infotest","X0afdfdfdsxzcvdfgffffdgfgfdgdfgdfdfqerert","AccountID",CTM())
      Inf("Cli send", "Send to server ", "i")     
 }
 
-
-// *************************************************************
-// Title   : Send to log server information
-// Date    : 12-02-2018 21:20
-// Library : "net/http"
-// Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
-// *************************************************************
+//************************************************************
+//  Name    : Send to log server information
+//  Date    : 12-09-2018 21:26
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : 
+//  Module  : 
+//  Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
+//************************************************************
 func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
-    url      := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+    url        := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
 	req,  err  := http.NewRequest("GET", url, nil)
 	
 	if err!=nil{
@@ -514,14 +544,19 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 	if erd!=nil{
        Inf("Send Info", "Error client connection.", "e")           
 	}
-
 	defer res.Body.Close()
 }
 
-// *************************************************************
-// Title        : Send to log server information
-// Description  : Old version wit return data form server
-// *************************************************************
+
+//************************************************************
+//  Name    : Send to log server information (Old variant needed delete not NOW!)
+//  Date    : 12-09-2018 21:26
+//  Company : Essentia
+//  Author  : Svachenko Arthur
+//  Number  : 
+//  Module  : 
+//  Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
+//************************************************************
 func Send_Info_old(Project, Module, Opertion, Status,BlockId,AccountID,CreateTime string  ){
     url    := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
 	req,_  := http.NewRequest("GET", url, nil)
@@ -536,14 +571,15 @@ func Send_Info_old(Project, Module, Opertion, Status,BlockId,AccountID,CreateTim
 }
 
 //************************************************************
-//  Name    : Test вызова клиента для монитора
-//  Date    : 
+//  Name    : Sample call procedure in program mode
+//  Date    : 10-09-2018 21:26
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : 
-//  Module  : 
+//  Module  : monitoring
 //************************************************************
 func Test_os(w http.ResponseWriter, req *http.Request){
-	 cmd:= exec.Command("./clmon",  "Призма", "Modul", "Пример передачи примера", "info")
+	 cmd:= exec.Command("./clmon",  "Призма", "Modul", "Send message to log file", "info")
 	 err:= cmd.Run()
 
 	 if err!=nil{
@@ -554,8 +590,9 @@ func Test_os(w http.ResponseWriter, req *http.Request){
 }
 
 //************************************************************
-//  Name    : Grap page 
+//  Name    : Graph page test 
 //  Date    : 10-09-2018 16:44
+//  Author  : Svachenko Arthur
 //  Company : Essentia
 //  Number  : /rep/graph/
 //  Module  : 
@@ -563,4 +600,94 @@ func Test_os(w http.ResponseWriter, req *http.Request){
 func Rep_graph(w http.ResponseWriter, req *http.Request){
      p := req.URL.Path[len("/rep/graph/"):]
      PG("grap"+p+".html", "Admi Panel", "Administrtion and monitoring", nil, w,req)
+}
+
+
+//************************************************************
+//  Name    : Graph page test 
+//  Date    : 14-09-2018 16:44
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : /rep/count/
+//  Module  : 
+//************************************************************
+func Rep_count(w http.ResponseWriter, req *http.Request){
+	var cnt int64
+	res, er := r.DB("wrk").Table("log").Count().Run(sessionArray[0])
+
+	if er != nil {
+       Inf("Rep JSON", "Error read table",  "e") 
+	}
+
+	defer res.Close()
+	er = res.One(&cnt)
+
+    // Check error
+	if er != nil {
+		Inf("Rep JSON", "Error read data form table log",  "w") 
+    }		
+     resp:=Int64toStr(cnt)
+     fmt.Println(resp)
+    // w.Header().Set("Content-Type", "application/text; charset=utf-8")
+	w.Write([]byte(resp))
+
+    // Call generator page
+    // PG("cnt.html", "Count data", "Count rec in log table", cnt, w, req)
+
+}
+
+//************************************************************
+//  Name    : PG (Page Generator)
+//  Date    : 10-09-2018 15:56
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : Creator page from template
+//  Module  : GPage
+//  Usage  :  PG("page.html", "Title", "Description", Data, w, req)
+//************************************************************
+func PG(PageNameHtml, Title, Description string, Data []Mst,  w http.ResponseWriter, req *http.Request) {
+	 Dt        := Mst{"Dts": Data, "Title": Title, "Descript": Description, "Datrep": CTM()}
+	 fp        := path.Join("tmp", PageNameHtml)                  
+	 tmpl, err := template.ParseFiles(fp, "tmp/main.html")  
+	 
+	 defer func(){
+	 	recover()
+	 }()
+
+	 // Err(err, "Error events template execute.")
+	 if err!=nil{
+   	    Inf("Cli send", "Bad read MAIN template or absent file.", "w")     	
+   	 } else {
+   	     errf:= tmpl.Execute(w, Dt)
+   	 
+   	     if errf!=nil{
+   	        Inf("Cli send", "Bad read template or absent file.", "e")     	
+   	     }	
+   	 }
+}
+
+//************************************************************
+//  Name    : Info Page
+//  Date    : 14-09-2018 20:04
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : /info
+//  Module  : 
+//************************************************************
+func InfoPage(w http.ResponseWriter, req *http.Request){
+	defer func(){recover()}()
+    PG("info.html", "Info", "Info", nil, w,req)
+}
+
+//************************************************************
+//  Name    : About Page
+//  Date    : 14-09-2018 20:44
+//  Author  : Svachenko Arthur
+//  Company : Essentia
+//  Number  : /info
+//  Module  : 
+//************************************************************
+func AboutPage(w http.ResponseWriter, req *http.Request){
+	defer func(){recover()}()
+    PG("about.html", "About", "About programm", nil, w,req)
 }

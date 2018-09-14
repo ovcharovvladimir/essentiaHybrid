@@ -1,0 +1,41 @@
+#!/bin/bash
+
+clear
+
+# Используется для формирования из директоррии
+# t/esentiaHybrid
+
+# Установки среды
+# $HOME/air/proj/hubl/SQLLITE/
+# echo $HOME/air/proj/hubl/SQLLITE/
+# export GOPATH=$HOME+$PWD
+# export GOPATH=$HOME+$USER+$PWD
+# export GOPATH=$HOME/planing
+
+NOWF=$(date +"%d-%m-%Y %T")
+echo Time $NOWF
+echo "Текущий каталог " $PWD
+echo Time $NOWF>>log.txt
+echo Time $NOWF Starting process
+
+
+
+#export GOPATH=$PWD
+#export GOPATH=$HOME/ETHEREUM/t/essentiaHybrid/build/_workspace
+export GOPATH=$HOME/ETHEREUM/MONITOR/app
+export GOROOT=$HOME/go
+export PATH=$PATH:$GOROOT/bin
+# read -p "Waiting five secs for Cloudflare to clear cache...." -t 5
+
+# Старт компиляции программы
+# Запуск программы
+#./service
+# go get "github.com/dancannon/gorethink"
+# go get gopkg.in/mgo.v2
+# go get github.com/mattn/go-sqlite3
+# go get golang.org/x/tools/present﻿
+
+echo Building process...
+go build -o mon
+./mon
+

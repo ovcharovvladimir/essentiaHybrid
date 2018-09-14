@@ -40,7 +40,6 @@ func Prn(Info string){
 	 fmt.Println(Info)
 }
 
-
 /***************************************************************
   Author      Savchenko Arthur
   Company     Essentia
@@ -90,7 +89,7 @@ func Stf(StrParameter string) float64 {
 }
 
 /****************************************************
- * Конвертация Int to Str
+ * Int -> Str
  ****************************************************/
 func InttoStr(Ints int) string {
 	//str := strconv.FormatInt(Intt64, 10)      
@@ -100,7 +99,7 @@ func InttoStr(Ints int) string {
 }
 
 /*****************************************************
- * Конвертация Int64 to Str
+ * Int64 -> Str
  *****************************************************/
 func Int64toStr(Int64 int64) string {
 	//str := strconv.FormatInt(Intt64, 10)      
@@ -110,23 +109,22 @@ func Int64toStr(Int64 int64) string {
 }
 
 /*****************************************************
- *   Title       : Current time in format (YYYY-MM-DD HH:MM:SS)
- * 	 Date        : 2015-12-14
+ * Title       : Current time in format (YYYY-MM-DD HH:MM:SS)
+ * Date        : 2015-12-14
  *****************************************************/
 func CTM() string {
 	 return time.Now().Format("2006-01-02 15:04:05")
 }
 
+
 /*****************************************************
-// Logurs
+ * Logurs
  *****************************************************/
 func Logus() {
 	 l:=logrus.Fields{"animal": "walrus", "Id":"Id001"}
      logrus.WithFields(l).Info("A walrus appears")	
-
 	 l=logrus.Fields{"animal": "walrus", "Id":"Id001", "Idw":"Id001"}
      logrus.WithFields(l).Info("A walrus appears")	
-
      requestLogger := logrus.WithFields(logrus.Fields{"request_id": "Req-001", "user_ip": "Userip"})
      requestLogger.Info("something happened on that request") 
      requestLogger.Warn("something not great happened")
