@@ -80,6 +80,9 @@ func main() {
     http.HandleFunc("/rep/graph/",            Rep_graph)        // Simple graph page
     http.HandleFunc("/rep/count/",            Rep_count)        // Count rec in table
 
+    // Admin
+    http.HandleFunc("/adm/idx/",              Admi_create_index)        // Count rec in table
+
     // Cli
     http.HandleFunc("/cli/send/",             Cli_send)         // Export to json format    
         
@@ -473,6 +476,8 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
     if p!=""{
        l=Sti(p) 
     } 
+
+
 		
 	var response []Mst
 	res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0])
@@ -690,4 +695,31 @@ func InfoPage(w http.ResponseWriter, req *http.Request){
 func AboutPage(w http.ResponseWriter, req *http.Request){
 	defer func(){recover()}()
     PG("about.html", "About", "About programm", nil, w,req)
+}
+
+
+//************************************************************
+//  Name    : Created index in table 
+//  Date    : 17-20-2018
+//  Author  : Svachenko Arthr
+//  Company : Essentia
+//  Number  : 
+//  Module  : 
+//************************************************************
+func Admi_create_index(w http.ResponseWriter, req *http.Request){
+resp:=`  
+<html>
+
+<h1>Индекс для таблицы лог был создан успешно.</h1>
+
+</html>`
+
+	err:=r.DB("wrk").Table("log").IndexCreate("Datetime").Exec(sessionArray[0])
+	if err!=nil{
+		Inf("Admin", "Error created index in table log.", "e")     	
+	}
+	 Inf("Admin", "Index was created susseccfully.", "i")     	
+     
+     w.Write([]byte(resp))	
+
 }

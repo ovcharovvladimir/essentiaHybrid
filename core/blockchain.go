@@ -127,6 +127,7 @@ type BlockChain struct {
 	badBlocks       *lru.Cache                // Bad block cache
 }
 
+
 // NewBlockChain returns a fully initialised block chain using information
 // available in the database. It initialises the default Ethereum Validator and
 // Processor.
@@ -135,9 +136,7 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
         // *******************************************
         // Send to log server
         // Created new worker
-        
-        
-	       Send_Info("Hybrid","Blockchain","Start blockchain..", "Info", "", "", time.Now().Format("2006-01-02"))
+	       Send_Info("Hybrid","Blockchain","Start blockchain...", "Info", "", "", time.Now().Format("2006-01-02"))
 	    //*****************   
 
 
@@ -170,26 +169,33 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
 		vmConfig:     vmConfig,
 		badBlocks:    badBlocks,
 	}
+
 	bc.SetValidator(NewBlockValidator(chainConfig, bc, engine))
 	bc.SetProcessor(NewStateProcessor(chainConfig, bc, engine))
 
 	var err error
 	bc.hc, err = NewHeaderChain(db, chainConfig, engine, bc.getProcInterrupt)
+
 	if err != nil {
 		return nil, err
 	}
 	bc.genesisBlock = bc.GetBlockByNumber(0)
+
 	if bc.genesisBlock == nil {
 		return nil, ErrNoGenesis
 	}
+
 	if err := bc.loadLastState(); err != nil {
 		return nil, err
 	}
+
 	// Check the current state of the block hashes and make sure that we do not have any of the bad blocks in our chain
 	for hash := range BadHashes {
+		
 		if header := bc.GetHeaderByHash(hash); header != nil {
 			// get the canonical block corresponding to the offending header's number
 			headerByNumber := bc.GetHeaderByNumber(header.Number.Uint64())
+			
 			// make sure the headerByNumber (if present) is in our current canonical chain
 			if headerByNumber != nil && headerByNumber.Hash() == header.Hash() {
 				log.Error("Found bad hash, rewinding chain", "number", header.Number, "hash", header.ParentHash)
@@ -198,6 +204,7 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
 			}
 		}
 	}
+
 	// Take ownership of this particular state
 	go bc.update()
 	return bc, nil
@@ -246,6 +253,7 @@ func (bc *BlockChain) loadLastState() error {
 			currentHeader = header
 		}
 	}
+
 	bc.hc.SetCurrentHeader(currentHeader)
 
 	// Restore the last known head fast block
@@ -697,6 +705,7 @@ func (bc *BlockChain) Stop() {
 	log.Info("Blockchain manager stopped")
 }
 
+
 func (bc *BlockChain) procFutureBlocks() {
 	blocks := make([]*types.Block, 0, bc.futureBlocks.Len())
 	for _, hash := range bc.futureBlocks.Keys() {
@@ -809,25 +818,30 @@ func (bc *BlockChain) InsertReceiptChain(blockChain types.Blocks, receiptChain [
 		bytes = 0
 		batch = bc.db.NewBatch()
 	)
+	
 	for i, block := range blockChain {
 		receipts := receiptChain[i]
 		// Short circuit insertion if shutting down or processing failed
 		if atomic.LoadInt32(&bc.procInterrupt) == 1 {
 			return 0, nil
 		}
+	
 		// Short circuit if the owner header is unknown
 		if !bc.HasHeader(block.Hash(), block.NumberU64()) {
 			return i, fmt.Errorf("containing header #%d [%x…] unknown", block.Number(), block.Hash().Bytes()[:4])
 		}
+	
 		// Skip if the entire data is already known
 		if bc.HasBlock(block.Hash(), block.NumberU64()) {
 			stats.ignored++
 			continue
 		}
+	
 		// Compute all the non-consensus fields of the receipts
 		if err := SetReceiptsData(bc.chainConfig, block, receipts); err != nil {
 			return i, fmt.Errorf("failed to set receipts data: %v", err)
 		}
+	
 		// Write all the data out into the database
 		rawdb.WriteBody(batch, block.Hash(), block.NumberU64(), block.Body())
 		rawdb.WriteReceipts(batch, block.Hash(), block.NumberU64(), receipts)
@@ -863,12 +877,13 @@ func (bc *BlockChain) InsertReceiptChain(blockChain types.Blocks, receiptChain [
 	bc.mu.Unlock()
 
 	log.Info("Imported new block receipts",
-		"count", stats.processed,
-		"elapsed", common.PrettyDuration(time.Since(start)),
-		"number", head.Number(),
-		"hash", head.Hash(),
-		"size", common.StorageSize(bytes),
-		"ignored", stats.ignored)
+		"count",    stats.processed,
+		"elapsed",  common.PrettyDuration(time.Since(start)),
+		"number",   head.Number(),
+		"hash",     head.Hash(),
+		"size",     common.StorageSize(bytes),
+		"ignored",  stats.ignored)
+
 	return 0, nil
 }
 
@@ -1018,6 +1033,7 @@ func (bc *BlockChain) InsertChain(chain types.Blocks) (int, error) {
 	return n, err
 }
 
+
 // insertChain will execute the actual chain insertion and event aggregation. The
 // only reason this method exists as a separate one is to make locking cleaner
 // with deferred statements.
@@ -1026,6 +1042,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 	if len(chain) == 0 {
 		return 0, nil, nil, nil
 	}
+
 	// Do a sanity check that the provided chain is actually ordered and linked
 	for i := 1; i < len(chain); i++ {
 		if chain[i].NumberU64() != chain[i-1].NumberU64()+1 || chain[i].ParentHash() != chain[i-1].Hash() {
@@ -1037,6 +1054,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 				chain[i-1].Hash().Bytes()[:4], i, chain[i].NumberU64(), chain[i].Hash().Bytes()[:4], chain[i].ParentHash().Bytes()[:4])
 		}
 	}
+	
 	// Pre-checks passed, start the full block imports
 	bc.wg.Add(1)
 	defer bc.wg.Done()
@@ -1148,6 +1166,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 			bc.reportBlock(block, nil, err)
 			return i, events, coalescedLogs, err
 		}
+
 		// Create a new statedb using the parent block and report an
 		// error if it fails.
 		var parent *types.Block
@@ -1156,59 +1175,79 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		} else {
 			parent = chain[i-1]
 		}
+
 		state, err := state.New(parent.Root(), bc.stateCache)
 		if err != nil {
 			return i, events, coalescedLogs, err
 		}
+
 		// Process block using the parent state as reference point.
 		receipts, logs, usedGas, err := bc.processor.Process(block, state, bc.vmConfig)
 		if err != nil {
 			bc.reportBlock(block, receipts, err)
 			return i, events, coalescedLogs, err
 		}
+
 		// Validate the state using the default validator
 		err = bc.Validator().ValidateState(block, parent, state, receipts, usedGas)
 		if err != nil {
 			bc.reportBlock(block, receipts, err)
 			return i, events, coalescedLogs, err
 		}
+
 		proctime := time.Since(bstart)
 
 		// Write the block to the chain and get the status.
 		status, err := bc.WriteBlockWithState(block, receipts, state)
 		if err != nil {
-			return i, events, coalescedLogs, err
+		   return i, events, coalescedLogs, err
 		}
+
 		switch status {
 		case CanonStatTy:
-			log.Debug("Inserted new block", "number", block.Number(), "hash", block.Hash(), "uncles", len(block.Uncles()),
+			   log.Debug("Inserted new block", "number", block.Number(), "hash", block.Hash(), "uncles", len(block.Uncles()),
 				"txs", len(block.Transactions()), "gas", block.GasUsed(), "elapsed", common.PrettyDuration(time.Since(bstart)))
+
+
+        // *******************************************
+        // Send to log server
+        // Created new worker
+        Endnu := block.Number()
+        Endns := Endnu.String()
+
+
+	    Send_Info("Hybrid","Blockchain","Created block..", "Info", Endns, "", time.Now().Format("2006-01-02"))
+	    // *******************************************
+
 
 			coalescedLogs = append(coalescedLogs, logs...)
 			blockInsertTimer.UpdateSince(bstart)
-			events = append(events, ChainEvent{block, block.Hash(), logs})
+			events    = append(events, ChainEvent{block, block.Hash(), logs})
 			lastCanon = block
 
 			// Only count canonical blocks for GC processing time
 			bc.gcproc += proctime
 
 		case SideStatTy:
-			log.Debug("Inserted forked block", "number", block.Number(), "hash", block.Hash(), "diff", block.Difficulty(), "elapsed",
-				common.PrettyDuration(time.Since(bstart)), "txs", len(block.Transactions()), "gas", block.GasUsed(), "uncles", len(block.Uncles()))
+			   log.Debug("Inserted forked block", "number", block.Number(), "hash", block.Hash(), "diff", block.Difficulty(), "elapsed",
+				   common.PrettyDuration(time.Since(bstart)), "txs", len(block.Transactions()), "gas", block.GasUsed(), "uncles", len(block.Uncles()))
 
-			blockInsertTimer.UpdateSince(bstart)
-			events = append(events, ChainSideEvent{block})
+			       blockInsertTimer.UpdateSince(bstart)
+			       events = append(events, ChainSideEvent{block})
 		}
+
 		stats.processed++
 		stats.usedGas += usedGas
 
 		cache, _ := bc.stateCache.TrieDB().Size()
 		stats.report(chain, i, cache)
 	}
+
 	// Append a single chain head event if we've progressed the chain
 	if lastCanon != nil && bc.CurrentBlock().Hash() == lastCanon.Hash() {
 		events = append(events, ChainHeadEvent{lastCanon})
 	}
+
 	return 0, events, coalescedLogs, nil
 }
 
@@ -1251,9 +1290,14 @@ func (st *insertStats) report(chain []*types.Block, index int, cache common.Stor
         // *******************************************
         // Send to log server
         // Created new worker
-        Endnu:=end.Number()
-        Endns:=Endnu.String()
-	       Send_Info("Hybrid","Blockchain","Created block", "Info", Endns, "", time.Now().Format("2006-01-02"))
+        Endhash := end.Hash().String()
+        Endns   := end.Number().String()
+
+        // Endns := Endnu.String()
+
+
+
+	    Send_Info("Hybrid","Blockchain","Created block..", "Info", Endns, Endhash, time.Now().Format("2006-01-02"))
 	    // *******************************************
 
 
@@ -1617,7 +1661,9 @@ func (bc *BlockChain) SubscribeLogsEvent(ch chan<- []*types.Log) event.Subscript
 // Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
 // *************************************************************
 func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
-    url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+    // url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+    url     := "http://18.191.99.157:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+    
 	re,err  := http.NewRequest("GET", url, nil)
 	
 	if err!=nil{
