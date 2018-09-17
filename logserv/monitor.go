@@ -553,27 +553,6 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 }
 
 
-//************************************************************
-//  Name    : Send to log server information (Old variant needed delete not NOW!)
-//  Date    : 12-09-2018 21:26
-//  Company : Essentia
-//  Author  : Svachenko Arthur
-//  Number  : 
-//  Module  : 
-//  Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
-//************************************************************
-func Send_Info_old(Project, Module, Opertion, Status,BlockId,AccountID,CreateTime string  ){
-    url    := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-	req,_  := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("cache-control", "no-cache")
-	req.Header.Add("Service-token", "d41aee26-cc94-E9ff-e9a5-f0701845624b")
-
-	res, _ := http.DefaultClient.Do(req)
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(string(body))
-}
 
 //************************************************************
 //  Name    : Sample call procedure in program mode
