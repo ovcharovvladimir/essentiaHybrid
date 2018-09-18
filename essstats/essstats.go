@@ -527,6 +527,7 @@ func (s *Service) assembleBlockStats(block *types.Block) *blockStats {
 		txs    []txStats
 		uncles []*types.Header
 	)
+
 	if s.eth != nil {
 		// Full nodes have all needed information available
 		if block == nil {
@@ -550,6 +551,7 @@ func (s *Service) assembleBlockStats(block *types.Block) *blockStats {
 		td = s.les.BlockChain().GetTd(header.Hash(), header.Number.Uint64())
 		txs = []txStats{}
 	}
+	
 	// Assemble and return the block stats
 	author, _ := s.engine.Author(header)
 
@@ -594,11 +596,13 @@ func (s *Service) reportHistory(conn *websocket.Conn, list []uint64) error {
 			indexes = append(indexes, i)
 		}
 	}
+
 	// Gather the batch of blocks to report
 	history := make([]*blockStats, len(indexes))
 	for i, number := range indexes {
 		// Retrieve the next block if it's known to us
 		var block *types.Block
+
 		if s.eth != nil {
 			block = s.eth.BlockChain().GetBlockByNumber(number)
 		} else {
@@ -615,19 +619,17 @@ func (s *Service) reportHistory(conn *websocket.Conn, list []uint64) error {
 		history = history[len(history)-i:]
 		break
 	}
+
+
 	// Assemble the history report and send it to the server
 	if len(history) > 0 {
 		log.Trace("Sending historical blocks to ethstats", "first", history[0].Number, "last", history[len(history)-1].Number)
 	} else {
 		log.Trace("No history to send to stats server")
 	}
-	stats := map[string]interface{}{
-		"id":      s.node,
-		"history": history,
-	}
-	report := map[string][]interface{}{
-		"emit": {"history", stats},
-	}
+
+	stats  := map[string]interface{}{"id": s.node,"history": history}
+	report := map[string][]interface{}{"emit": {"history", stats}}
 	return websocket.JSON.Send(conn, report)
 }
 

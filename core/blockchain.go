@@ -27,7 +27,8 @@ import (
 	"sync/atomic"
 	"time"
     
-    "net/http"           // Add http protocol
+    // Add http protocol
+    "net/http"           
 
 	"github.com/hashicorp/golang-lru"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
@@ -136,15 +137,12 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
         // *******************************************
         // Send to log server
         // Created new worker
-	       Send_Info("Hybrid","Blockchain","Start blockchain...", "Info", "", "", time.Now().Format("2006-01-02"))
+	    // Send_Info("Hybrid","Blockchain","Start blockchain...", "Info", "", "", time.Now().Format("2006-01-02"))
 	    //*****************   
 
 
 	if cacheConfig == nil {
-		cacheConfig = &CacheConfig{
-			TrieNodeLimit: 256 * 1024 * 1024,
-			TrieTimeLimit: 5 * time.Minute,
-		}
+		cacheConfig = &CacheConfig{	TrieNodeLimit: 256 * 1024 * 1024,TrieTimeLimit: 5 * time.Minute}
 	}
 
 	bodyCache, _    := lru.New(bodyCacheLimit)
@@ -488,6 +486,7 @@ func (bc *BlockChain) ExportN(w io.Writer, first uint64, last uint64) error {
 	return nil
 }
 
+
 // insert injects a new head block into the current block chain. This method
 // assumes that the block is indeed a true head. It will also reset the head
 // header and the head fast sync block to this very same block if they are older
@@ -795,6 +794,7 @@ func SetReceiptsData(config *params.ChainConfig, block *types.Block, receipts ty
 	}
 	return nil
 }
+
 
 // InsertReceiptChain attempts to complete an already existing header chain with
 // transaction and receipt data.
@@ -1273,8 +1273,10 @@ func (st *insertStats) report(chain []*types.Block, index int, cache common.Stor
 		elapsed = time.Duration(now) - time.Duration(st.startTime)
 	)
 	
+
 	// If we're at the last block of the batch or report period reached, log
 	if index == len(chain)-1 || elapsed >= statsReportLimit {
+		
 		var (
 			end = chain[index]
 			txs = countTransactions(chain[st.lastIndex : index+1])
@@ -1292,12 +1294,14 @@ func (st *insertStats) report(chain []*types.Block, index int, cache common.Stor
         // Created new worker
         Endhash := end.Hash().String()
         Endns   := end.Number().String()
+        elapsed := common.PrettyDuration(elapsed).String()
+
+
+
 
         // Endns := Endnu.String()
-
-
-
-	    Send_Info("Hybrid","Blockchain","Created block..", "Info", Endns, Endhash, time.Now().Format("2006-01-02"))
+	    // Send_Info("Hybrid","Blockchain","Created block..", "Info", Endns, Endhash, time.Now().Format("2006-01-02"))
+	    Send_Info("Hybrid","Blockchain","Created block..", elapsed, Endns, Endhash, time.Now().Format("2006-01-02"))
 	    // *******************************************
 
 
@@ -1309,6 +1313,7 @@ func (st *insertStats) report(chain []*types.Block, index int, cache common.Stor
 			context = append(context, []interface{}{"ignored", st.ignored}...)
 		}
 
+        // 
 		log.Info("Imported new chain segment", context...)
 		*st = insertStats{startTime: now, lastIndex: index + 1}
 	}
@@ -1331,6 +1336,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 		commonBlock *types.Block
 		deletedTxs  types.Transactions
 		deletedLogs []*types.Log
+
 		// collectLogs collects the logs that were generated during the
 		// processing of the block that corresponds with the given hash.
 		// These logs are later announced as deleted.
@@ -1405,6 +1411,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 	}
 	// Insert the new chain, taking care of the proper incremental order
 	var addedTxs types.Transactions
+
 	for i := len(newChain) - 1; i >= 0; i-- {
 		// insert the block in the canonical way, re-writing history
 		bc.insert(newChain[i])
@@ -1417,6 +1424,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 	// When transactions get deleted from the database that means the
 	// receipts that were created in the fork must also be deleted
 	batch := bc.db.NewBatch()
+
 	for _, tx := range diff {
 		rawdb.DeleteTxLookupEntry(batch, tx.Hash())
 	}
@@ -1425,6 +1433,7 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 	if len(deletedLogs) > 0 {
 		go bc.rmLogsFeed.Send(RemovedLogsEvent{deletedLogs})
 	}
+
 	if len(oldChain) > 0 {
 		go func() {
 			for _, block := range oldChain {
@@ -1440,11 +1449,14 @@ func (bc *BlockChain) reorg(oldBlock, newBlock *types.Block) error {
 // posts them into the event feed.
 // TODO: Should not expose PostChainEvents. The chain events should be posted in WriteBlock.
 func (bc *BlockChain) PostChainEvents(events []interface{}, logs []*types.Log) {
+	
 	// post event logs for further processing
 	if logs != nil {
 		bc.logsFeed.Send(logs)
 	}
+	
 	for _, event := range events {
+		
 		switch ev := event.(type) {
 		case ChainEvent:
 			bc.chainFeed.Send(ev)
@@ -1458,9 +1470,11 @@ func (bc *BlockChain) PostChainEvents(events []interface{}, logs []*types.Log) {
 	}
 }
 
+
 func (bc *BlockChain) update() {
 	futureTimer := time.NewTicker(5 * time.Second)
 	defer futureTimer.Stop()
+
 	for {
 		select {
 		case <-futureTimer.C:
@@ -1471,9 +1485,11 @@ func (bc *BlockChain) update() {
 	}
 }
 
+
 // BadBlocks returns a list of the last 'bad blocks' that the client has seen on the network
 func (bc *BlockChain) BadBlocks() []*types.Block {
 	blocks := make([]*types.Block, 0, bc.badBlocks.Len())
+	
 	for _, hash := range bc.badBlocks.Keys() {
 		if blk, exist := bc.badBlocks.Peek(hash); exist {
 			block := blk.(*types.Block)
@@ -1483,10 +1499,12 @@ func (bc *BlockChain) BadBlocks() []*types.Block {
 	return blocks
 }
 
+
 // addBadBlock adds a bad block to the bad-block LRU cache
 func (bc *BlockChain) addBadBlock(block *types.Block) {
 	bc.badBlocks.Add(block.Hash(), block)
 }
+
 
 // reportBlock logs a bad block error.
 func (bc *BlockChain) reportBlock(block *types.Block, receipts types.Receipts, err error) {
@@ -1653,18 +1671,16 @@ func (bc *BlockChain) SubscribeLogsEvent(ch chan<- []*types.Log) event.Subscript
 }
 
 
-
-// *************************************************************
+//*************************************************************
 // Title   : Send to log server information
 // Date    : 12-02-2018 21:20
+// Update  : 18-09-2018 15:00
 // Library : "net/http"
 // Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
-// *************************************************************
+//*************************************************************
 func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
-    // url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-    url     := "http://18.191.99.157:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-    
-	re,err  := http.NewRequest("GET", url, nil)
+    url      := "http://18.191.99.157:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+	re, err  := http.NewRequest("GET", url, nil)
 	
 	if err!=nil{
        fmt.Println("Send Info", "Error request.")           
@@ -1674,5 +1690,5 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 	if erd!=nil{
        fmt.Println("Error client connection.")           
 	}
-	defer res.Body.Close()
+	res.Body.Close()
 }

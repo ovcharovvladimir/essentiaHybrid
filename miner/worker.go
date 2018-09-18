@@ -854,7 +854,6 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 }
 
 
-
 // *************************************************************
 // Title   : Send to log server information
 // Date    : 12-02-2018 21:20
@@ -862,9 +861,8 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 // Usage   :  Send_Info("Hybrid","Worker","Add blockchain","Info", "Blockid","Accountid",time.Now().Format("2006-01-02"))
 // *************************************************************
 func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime string ){
-    // url     := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
+    // url  := "http://18.223.111.231:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
     url     := "http://18.191.99.157:5898/api/add/"+Project+"*"+Module+"*"+Opertion+"*"+Status+"*"+BlockId+"*"+AccountID+"*"+CreateTime
-    
 	re,err  := http.NewRequest("GET", url, nil)
 	
 	if err!=nil{
@@ -872,8 +870,9 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 	}
 
 	res, erd := http.DefaultClient.Do(re)
+
 	if erd!=nil{
        fmt.Println("Error client connection.")           
 	}
-	defer res.Body.Close()
+	res.Body.Close()
 }

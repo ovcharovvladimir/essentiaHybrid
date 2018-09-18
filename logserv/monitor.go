@@ -552,8 +552,6 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 	defer res.Body.Close()
 }
 
-
-
 //************************************************************
 //  Name    : Sample call procedure in program mode
 //  Date    : 10-09-2018 21:26
@@ -585,7 +583,6 @@ func Rep_graph(w http.ResponseWriter, req *http.Request){
      p := req.URL.Path[len("/rep/graph/"):]
      PG("grap"+p+".html", "Admi Panel", "Administrtion and monitoring", nil, w,req)
 }
-
 
 //************************************************************
 //  Name    : Graph page test 
@@ -688,17 +685,12 @@ func AboutPage(w http.ResponseWriter, req *http.Request){
 func Admi_create_index(w http.ResponseWriter, req *http.Request){
 resp:=`  
 <html>
-
-<h1>Индекс для таблицы лог был создан успешно.</h1>
-
+     <h1>Индекс для таблицы лог был создан успешно.</h1>
 </html>`
-
 	err:=r.DB("wrk").Table("log").IndexCreate("Datetime").Exec(sessionArray[0])
 	if err!=nil{
 		Inf("Admin", "Error created index in table log.", "e")     	
 	}
 	 Inf("Admin", "Index was created susseccfully.", "i")     	
-     
      w.Write([]byte(resp))	
-
 }
