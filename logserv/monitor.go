@@ -656,7 +656,9 @@ func PG(PageNameHtml, Title, Description string, Data []Mst,  w http.ResponseWri
 //  Module  : 
 //************************************************************
 func InfoPage(w http.ResponseWriter, req *http.Request){
-	defer func(){recover()}()
+	defer func(){
+		recover()
+	}()
     PG("info.html", "Info", "Info", nil, w,req)
 }
 
@@ -685,7 +687,7 @@ func AboutPage(w http.ResponseWriter, req *http.Request){
 func Admi_create_index(w http.ResponseWriter, req *http.Request){
 resp:=`  
 <html>
-     <h1>Индекс для таблицы лог был создан успешно.</h1>
+     <h1>Index was created successful! </h1>
 </html>`
 	err:=r.DB("wrk").Table("log").IndexCreate("Datetime").Exec(sessionArray[0])
 	if err!=nil{
