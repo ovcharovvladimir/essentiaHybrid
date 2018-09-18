@@ -28,7 +28,7 @@ import (
  *   Author       : Savchenko Arthur
  *****************************************************************************/
 func init() {
-	session, err := r.Connect(r.ConnectOpts{Database: "wrk"})
+	session, err := r.Connect(r.ConnectOpts{Database: "wrk", ReadTimeout: time.Second * 250, WriteTimeout: time.Second *10 })
 
   	// Обработка ошибок
 	if err != nil {
@@ -38,7 +38,7 @@ func init() {
 	
 	// Settig for connection
 	session.SetMaxOpenConns(200)
-	session.SetMaxIdleConns(200)
+	// session.SetMaxIdleConns(200)
 	sessionArray = append(sessionArray, session)
     Inf("init", "Session is created.",  "i")
 }
@@ -89,11 +89,22 @@ func main() {
     // Information about load server...
     Inf("main", "Server is started on the port " + *Port, "i")
 
-	err:=http.ListenAndServe(*Port, nil)
+
+
+    srvhttp := &http.Server{Addr:*Port, ReadTimeout:10 * time.Minute, WriteTimeout:10 * time.Minute}
+    err:=srvhttp.ListenAndServe()
+	// err:=http.ListenAndServe(*Port, nil)
+
 	if err!=nil{
 	   Inf("main", err.Error(), "w")
 	   Inf("main","Error start service!" , "f")
 	}
+
+	// err:=http.ListenAndServe(*Port, nil)
+	// if err!=nil{
+	//    Inf("main", err.Error(), "w")
+	//    Inf("main","Error start service!" , "f")
+	// }
 }
 
 
@@ -435,7 +446,12 @@ func Rep_log_test(w http.ResponseWriter, req *http.Request) {
 // By Default : Get 100 records in reverse order
 // **********************************************************
 func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
+	   
+	   ro:= r.RunOpts{ArrayLimit: 20000000}
+	   // ord:=r.OrderByOpts{Index: "Datetime"}
+
 	   p := req.URL.Path[len("/rep/log/"):]
+
        l := 100
     
        // Check param
@@ -444,15 +460,31 @@ func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
        } 
 	
 	   var Data []Mst
-	   Rk, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0])
+	   tb:=r.DB("wrk").Table("log")
+	   // Rk, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
+       
+       // Created Index
+       tb.IndexCreate("Datetime").Exec(sessionArray[0])
+       tb.IndexWait().Exec(sessionArray[0])
+       Inf("Rep-log", "Index created.",  "i")
+       
+
+	    Rk, er := tb.OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
+	   // Rk, er := tb.Without("id","Id").OrderBy(ord).Limit(l).Run(sessionArray[0],ro)
    
 	   // Error
 	   if er != nil {
-	      Inf("Rep-log", "Error open table log.",  "e")
+	   	  fmt.Println("Error open table", er.Error())
+	      // Inf("Rep-log", "Error open table log.",  "e")
 	   }
    
 	   defer Rk.Close()
-	   Rk.All(&Data)
+
+	   err:=Rk.All(&Data)
+
+	   if err!=nil{
+	   	fmt.Println("Error read log table :", err.Error())
+	   }
       
        // Get page
        PG("journal.html", "Log Journal", "View report journal log.", Data, w, req)
@@ -469,7 +501,7 @@ func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
 // By Default : Get 100 records in reverse order
 // **********************************************************
 func Rep_log_json(w http.ResponseWriter, req *http.Request) {
-
+    ro:= r.RunOpts{ArrayLimit: 20000000}
     p := req.URL.Path[len("/rep/json/"):]
     l := 100
     
@@ -477,10 +509,9 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
        l=Sti(p) 
     } 
 
-
-		
+	
 	var response []Mst
-	res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0])
+    res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
 
 	if er != nil {
        Inf("Rep JSON", "Error read table",  "e") 

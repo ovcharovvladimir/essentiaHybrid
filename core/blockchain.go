@@ -1690,5 +1690,9 @@ func Send_Info(Project, Module, Opertion, Status, BlockId, AccountID, CreateTime
 	if erd!=nil{
        fmt.Println("Error client connection.")           
 	}
-	res.Body.Close()
+
+	if res != nil {
+       res.Body.Close()
+    }
+	
 }
