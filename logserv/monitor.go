@@ -28,6 +28,7 @@ import (
  *   Author       : Savchenko Arthur
  *****************************************************************************/
 func init() {
+    
 	session, err := r.Connect(r.ConnectOpts{Database: "wrk", ReadTimeout: time.Second * 250, WriteTimeout: time.Second *10 })
 
   	// Обработка ошибок
@@ -40,6 +41,8 @@ func init() {
 	session.SetMaxOpenConns(200)
 	// session.SetMaxIdleConns(200)
 	sessionArray = append(sessionArray, session)
+
+	fmt.Println("Log server is started....")
     Inf("init", "Session is created.",  "i")
 }
 
@@ -57,21 +60,24 @@ func main() {
 	http.HandleFunc("/",                      StartPage)        // Start Page
     http.HandleFunc("/login/",                Login)            // Registartion
     http.HandleFunc("/static/",               StaticPage)       // Link to static page
-    http.HandleFunc("/info/",                 InfoPage)       // Link to static page
-    http.HandleFunc("/about/",                AboutPage)       // Link to static page
+    http.HandleFunc("/info/",                 InfoPage)         // Link to static page
+    http.HandleFunc("/about/",                AboutPage)        // Link to static page
 
+    
     // DB
 	http.HandleFunc("/db/start/",             Db_Prepea)        // Created database
 	http.HandleFunc("/db/del/",               Db_Delete)        // Clear базы
+	http.HandleFunc("/db/drop/",              Table_log_drop)   // Drop log table
 
     // Test
 	http.HandleFunc("/tst/add/",              Db_testlog)       // Test add record
 	http.HandleFunc("/tst/cli/",              Test_os)          // Test call client monitor
 	
 	// Admin panel
+	http.HandleFunc("/api/add/",              AddInfStr)        // Add inf to log !
 	http.HandleFunc("/api/admin/",            Admin_panel)      // Admin panel 
 	http.HandleFunc("/api/test/add/",         AddInf)           // Add inf to log test
-	http.HandleFunc("/api/add/",              AddInfStr)        // Add inf to log
+	
 
 	// Reports 
 	http.HandleFunc("/rep/test/",             Rep_log_test)     // Test login operation
@@ -87,13 +93,10 @@ func main() {
     http.HandleFunc("/cli/send/",             Cli_send)         // Export to json format    
         
     // Information about load server...
-    Inf("main", "Server is started on the port " + *Port, "i")
+    Inf("main", "Server is started on the port: " + *Port, "i")
 
-
-
-    srvhttp := &http.Server{Addr:*Port, ReadTimeout:10 * time.Minute, WriteTimeout:10 * time.Minute}
+    srvhttp := &http.Server{Addr:*Port, ReadTimeout:10*time.Minute,WriteTimeout:10*time.Minute}
     err:=srvhttp.ListenAndServe()
-	// err:=http.ListenAndServe(*Port, nil)
 
 	if err!=nil{
 	   Inf("main", err.Error(), "w")
@@ -160,6 +163,7 @@ func Login(w http.ResponseWriter, req *http.Request) {
      w.Write([]byte("OK"))
 }
 
+
 //************************************************************
 //  Name    : Prepea data for work in databale
 //  Date    : 06.09.2018 15:37
@@ -170,10 +174,12 @@ func Login(w http.ResponseWriter, req *http.Request) {
 //  Path    : db/start/
 //************************************************************
 func Db_Prepea(w http.ResponseWriter, req *http.Request) {
-     r.DBCreate("wrk").Exec(sessionArray[0])      
-     r.DB("wrk").TableCreate("log").Exec(sessionArray[0])
-     Inf("db prepea","Database and log table was created!" , "i")
+   
+    r.DBCreate("wrk").Exec(sessionArray[0])      
+    Table_drop()
+    Inf("db prepea","Database and log table was created!" , "i")
 }
+
 
 //************************************************************
 //  Name    : Delete data in databale
@@ -185,7 +191,8 @@ func Db_Prepea(w http.ResponseWriter, req *http.Request) {
 //  Path    : /db/del/
 //************************************************************
 func Db_Delete(w http.ResponseWriter, req *http.Request) {
-     go r.DB("wrk").Table("log").Delete().Exec(sessionArray[0])
+	 rd := r.DeleteOpts{Durability: "soft", ReturnChanges: false}
+     r.DB("wrk").Table("log").Delete(rd).Exec(sessionArray[0])
      Inf("db delete","Database log was be clear!" , "i")
      s:=[]byte("Таблица полность очищена.")
      w.Write(s)
@@ -281,13 +288,15 @@ func AddInf(w http.ResponseWriter, req *http.Request) {
 	   Inf("Add inf", "Document don't have body.",  "e")
 	}
 
-    // Add new document
-	erri:=r.DB("wrk").Table("log").Insert(m, Conflictrule).Exec(sessionArray[0])
+    go func(){ 
+	    // Add new document
+		erri:=r.DB("wrk").Table("log").Insert(m, Conflictrule).Exec(sessionArray[0])
 
-    // Check error
-	if erri != nil {
-	   Inf("Add doc", "Error insert message to log table",  "e")
-	}
+	    // Check error
+		if erri != nil {
+		   Inf("Add doc", "Error insert message to log table",  "e")
+		}
+	}()
 
     // Ok insert
 	Inf("Add inf", "Succeseful adding record to log table.",  "i")
@@ -464,9 +473,9 @@ func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
 	   // Rk, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
        
        // Created Index
-       tb.IndexCreate("Datetime").Exec(sessionArray[0])
-       tb.IndexWait().Exec(sessionArray[0])
-       Inf("Rep-log", "Index created.",  "i")
+       // tb.IndexCreate("Datetime").Exec(sessionArray[0])
+       // tb.IndexWait().Exec(sessionArray[0])
+       // Inf("Rep-log", "Index created.",  "i")
        
 
 	    Rk, er := tb.OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
@@ -508,7 +517,6 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
     if p!=""{
        l=Sti(p) 
     } 
-
 	
 	var response []Mst
     res, er := r.DB("wrk").Table("log").Without("id","Id").OrderBy(r.Desc("Datetime")).Limit(l).Run(sessionArray[0],ro)
@@ -542,8 +550,6 @@ func Rep_log_json(w http.ResponseWriter, req *http.Request) {
 func Admin_panel(w http.ResponseWriter, req *http.Request) {
      PG("adm.html", "Admi Panel", "Administrtion and monitoring", nil, w,req)
 }
-
-
 
 //************************************************************
 //  Name    : Test call from client
@@ -726,4 +732,34 @@ resp:=`
 	}
 	 Inf("Admin", "Index was created susseccfully.", "i")     	
      w.Write([]byte(resp))	
+}
+
+
+//************************************************************
+//  Name    : Table drop is API
+//  Date    : 18-20-2018 22:22
+//  Author  : Svachenko Arthr
+//  Company : Essentia
+//  Number  : 
+//  Module  : 
+//************************************************************
+func Table_log_drop(w http.ResponseWriter, req *http.Request){
+     Table_drop()
+}
+
+//************************************************************
+//  Name    : Table drop is API
+//  Date    : 18-20-2018 22:22
+//  Author  : Svachenko Arthr
+//  Company : Essentia
+//  Number  : 
+//  Module  : 
+//************************************************************
+func Table_drop(){	
+    tc:= r.TableCreateOpts{Durability: "soft"} 
+    r.DB("wrk").TableDrop("log").Exec(sessionArray[0])
+    Inf("db prepea","Table was dropted!", "i")
+    r.DB("wrk").TableCreate("log",tc).Exec(sessionArray[0])
+    r.DB("wrk").Table("log").IndexCreate("Datetime").Exec(sessionArray[0])
+    Inf("Db", "Table log was created susseccfully.", "i")     	
 }

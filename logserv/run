@@ -12,12 +12,11 @@ clear
 # export GOPATH=$HOME+$USER+$PWD
 # export GOPATH=$HOME/planing
 
-NOWF=$(date +"%d-%m-%Y %T")
-echo Time $NOWF
-echo "Текущий каталог " $PWD
-echo Time $NOWF>>log.txt
-echo Time $NOWF Starting process
-
+#NOWF=$(date +"%d-%m-%Y %T")
+#echo Time $NOWF
+#echo "Текущий каталог " $PWD
+#echo Time $NOWF>>log.txt
+#echo Time $NOWF Starting process
 
 
 #export GOPATH=$PWD
