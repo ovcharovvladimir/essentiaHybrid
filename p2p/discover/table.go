@@ -324,10 +324,11 @@ func (tab *Table) findnode(n *Node, targetID NodeID, reply chan<- []*Node) {
 		fails++
 		tab.db.updateFindFails(n.ID, fails)
 		log.Trace("Findnode failed", "id", n.ID, "failcount", fails, "err", err)
-		if fails >= maxFindnodeFailures {
-			log.Trace("Too many findnode failures, dropping", "id", n.ID, "failcount", fails)
-			tab.delete(n)
-		}
+		//if fails >= maxFindnodeFailures {
+		//	log.Trace("Too many findnode failures, dropping", "id", n.ID, "failcount", fails)
+		log.Trace("Findnode failures, dropping", "id", n.ID, "failcount", fails)
+		tab.delete(n)
+		//}
 	} else if fails > 0 {
 		tab.db.updateFindFails(n.ID, fails-1)
 	}
