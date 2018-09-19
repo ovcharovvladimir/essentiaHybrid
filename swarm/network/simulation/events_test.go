@@ -53,7 +53,8 @@ func TestPeerEvents(t *testing.T) {
 					return
 				}
 				t.Error(e.Error)
-				continue
+				//TODO: Upgrade this test because of new Discovering
+				//continue
 			}
 			wg.Done()
 		}
