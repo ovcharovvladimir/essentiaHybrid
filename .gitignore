@@ -18,3 +18,5 @@ scripts/key1\.bin
 logserv/logserv
 /logserv/log.txt
 /logserv/mon
+
+*.test
