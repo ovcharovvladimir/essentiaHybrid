@@ -329,7 +329,12 @@ func (tab *Table) findnode(n *Node, targetID NodeID, reply chan<- []*Node) {
 			tab.delete(n)
 		}
 	} else if fails > 0 {
-		tab.db.updateFindFails(n.ID, fails-1)
+		if fails >= maxFindnodeFailures {
+			log.Trace("Too many findnode failures, dropping", "id", n.ID, "failcount", fails)
+			tab.delete(n)
+		} else {
+			tab.db.updateFindFails(n.ID, fails-1)
+		}
 	}
 
 	// Grab as many nodes as possible. Some of them might not be alive anymore, but we'll
