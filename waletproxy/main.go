@@ -3,7 +3,6 @@
 // https://github.com/ovcharovvladimir/essentiaHybrid/tree/master/waletproxy
 // 
 package main
-
 import (
 	"fmt"
     "io/ioutil"
@@ -21,7 +20,7 @@ type Node  struct {
              Port string   `json:"Port"`
              Note string   `json:"Note"`
              Status string `json:"Status"`
-         } 
+} 
 
 // Sdetting structure
 type Sett struct {
@@ -35,11 +34,15 @@ type Sett struct {
 //************************************************************
 func main() {
 
-     Host  := ActiveNode()
-     Sett  := ReadSettingFile()
-     Port  := ":"+ Sett.Mainport
-     proxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme: "http", Host:Host})
-    
+    Host  := ActiveNode()
+    Sett  := ReadSettingFile()
+    Port  := ":"+ Sett.Mainport
+
+    // For test with other resources
+    // Host="localhost:5555"
+    // Host="www.youtube.com"
+    proxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme:"http", Host:Host})
+
     // Proxy
     proxy.Director = func(req *http.Request) {
         fmt.Println("Host redirect:", Host) 
@@ -48,9 +51,8 @@ func main() {
         req.URL.Scheme = "http"    
     }
 
-
     // Proxy 
-    http.Handle("/",   proxy)
+     http.Handle("/",   proxy)
     
     // Routing
     http.HandleFunc("/nodes/",        ShowNodes)              // Show all nodes

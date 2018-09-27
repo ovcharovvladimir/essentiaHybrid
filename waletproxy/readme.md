@@ -1,4 +1,4 @@
-# Proxy service for ess wallet
+# Proxy service for walet
 ### Version
 
 ### Settings
