@@ -1,12 +1,12 @@
-* Proxy service for walet
-** Version
+# Proxy service for walet
+### Version
 
-*** Settings
+### Settings
 Настройка производится через файл setting.json
 в котром необходимо происать все ноды и порт активного сервиса.
 
 
-** API descriptin
+### API descriptin
 
 |Api|Description|
 |---|---|
