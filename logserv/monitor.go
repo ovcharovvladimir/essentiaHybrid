@@ -492,7 +492,7 @@ func Rep_log_journal(w http.ResponseWriter, req *http.Request) {
 	   err:=Rk.All(&Data)
 
 	   if err!=nil{
-	   	fmt.Println("Error read log table :", err.Error())
+	   	  fmt.Println("Error read log table :", err.Error())
 	   }
       
        // Get page
