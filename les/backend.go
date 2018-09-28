@@ -95,26 +95,27 @@ func New(ctx *node.ServiceContext, config *ess.Config) (*LightEthereum, error) {
 		lesCommons: lesCommons{
 			chainDb: chainDb,
 			config:  config,
+			iConfig: light.DefaultClientIndexerConfig,
 		},
 		chainConfig:    chainConfig,
 		eventMux:       ctx.EventMux,
 		peers:          peers,
 		reqDist:        newRequestDistributor(peers, quitSync),
 		accountManager: ctx.AccountManager,
-		engine:         ess.CreateConsensusEngine(ctx, chainConfig, &config.Ethash, nil, chainDb),
+		engine:         ess.CreateConsensusEngine(ctx, chainConfig, &config.Ethash, nil, false, chainDb),
 		shutdownChan:   make(chan bool),
 		networkId:      config.NetworkId,
 		bloomRequests:  make(chan chan *bloombits.Retrieval),
-		bloomIndexer:   ess.NewBloomIndexer(chainDb, light.BloomTrieFrequency, light.HelperTrieConfirmations),
+		bloomIndexer:   ess.NewBloomIndexer(chainDb, params.BloomBitsBlocksClient, params.HelperTrieConfirmations),
 	}
 
 	less.relay = NewLesTxRelay(peers, less.reqDist)
 	less.serverPool = newServerPool(chainDb, quitSync, &less.wg)
 	less.retriever = newRetrieveManager(peers, less.reqDist, less.serverPool)
 
-	less.odr = NewLesOdr(chainDb, less.retriever)
-	less.chtIndexer = light.NewChtIndexer(chainDb, true, less.odr)
-	less.bloomTrieIndexer = light.NewBloomTrieIndexer(chainDb, true, less.odr)
+	less.odr = NewLesOdr(chainDb, light.DefaultClientIndexerConfig, less.retriever)
+	less.chtIndexer = light.NewChtIndexer(chainDb, less.odr, params.CHTFrequencyClient, params.HelperTrieConfirmations)
+	less.bloomTrieIndexer = light.NewBloomTrieIndexer(chainDb, less.odr, params.BloomBitsBlocksClient, params.BloomTrieFrequency)
 	less.odr.SetIndexers(less.chtIndexer, less.bloomTrieIndexer, less.bloomIndexer)
 
 	// Note: NewLightChain adds the trusted checkpoint so it needs an ODR with
@@ -135,13 +136,13 @@ func New(ctx *node.ServiceContext, config *ess.Config) (*LightEthereum, error) {
 	}
 
 	less.txPool = light.NewTxPool(less.chainConfig, less.blockchain, less.relay)
-	if less.protocolManager, err = NewProtocolManager(less.chainConfig, true, config.NetworkId, less.eventMux, less.engine, less.peers, less.blockchain, nil, chainDb, less.odr, less.relay, less.serverPool, quitSync, &less.wg); err != nil {
+	if less.protocolManager, err = NewProtocolManager(less.chainConfig, light.DefaultClientIndexerConfig, true, config.NetworkId, less.eventMux, less.engine, less.peers, less.blockchain, nil, chainDb, less.odr, less.relay, less.serverPool, quitSync, &less.wg); err != nil {
 		return nil, err
 	}
 	less.ApiBackend = &LesApiBackend{less, nil}
 	gpoParams := config.GPO
 	if gpoParams.Default == nil {
-		gpoParams.Default = config.GasPrice
+		gpoParams.Default = config.MinerGasPrice
 	}
 	less.ApiBackend.gpo = gasprice.NewOracle(less.ApiBackend, gpoParams)
 	return less, nil
@@ -192,12 +193,12 @@ func (s *LightEthereum) APIs() []rpc.API {
 			Service:   &LightDummyAPI{},
 			Public:    true,
 		}, {
-			Namespace: "eth",
+			Namespace: "ess",
 			Version:   "1.0",
 			Service:   downloader.NewPublicDownloaderAPI(s.protocolManager.downloader, s.eventMux),
 			Public:    true,
 		}, {
-			Namespace: "eth",
+			Namespace: "ess",
 			Version:   "1.0",
 			Service:   filters.NewPublicFilterAPI(s.ApiBackend, true),
 			Public:    true,
@@ -230,8 +231,8 @@ func (s *LightEthereum) Protocols() []p2p.Protocol {
 // Start implements node.Service, starting all internal goroutines needed by the
 // Ethereum protocol implementation.
 func (s *LightEthereum) Start(srvr *p2p.Server) error {
-	s.startBloomHandlers()
 	log.Warn("Light client mode is an experimental feature")
+	s.startBloomHandlers(params.BloomBitsBlocksClient)
 	s.netRPCService = essapi.NewPublicNetAPI(srvr, s.networkId)
 	// clients are searching for the first advertised protocol in the list
 	protocolVersion := AdvertiseProtocolVersions[0]

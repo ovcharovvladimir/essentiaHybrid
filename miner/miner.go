@@ -20,6 +20,7 @@ package miner
 import (
 	"fmt"
 	"sync/atomic"
+	"time"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/consensus"
@@ -41,29 +42,29 @@ type Backend interface {
 
 // Miner creates blocks and searches for proof-of-work values.
 type Miner struct {
-	mux         *event.TypeMux
-	worker      *worker
-	coinbase     common.Address
-	eth          Backend
-	engine       consensus.Engine
-    exitCh       chan struct{}
-	canStart     int32 // can start indicates whether we can start the mining operation
-	shouldStart  int32 // should start indicates whether we should start after sync
+	mux      *event.TypeMux
+	worker   *worker
+	coinbase common.Address
+	eth      Backend
+	engine   consensus.Engine
+	exitCh   chan struct{}
+
+	canStart    int32 // can start indicates whether we can start the mining operation
+	shouldStart int32 // should start indicates whether we should start after sync
 }
 
-
-
-func New(eth Backend, config *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine) *Miner {
-	 miner := &Miner{ 
-	 	eth:      eth,
+func New(eth Backend, config *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, recommit time.Duration, gasFloor, gasCeil uint64, isLocalBlock func(block *types.Block) bool) *Miner {
+	miner := &Miner{
+		eth:      eth,
 		mux:      mux,
 		engine:   engine,
 		exitCh:   make(chan struct{}),
-		worker:   newWorker(config, engine, eth, mux),
+		worker:   newWorker(config, engine, eth, mux, recommit, gasFloor, gasCeil, isLocalBlock),
 		canStart: 1,
 	}
 
 	go miner.update()
+
 	return miner
 }
 
@@ -78,12 +79,10 @@ func (self *Miner) update() {
 
 	for {
 		select {
-
-		    case ev := <-events.Chan():
-			     if ev == nil {
-				    return
-			      }
-
+		case ev := <-events.Chan():
+			if ev == nil {
+				return
+			}
 			switch ev.Data.(type) {
 			case downloader.StartEvent:
 				atomic.StoreInt32(&self.canStart, 0)
@@ -112,54 +111,59 @@ func (self *Miner) update() {
 
 
 func (self *Miner) Start(coinbase common.Address) {
-  	  atomic.StoreInt32(&self.shouldStart, 1)
-	  self.SetEtherbase(coinbase)
+	atomic.StoreInt32(&self.shouldStart, 1)
+	self.SetEtherbase(coinbase)
 
-	  if atomic.LoadInt32(&self.canStart) == 0 {
-	     log.Info("Network syncing, will start miner afterwards")
-	     return
-	   }
-	  self.worker.start()
+	if atomic.LoadInt32(&self.canStart) == 0 {
+		log.Info("Network syncing, will start miner afterwards")
+		return
+	}
+	self.worker.start()
 }
 
 
 func (self *Miner) Stop() {
-	  self.worker.stop()
-	  atomic.StoreInt32(&self.shouldStart, 0)
+	self.worker.stop()
+	atomic.StoreInt32(&self.shouldStart, 0)
 }
 
 
 func (self *Miner) Close() {
-	  self.worker.close()
-	  close(self.exitCh)
+	self.worker.close()
+	close(self.exitCh)
 }
 
 
 func (self *Miner) Mining() bool {
- 	  return self.worker.isRunning()
+	return self.worker.isRunning()
 }
 
 
 func (self *Miner) HashRate() uint64 {
-	  if pow, ok := self.engine.(consensus.PoW); ok {
-		 return uint64(pow.Hashrate())
-	  }
-	  return 0
+	if pow, ok := self.engine.(consensus.PoW); ok {
+		return uint64(pow.Hashrate())
+	}
+	return 0
 }
 
 
 func (self *Miner) SetExtra(extra []byte) error {
 	if uint64(len(extra)) > params.MaximumExtraDataSize {
- 	   return fmt.Errorf("Extra exceeds max length. %d > %v", len(extra), params.MaximumExtraDataSize)
+		return fmt.Errorf("Extra exceeds max length. %d > %v", len(extra), params.MaximumExtraDataSize)
 	}
 
 	self.worker.setExtra(extra)
 	return nil
 }
 
+// SetRecommitInterval sets the interval for sealing work resubmitting.
+func (self *Miner) SetRecommitInterval(interval time.Duration) {
+	self.worker.setRecommitInterval(interval)
+}
+
 // Pending returns the currently pending block and associated state.
 func (self *Miner) Pending() (*types.Block, *state.StateDB) {
-	  return self.worker.pending()
+	return self.worker.pending()
 }
 
 // PendingBlock returns the currently pending block.
@@ -168,7 +172,7 @@ func (self *Miner) Pending() (*types.Block, *state.StateDB) {
 // simultaneously, please use Pending(), as the pending state can
 // change between multiple method calls
 func (self *Miner) PendingBlock() *types.Block {
-	  return self.worker.pendingBlock()
+	return self.worker.pendingBlock()
 }
 
 func (self *Miner) SetEtherbase(addr common.Address) {

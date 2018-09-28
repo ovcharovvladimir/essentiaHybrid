@@ -307,6 +307,7 @@ func (b *bridge) Send(call otto.FunctionCall) (response otto.Value) {
 		resp.Set("id", req.ID)
 		var result json.RawMessage
 		err = b.client.Call(&result, req.Method, req.Params...)
+		log.Warn("@rpc ", "req", req)
 		switch err := err.(type) {
 		case nil:
 			if result == nil {

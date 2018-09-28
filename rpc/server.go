@@ -401,13 +401,17 @@ func (s *Server) readRequest(codec ServerCodec) ([]*serverRequest, bool, Error) 
 		}
 
 		if svc, ok = s.services[r.service]; !ok { // rpc method isn't available
+			log.Warn("rpc service ", "rs", r.service, "ss", s.services)
 			requests[i] = &serverRequest{id: r.id, err: &methodNotFoundError{r.service, r.method}}
 			continue
 		}
 
 		if r.isPubSub { // eth_subscribe, r.method contains the subscription method name
+			log.Warn("isPubSub", "svc.subscriptions", svc, "rm", r.method)
 			if callb, ok := svc.subscriptions[r.method]; ok {
+				log.Warn("eth_subscribe", "rs", r.method, "ss", svc.subscriptions)
 				requests[i] = &serverRequest{id: r.id, svcname: svc.name, callb: callb}
+				log.Warn("eth_subscribe", "rid", r.id, "svcname", svc.name, "callb", callb)
 				if r.params != nil && len(callb.argTypes) > 0 {
 					argTypes := []reflect.Type{reflect.TypeOf("")}
 					argTypes = append(argTypes, callb.argTypes...)

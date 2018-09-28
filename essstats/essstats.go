@@ -627,9 +627,13 @@ func (s *Service) reportHistory(conn *websocket.Conn, list []uint64) error {
 	} else {
 		log.Trace("No history to send to stats server")
 	}
-
-	stats  := map[string]interface{}{"id": s.node,"history": history}
-	report := map[string][]interface{}{"emit": {"history", stats}}
+	stats := map[string]interface{}{
+		"id":      s.node,
+		"history": history,
+	}
+	report := map[string][]interface{}{
+		"emit": {"history", stats},
+	}
 	return websocket.JSON.Send(conn, report)
 }
 

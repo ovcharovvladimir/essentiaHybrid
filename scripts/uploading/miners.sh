@@ -5,7 +5,7 @@ GREEN='\033[01;32m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("18.191.153.144" "18.223.214.204" "18.188.133.172" "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
+options=("13.59.162.217" "18.219.184.139" "18.222.154.170" "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
 echo "Availible miners"
 print_list(){
 for ((i = 0; i < ${#options[@]}; ++i)); do
@@ -34,13 +34,12 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
 
-   ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.essentia
-   ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.esshash
+ #  ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.essentia
+  # ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.esshash
    echo  --password /home/release/pass.txt account new
    ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/gess  --testnet --password /home/release/pass.txt account new
-   wait
-   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} nohup sudo  /home/release/gess  --mine --minerthreads=4 --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]} 
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo  /home/release/gess  --mine --minerthreads=4 --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]}  > /dev/null 2>&1 &
+   echo  sudo  /home/release/gess  --rpc --rpcapi eth,eth,net,web3,admin,miner,debug,personal  --mine --minerthreads=1 --testnet  --rpc --rpcaddr  $ip4 --nat extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo  /home/release/gess   --rpc --rpcapi eth,eth,net,web3,admin,miner,debug,personal  --mine --minerthreads=1 --testnet  --rpc --rpcaddr$ip4 --nat extip:${options[$i]}  > /dev/null 2>&1 &
     echo -e "* ${GREEN} DONE ${NC} *"
  done  
 }
@@ -77,19 +76,19 @@ PS3='Select:'
 select opt in "${options[@]}"
 do
     case $opt in
-        "18.191.153.144")
+        "13.59.162.217")
 	    clear
 	echo "**** ${opt} ****"
             ssh -i block.pem ubuntu@$opt
 	    print_list
 	    ;;
-        "18.223.214.204")
+        "18.219.184.139")
 	    clear
 	echo "**** ${opt} ****"
             ssh -i block.pem ubuntu@$opt
            print_list
             ;;
-        "18.188.133.172")
+        "18.222.154.170")
 	    clear
 	echo "**** ${opt} ****"
             clear

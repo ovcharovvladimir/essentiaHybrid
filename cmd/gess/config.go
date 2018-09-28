@@ -101,8 +101,8 @@ func defaultNodeConfig() node.Config {
 	cfg := node.DefaultConfig
 	cfg.Name = clientIdentifier
 	cfg.Version = params.VersionWithCommit(gitCommit)
-	cfg.HTTPModules = append(cfg.HTTPModules, "ess", "shh")
-	cfg.WSModules = append(cfg.WSModules, "ess", "shh")
+	cfg.HTTPModules = append(cfg.HTTPModules, "eth", "shh")
+	cfg.WSModules = append(cfg.WSModules, "eth", "shh")
 	cfg.IPCPath = "gess.ipc"
 	return cfg
 }
@@ -167,6 +167,9 @@ func makeFullNode(ctx *cli.Context) *node.Node {
 		}
 		if ctx.GlobalIsSet(utils.WhisperMinPOWFlag.Name) {
 			cfg.Shh.MinimumAcceptedPOW = ctx.Float64(utils.WhisperMinPOWFlag.Name)
+		}
+		if ctx.GlobalIsSet(utils.WhisperRestrictConnectionBetweenLightClientsFlag.Name) {
+			cfg.Shh.RestrictConnectionBetweenLightClients = true
 		}
 		utils.RegisterShhService(stack, &cfg.Shh)
 	}

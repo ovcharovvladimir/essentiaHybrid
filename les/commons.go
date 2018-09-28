@@ -33,6 +33,7 @@ import (
 // lesCommons contains fields needed by both server and client.
 type lesCommons struct {
 	config                       *ess.Config
+	iConfig                      *light.IndexerConfig
 	chainDb                      essdb.Database
 	protocolManager              *ProtocolManager
 	chtIndexer, bloomTrieIndexer *core.ChainIndexer
@@ -41,12 +42,12 @@ type lesCommons struct {
 // NodeInfo represents a short summary of the Ethereum sub-protocol metadata
 // known about the host peer.
 type NodeInfo struct {
-	Network    uint64                  `json:"network"`    // Ethereum network ID (1=Frontier, 2=Morden, Ropsten=3, Rinkeby=4)
-	Difficulty *big.Int                `json:"difficulty"` // Total difficulty of the host's blockchain
-	Genesis    common.Hash             `json:"genesis"`    // SHA3 hash of the host's genesis block
-	Config     *params.ChainConfig     `json:"config"`     // Chain configuration for the fork rules
-	Head       common.Hash             `json:"head"`       // SHA3 hash of the host's best owned block
-	CHT        light.TrustedCheckpoint `json:"cht"`        // Trused CHT checkpoint for fast catchup
+	Network    uint64                   `json:"network"`    // Ethereum network ID (1=Frontier, 2=Morden, Ropsten=3, Rinkeby=4)
+	Difficulty *big.Int                 `json:"difficulty"` // Total difficulty of the host's blockchain
+	Genesis    common.Hash              `json:"genesis"`    // SHA3 hash of the host's genesis block
+	Config     *params.ChainConfig      `json:"config"`     // Chain configuration for the fork rules
+	Head       common.Hash              `json:"head"`       // SHA3 hash of the host's best owned block
+	CHT        params.TrustedCheckpoint `json:"cht"`        // Trused CHT checkpoint for fast catchup
 }
 
 // makeProtocols creates protocol descriptors for the given LES versions.
@@ -75,20 +76,33 @@ func (c *lesCommons) makeProtocols(versions []uint) []p2p.Protocol {
 
 // nodeInfo retrieves some protocol metadata about the running host node.
 func (c *lesCommons) nodeInfo() interface{} {
-	var cht light.TrustedCheckpoint
-	sections, _, sectionHead := c.chtIndexer.Sections()
-	sections2, _, sectionHead2 := c.bloomTrieIndexer.Sections()
+	var cht params.TrustedCheckpoint
+	sections, _, _ := c.chtIndexer.Sections()
+	sections2, _, _ := c.bloomTrieIndexer.Sections()
+
+	if !c.protocolManager.lightSync {
+		// convert to client section size if running in server mode
+		sections /= c.iConfig.PairChtSize / c.iConfig.ChtSize
+	}
+
 	if sections2 < sections {
 		sections = sections2
-		sectionHead = sectionHead2
 	}
 	if sections > 0 {
 		sectionIndex := sections - 1
-		cht = light.TrustedCheckpoint{
-			SectionIdx:  sectionIndex,
-			SectionHead: sectionHead,
-			CHTRoot:     light.GetChtRoot(c.chainDb, sectionIndex, sectionHead),
-			BloomRoot:   light.GetBloomTrieRoot(c.chainDb, sectionIndex, sectionHead),
+		sectionHead := c.bloomTrieIndexer.SectionHead(sectionIndex)
+		var chtRoot common.Hash
+		if c.protocolManager.lightSync {
+			chtRoot = light.GetChtRoot(c.chainDb, sectionIndex, sectionHead)
+		} else {
+			idxV2 := (sectionIndex+1)*c.iConfig.PairChtSize/c.iConfig.ChtSize - 1
+			chtRoot = light.GetChtRoot(c.chainDb, idxV2, sectionHead)
+		}
+		cht = params.TrustedCheckpoint{
+			SectionIndex: sectionIndex,
+			SectionHead:  sectionHead,
+			CHTRoot:      chtRoot,
+			BloomRoot:    light.GetBloomTrieRoot(c.chainDb, sectionIndex, sectionHead),
 		}
 	}
 

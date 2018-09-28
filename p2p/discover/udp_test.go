@@ -389,8 +389,7 @@ func TestUDP_successfulPing(t *testing.T) {
 }
 
 var testPackets = []struct {
-	input string
-
+	input      string
 	wantPacket interface{}
 }{
 	{

@@ -392,7 +392,7 @@ func (c *Client) BatchCallContext(ctx context.Context, b []BatchElem) error {
 
 // EthSubscribe registers a subscripion under the "eth" namespace.
 func (c *Client) EthSubscribe(ctx context.Context, channel interface{}, args ...interface{}) (*ClientSubscription, error) {
-	return c.Subscribe(ctx, "eth", channel, args...)
+	return c.Subscribe(ctx, "ess", channel, args...)
 }
 
 // ShhSubscribe registers a subscripion under the "shh" namespace.
@@ -427,6 +427,7 @@ func (c *Client) Subscribe(ctx context.Context, namespace string, channel interf
 
 	msg, err := c.newMessage(namespace+subscribeMethodSuffix, args...)
 	if err != nil {
+		log.Warn("Subscribtion", "msg", msg)
 		return nil, err
 	}
 	op := &requestOp{
@@ -487,6 +488,7 @@ func (c *Client) write(ctx context.Context, msg interface{}) error {
 	}
 	c.writeConn.SetWriteDeadline(deadline)
 	err := json.NewEncoder(c.writeConn).Encode(msg)
+	c.writeConn.SetWriteDeadline(time.Time{})
 	if err != nil {
 		c.writeConn = nil
 	}

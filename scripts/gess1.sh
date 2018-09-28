@@ -4,4 +4,4 @@ boot='essnode://e1d615ef7c55f0a43049ad1bacd3646148b13939d61042e580eb5891c179ccb0
 echo $boot
 echo "Your host is :" $ip4
 echo "*** Node A ***"
-./gess --testnet --networkid 666  --port 51906  --bootnodes $boot --datadir="/home/essdeveloper/.essentia2" --verbosity 5 console
+konsole -e ./gess --testnet --networkid 666  --port 51906  --bootnodes $boot --datadir="/home/essdeveloper/.essentia2" --verbosity 5 console

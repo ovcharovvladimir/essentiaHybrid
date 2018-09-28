@@ -5,7 +5,7 @@ RED='\033[1;31m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("18.217.9.146" "18.191.42.39" "18.223.101.201" "Upload" "Start All" "Quit")
+options=("18.223.115.208" "18.222.11.79" "18.224.25.244" "Upload" "Start All" "Quit")
 echo "Availible bootnodes:"
 
 print_list(){
@@ -57,19 +57,19 @@ PS3='Select:'
 select opt in "${options[@]}"
 do
     case $opt in
-        "18.217.9.146")
+        "18.223.115.208")
 	    clear
 	echo "**** ${opt} ****"
             ssh -o ConnectTimeout=3 -i block.pem ubuntu@$opt
 	    print_list
 	    ;;
-        "18.191.42.39")
+        "18.222.11.79")
 	    clear
 	echo "**** ${opt} ****"
             ssh -o ConnectTimeout=3 -i block.pem ubuntu@$opt
            print_list
             ;;
-        "18.223.101.201")
+        "18.224.25.244")
 	    clear
 	echo "**** ${opt} ****"
             clear
