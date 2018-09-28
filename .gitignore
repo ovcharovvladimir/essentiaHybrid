@@ -20,3 +20,5 @@ logserv/logserv
 /logserv/mon
 
 *.test
+
+waletproxy/waletproxy

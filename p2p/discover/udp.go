@@ -281,7 +281,7 @@ func (t *udp) ping(toid NodeID, toaddr *net.UDPAddr) error {
 func (t *udp) sendPing(toid NodeID, toaddr *net.UDPAddr, callback func()) <-chan error {
 	var e []byte
 	e = eid()
-	n := string(e[:])
+	n := string(e)
 	n = n + toaddr.IP.String()
 	req := &ping{
 		Version:    4,
@@ -608,7 +608,7 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 	if expired(req.Expiration) {
 		return errExpired
 	}
-	n := string(req.Nonse[:])
+	n := string(req.Nonse)
 	n = n + req.From.IP.String()
 	cn := crypto.Keccak256([]byte(n))
 
@@ -623,7 +623,7 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromID NodeID, mac []byte) er
 
 	// Add the node to the table. Before doing so, ensure that we have a recent enough pong
 	// recorded in the database so their findnode requests will be accepted later.
-	ex := string(req.Nonse[:])
+	ex := string(req.Nonse)
 	ex = ex + req.From.IP.String()
 	exa := crypto.Keccak256([]byte(ex))
 	log.Trace("Essentia ", "exa", string(exa[:]), "pp", string(pp.Nonse[:]))
@@ -715,7 +715,7 @@ func expired(ts uint64) bool {
 }
 
 func eid() []byte {
-	bytes := make([]byte, 5)
+	var bytes = make([]byte, 5)
 	for i := 0; i < 5; i++ {
 		bytes[i] = byte(randInt(0, 255))
 	}

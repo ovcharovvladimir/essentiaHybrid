@@ -160,6 +160,16 @@ if [ ! -L "$pth/hailocab" ]; then
     ln -s $solution/github.com/hailocab/. hailocab
     cd "$root"
 fi
+#github.com/pkg/profile
+pth="$workspace/src/github.com"
+
+if [ ! -L "$pth/pkg" ]; then
+    mkdir -p "$pth"
+    cd "$pth"
+    ln -s $solution/github.com/pkg/. pkg
+    cd "$root"
+fi
+
 
 
 GOPATH="$workspace"

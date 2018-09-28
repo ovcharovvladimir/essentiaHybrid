@@ -40,6 +40,8 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
 	"github.com/ovcharovvladimir/essentiaHybrid/node"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/pkg/profile"
 )
 
 const (
@@ -252,6 +254,10 @@ func init() {
 }
 
 func main() {
+	//CPU profileing
+	//defer profile.Start().Stop()
+	// Memory profiling
+	defer profile.Start(profile.MemProfile).Stop()
 	if err := app.Run(os.Args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
