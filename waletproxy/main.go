@@ -1,17 +1,21 @@
 // 
 // Copyright 2018 Essentia
 // https://github.com/ovcharovvladimir/essentiaHybrid/tree/master/waletproxy
-// 
+
+
 package main
 import (
-	"fmt"
+	  "fmt"
     "io/ioutil"
-	"time"
+   	"time"
     "log"
     "net/http"
     "encoding/json"
     "net/http/httputil"
     "net/url"
+    "strconv"
+    "bytes"
+
 )
 
 // Node structure
@@ -29,6 +33,39 @@ type Sett struct {
     Nodes   []Node
 }
 
+
+type transport struct {
+  http.RoundTripper
+}
+
+//************************************************************
+//  Name    : Transport
+//************************************************************
+func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+  resp, err = t.RoundTripper.RoundTrip(req)
+  if err != nil {
+     return nil, err
+  }
+  b, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    return nil, err
+  }
+  err = resp.Body.Close()
+  if err != nil {
+     return nil, err
+  }
+  b = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
+  body := ioutil.NopCloser(bytes.NewReader(b))
+  resp.Body = body
+  resp.ContentLength = int64(len(b))
+  resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
+
+  return resp, nil
+}
+
+var _ http.RoundTripper = &transport{}
+
+
 //************************************************************
 //  Name    : Main  
 //************************************************************
@@ -42,10 +79,15 @@ func main() {
     // Host="localhost:5555"
     // Host="www.youtube.com"
     proxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme:"http", Host:Host})
+    proxy.Transport = &transport{http.DefaultTransport}
 
     // Proxy
     proxy.Director = func(req *http.Request) {
-        fmt.Println("Host redirect:", Host) 
+        req.Header.Set("Content-Type", "application/json")
+        req.Header.Set("Access-Control-Allow-Origin", "*")
+        req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
+
+        log.Println("Host redirect:", Host) 
         req.Host       = Host
         req.URL.Host   = Host
         req.URL.Scheme = "http"    
@@ -62,6 +104,7 @@ func main() {
     http.HandleFunc("/test/",         Api_test)               // Test service response 
     http.HandleFunc("/admin/",        Api_admin)              // Test service response 
        
+    fmt.Printf("\n Proxy server walet v%", Port )
     // View settings
     fmt.Println("\n Start Service Port ", Port, "\n","Active Work Node    :", Host)
     err := http.ListenAndServe(Port, nil)
@@ -224,7 +267,7 @@ func ReadSettingFile() Sett {
 //  Name    : Check node 
 //************************************************************
 func ChekNodeWork(Ip,Port string) bool {
-     timeout := time.Duration(700 * time.Millisecond )
+     timeout := time.Duration(500 * time.Millisecond )
      client  := http.Client{Timeout: timeout}
      resp, err := client.Get("http://"+Ip+":"+Port)
     
@@ -300,7 +343,7 @@ html:=`
                           <a href="/nodes/">Preview all nodes</a><br>
                           <a href="/active/">Preview <b>first</b> active node</a><br>
                           <a href="/actives">Preview all <b>active</b> nodes</a><br>
-                          <a href="/down/">Preview all <b>Disabled</b>nodes</a><br>
+                          <a href="/down/">Preview all <b>Disabled</b> nodes</a><br>
                           <a href="/test/">Test service</a><br>
                     </div>      
                     <div class="card-footer">Essentia</div>           
@@ -313,5 +356,3 @@ html:=`
  `
 Wprn(html,w)
 }
-
-
