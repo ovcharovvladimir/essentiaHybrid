@@ -22,3 +22,22 @@ logserv/logserv
 *.test
 
 waletproxy/waletproxy
+
+
+# --- Python section ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
