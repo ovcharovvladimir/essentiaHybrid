@@ -1,7 +1,6 @@
 """
 Provide nodes settings.
 """
-from services.node import Node
 from utils.cycle_list import CycleList
 
 GESS_01 = '18.224.0.169'
@@ -19,14 +18,16 @@ DEFAULT_PORT = 8545
 
 
 NODES_HOSTS = CycleList()
-# NODES_HOSTS.extend([
-#     GESS_01,
-#     GESS_02,
-#     GESS_03,
-#     GESS_04,
-#     GESS_05,
-# ])
 NODES_HOSTS.extend([
+    GESS_01,
+    GESS_02,
+    GESS_03,
+    GESS_04,
+    GESS_05,
+])
+
+MINERS_HOSTS = CycleList()
+MINERS_HOSTS.extend([
     MINER_01,
     MINER_02,
     MINER_03,
@@ -43,21 +44,3 @@ def get_node_url(node_host=None, index=None):
 
     return f'http://{node_host}:{DEFAULT_PORT}'
 
-
-class Nodes(CycleList):
-    """
-    Nodes list implementation.
-    """
-
-    __instance = None
-
-    def __new__(cls):
-        if not Nodes.__instance:
-            Nodes.__instance = CycleList.__new__(cls)
-
-        return Nodes.__instance
-
-    def __init__(self, *args, **kwargs):
-        super(Nodes, self).__init__(*args, **kwargs)
-
-        self.extend([Node(host=get_node_url(node_host)) for node_host in NODES_HOSTS])

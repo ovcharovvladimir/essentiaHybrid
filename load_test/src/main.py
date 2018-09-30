@@ -7,7 +7,7 @@ from runner import runner
 
 if __name__ == '__main__':
 
-    NODES_COUNT = 2
+    NODES_COUNT = 1
     LOAD_FACTOR = 1
 
     runner_environment = RunnerEnvironment(nodes_count=NODES_COUNT, load_factor=LOAD_FACTOR)

@@ -4,11 +4,15 @@ Provide base request.
 import json
 import requests
 
+from runner.logger import log
+
 
 class RequestWrapper:
     """
     Request wrapper implementation.
     """
+
+    counter = 0
 
     def __init__(self, url):
         self.url = url
@@ -29,9 +33,18 @@ class RequestWrapper:
             if json_string:
                 json_string = json.dumps(json_string).replace('\'', '"')
 
-            print(f'→ Sent {method.upper()} to {self.url} json: {json_string}')
+            request_number = int(RequestWrapper.counter)
+
+            # request_number = 0
+
+            log.info(f'→ Sent #{request_number} {method.upper()} to {self.url} json: {json_string}')
             response = request_method(self.url, timeout=(60, 60), **kwargs)
-            print(f'← Received: {response.content}')
+            log.info(
+                f'← Received #{request_number} from {self.url}: {response.content}; '
+                f'Request time: {response.elapsed.total_seconds()}'
+            )
+
+            RequestWrapper.counter += 1
 
             return self._wrap_response(response=response)
 

@@ -5,7 +5,7 @@ from multiprocessing import Pool, Process
 
 from utils.cycle_list import CycleList
 from runner.data.accounts import AccountsData
-from settings.nodes import Nodes
+from runner.gess import GessNodes
 from settings.transaction import (
     TRANSACTION_GAS,
     TRANSACTION_GAS_PRICE,
@@ -42,8 +42,12 @@ class SingleNodeRun:
     def __init__(self, node_index, load_factor):
         self.node_index = node_index
         self.load_factor = load_factor
-        self.overall_transactions_count = self.load_factor * len(Nodes())
+        self.gess_nodes = GessNodes()
+        self.overall_transactions_count = self.load_factor * len(self.gess_nodes)
         self.transactions_performed = 0
+
+        self.accounts = AccountsData().accounts
+        self.accounts = test_accounts
 
     def _single_run(self):
         """
@@ -52,19 +56,16 @@ class SingleNodeRun:
           for i in range(next_node_inex + 1, next_node_inex + 4):
               Send transaction from this_node.address1 to next_node+1.address1
         """
-        accounts = AccountsData().accounts
-        accounts = test_accounts
-
-        source_node = Nodes()[self.node_index]
+        source_node = self.gess_nodes[self.node_index]
 
         # import pdb; pdb.set_trace()
-        source_address = accounts.get(source_node.host)[0]
+        source_address = self.accounts.get(source_node.host)[0].get('address')
 
         target_node_index = self.node_index + TRANSACTIONS_MAP[self.transactions_performed][0]
         target_address_index = TRANSACTIONS_MAP[self.transactions_performed][1]
 
-        target_node = Nodes()[target_node_index]
-        target_address = accounts.get(target_node.host)[target_address_index]
+        target_node = self.gess_nodes[target_node_index]
+        target_address = self.accounts.get(target_node.host)[target_address_index].get('address')
 
         # print(f'N{self.node_index + 1}#{self.transactions_performed + 1} Performing operation for: {source_address} -> {target_address}')
 

@@ -3,8 +3,8 @@ Provide accounts functionality.
 """
 from request.wrapper import RequestWrapper
 from request.templates import get_request_json
+from settings.accounts import DEFAULT_ACCOUNT_PASSWORD
 
-DEFAULT_PASSWORD = 'pass'
 DEFAULT_UNLOCK_TIME = 1 * 60 * 60   # 1 HOUR (seconds)
 
 
@@ -37,7 +37,7 @@ class Account(RequestWrapper):
     Accounts implementations.
     """
 
-    def create(self, password=DEFAULT_PASSWORD):
+    def create(self, password=DEFAULT_ACCOUNT_PASSWORD):
         """
         Create a new account and return it's address.
         """
@@ -65,8 +65,8 @@ class Account(RequestWrapper):
 
         return accounts_list
 
-    def unlock(self, address, password=DEFAULT_PASSWORD, time=DEFAULT_UNLOCK_TIME):
-        unlock_status, error = self.send(json=get_request_json('personal_unlockAccount', address, password))
+    def unlock(self, address, password=DEFAULT_ACCOUNT_PASSWORD, time=DEFAULT_UNLOCK_TIME):
+        unlock_status, error = self.send(json=get_request_json('personal_unlockAccount', address, password, time))
 
         if error:
             raise FailedToUnlockAccount(error)

@@ -3,11 +3,15 @@ DEFAULT_REQUEST_JSON_TEMPLATE = {
     'id': 1,
 }
 
+id_counter = 0
+
 
 def get_request_json(method, *params, **kwparams):
     """
     Get correct JSON request valid to be send via RPC Api.
     """
+    # global id_counter
+
     request_json = DEFAULT_REQUEST_JSON_TEMPLATE
 
     parameters = []
@@ -36,7 +40,10 @@ def get_request_json(method, *params, **kwparams):
     request_json.update({
         'method': method,
         'params': parameters,
+        # 'id': id_counter,
     })
+
+    # id_counter += 1
 
     return request_json
 

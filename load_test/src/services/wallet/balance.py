@@ -6,6 +6,7 @@ import requests
 
 from request.templates import get_request_json
 from request.wrapper import RequestWrapper
+from utils.values import hex_to_int
 
 
 class FailedToGetBalance(Exception):
@@ -31,4 +32,4 @@ class WalletBalance(RequestWrapper):
         if balance is None:
             raise FailedToGetBalance
 
-        return balance
+        return hex_to_int(balance)
