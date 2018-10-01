@@ -124,6 +124,9 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	}
 	log.Info("Initialised chain configuration", "config", chainConfig)
 
+	if (config.NetworkId==5678){
+		config.Ethash.PowMode=esshash.ModeTest
+	}; 
 	eth := &Ethereum{
 		config:         config,
 		chainDb:        chainDb,
