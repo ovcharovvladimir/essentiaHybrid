@@ -2,7 +2,6 @@
 // Copyright 2018 Essentia
 // https://github.com/ovcharovvladimir/essentiaHybrid/tree/master/waletproxy
 
-
 package main
 import (
 	  "fmt"
@@ -33,7 +32,6 @@ type Sett struct {
     Nodes   []Node
 }
 
-
 type transport struct {
   http.RoundTripper
 }
@@ -42,24 +40,30 @@ type transport struct {
 //  Name    : Transport
 //************************************************************
 func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+
   resp, err = t.RoundTripper.RoundTrip(req)
   if err != nil {
      return nil, err
   }
+
   b, err := ioutil.ReadAll(resp.Body)
   if err != nil {
     return nil, err
   }
+
   err = resp.Body.Close()
   if err != nil {
      return nil, err
   }
+
   b = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
   body := ioutil.NopCloser(bytes.NewReader(b))
   resp.Body = body
   resp.ContentLength = int64(len(b))
   resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
-
+  resp.Header.Set("Content-Type", "application/json")
+ 
+  // fmt.Println(resp.ContentLength)
   return resp, nil
 }
 
@@ -74,6 +78,13 @@ func main() {
     Host  := ActiveNode()
     Sett  := ReadSettingFile()
     Port  := ":"+ Sett.Mainport
+    
+    // Check active node
+    if Host== "" {
+       Host="Error: All nodes disabled."
+       // fmt.Println(Host)
+       // return
+    }
 
     // For test with other resources
     // Host="localhost:5555"
@@ -86,6 +97,7 @@ func main() {
         req.Header.Set("Content-Type", "application/json")
         req.Header.Set("Access-Control-Allow-Origin", "*")
         req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
+        req.Header.Set("X-Forwarded-For", Host)
 
         log.Println("Host redirect:", Host) 
         req.Host       = Host
@@ -103,10 +115,10 @@ func main() {
     http.HandleFunc("/down/",         Down_nodes)             // Show down nodes 
     http.HandleFunc("/test/",         Api_test)               // Test service response 
     http.HandleFunc("/admin/",        Api_admin)              // Test service response 
-       
-    fmt.Printf("\n Proxy server walet v%", Port )
-    // View settings
-    fmt.Println("\n Start Service Port ", Port, "\n","Active Work Node    :", Host)
+    
+    // View settings   
+    fmt.Printf("Proxy server walet %s \nActive node : %s", Port, Host )
+   
     err := http.ListenAndServe(Port, nil)
     
     // Error
@@ -115,10 +127,12 @@ func main() {
     }
 }
 
+
 //************************************************************
-//  Name    : Show All Node 
+// Show all nodes 
 //************************************************************
 func ShowNodes(w http.ResponseWriter, req *http.Request) {
+
     Nd:=ReadSettingFile()
     
     // Looop for nodes
@@ -134,18 +148,24 @@ func ShowNodes(w http.ResponseWriter, req *http.Request) {
 }
 
 //************************************************************
-//  Name    : Show All Node 
+// Show first active node
 //************************************************************
 func Active_node(w http.ResponseWriter, req *http.Request) {
-     ft:="Active note :" + ActiveNode()
+     An:=""
+     if ActiveNode()!=""{
+        An = ActiveNode()
+     }else{
+        An = "No active node."
+     }
+     ft:="Active note :" + An
      Wprn(ft,w)
 }
 
 //************************************************************
-//  Name    : Show All Node 
+// Show active nodes
 //************************************************************
 func Active_nodes(w http.ResponseWriter, req *http.Request) {
-    Nd:=ReadSettingFile()
+    Nd := ReadSettingFile()
 
     // Looop for nodes
     for _,nd:=range Nd.Nodes{
@@ -157,22 +177,23 @@ func Active_nodes(w http.ResponseWriter, req *http.Request) {
 }
 
 //************************************************************
-//  Name    : Text  output rep
+// Text  output rep
 //************************************************************
 func Wprn(Txt string, w http.ResponseWriter){
      w.Write([]byte(Txt))
 }
 
 //************************************************************
-//  Name    : Format  output rep
+// Format  output rep
 //************************************************************
 func WPr(nd Node, w http.ResponseWriter){
      ft:=fmt.Sprintf("Node :%-15s Ip : %-15s Port : %-6s Status : %-20s \n",nd.Note,nd.Ip,nd.Port,nd.Status)
      w.Write([]byte(ft))
 }
 
+
 //************************************************************
-//  Name    : Show All Node 
+// Show all disabled node 
 //************************************************************
 func Down_nodes(w http.ResponseWriter, req *http.Request) {
     Nd:=ReadSettingFile()
@@ -187,7 +208,7 @@ func Down_nodes(w http.ResponseWriter, req *http.Request) {
 }
 
 //************************************************************
-//  Name    : Test
+// Test
 //************************************************************
 func Api_test (wr http.ResponseWriter, rq *http.Request) {
      t:="Test service " + time.Now().Format("02/01/2006 15:45")
@@ -205,8 +226,8 @@ func Api_test (wr http.ResponseWriter, rq *http.Request) {
 //************************************************************
 func sameHost(handler http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        r.Host = r.URL.Host
-        handler.ServeHTTP(w, r)
+           r.Host = r.URL.Host
+           handler.ServeHTTP(w, r)
     })
 }
 
@@ -225,8 +246,8 @@ func addCORS(handler http.Handler) http.Handler {
 //  Name    : Get info about first active note 
 //************************************************************
 func ActiveNode() string {
-    Rip:=""
-    Nd :=ReadSettingFile()
+    Rip := ""
+    Nd  := ReadSettingFile()
 
     // Looop for nodes
     for _,nd:=range Nd.Nodes{
@@ -281,7 +302,6 @@ func ChekNodeWork(Ip,Port string) bool {
        return false 
     }
 }
-
 
 // *********************************************************************
 // Admin panel
