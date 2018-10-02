@@ -43,4 +43,3 @@ def get_node_url(node_host=None, index=None):
         node_host = NODES_HOSTS[index]
 
     return f'http://{node_host}:{DEFAULT_PORT}'
-

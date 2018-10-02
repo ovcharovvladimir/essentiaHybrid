@@ -5,7 +5,7 @@ from multiprocessing import Pool, Process
 
 from utils.cycle_list import CycleList
 from runner.data.accounts import AccountsData
-from runner.gess import GessNodes
+from runner.nodes import GessNodes
 from settings.transaction import (
     TRANSACTION_GAS,
     TRANSACTION_GAS_PRICE,

@@ -12,7 +12,12 @@ if __name__ == '__main__':
 
     runner_environment = RunnerEnvironment(nodes_count=NODES_COUNT, load_factor=LOAD_FACTOR)
 
-    if runner_environment.setup_accounts():
-        # runner.run(nodes_count=NODES_COUNT, load_factor=LOAD_FACTOR)
-        runner_environment.cleanup()
+    try:
+        if runner_environment.setup_accounts():
+            # runner.run(nodes_count=NODES_COUNT, load_factor=LOAD_FACTOR)
+            runner_environment.cleanup()
 
+    except Exception as exception:
+        runner_environment.save_accounts()
+
+        raise exception

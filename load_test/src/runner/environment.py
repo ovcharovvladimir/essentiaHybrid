@@ -12,13 +12,14 @@ from settings.accounts import (
     DEFAULT_ACCOUNT_PASSWORD,
 )
 from settings.nodes import get_node_url
-from runner.gess import GessNodes
+from runner.nodes import GessNodes
 from settings.transaction import (
     TRANSACTION_GAS,
     TRANSACTION_GAS_PRICE,
     TRANSACTION_VALUE,
 )
 from runner.logger import log
+from utils.wei import wei_to_gwei
 # from utils.log import log, log_in_line
 # from utils.values import hex_to_int
 
@@ -49,27 +50,46 @@ class RunnerEnvironment:
     def _create_accounts(self, count, node):
         """
         Create accounts on a given node and store them.
+        1. Get nodes accounts
+        2. Get known accounts
+        3. Actualize the list of known accounts
+        (Removes absent accounts, adds missing accounts)
         """
-        # TODO: check count of saved accounts, check if they exist, create necessary amount
+        # TODO: check if saved account exists on the node, if not, then discard it from the list and create a new one
         known_accounts = self.accounts_data.accounts.get(node.host)
+        node_accounts = node.account.get_all()
+        existing_accounts = []
 
         for i in range(count):
-            account_exists = True
+            account_exists = False
+            account_address = ''
+            account_password = ''
+
             if known_accounts:
-                try:
-                    account_address = known_accounts[i].get('address')
-                    account_password = known_accounts[i].get('password')
-                except IndexError:
-                    account_exists = False
-            else:
-                account_exists = False
+                for known_account in known_accounts:
+                    if known_account.get('address') in node_accounts:
+                        account_address = known_account.get('address')
+                        account_password = known_account.get('password')
+                        existing_accounts.append({
+                            'address': account_address,
+                            'password': account_password,
+                        })
+
+                        known_accounts.remove(known_account)
+                        account_exists = True
+                        break
 
             if not account_exists:
                 account_address = node.account.create()
-                self.accounts_data.add_account(node_host=node.host, address=account_address)
                 account_password = DEFAULT_ACCOUNT_PASSWORD
+                existing_accounts.append({
+                    'address': account_address,
+                    'password': account_password,
+                })
 
             node.account.unlock(address=account_address, password=account_password)
+
+        self.accounts_data.set_actual_accounts_for_node(node_host=node.host, accounts_list=existing_accounts)
 
     def _top_up_account(self, address, value):
         """
@@ -123,15 +143,18 @@ class RunnerEnvironment:
 
         Return bool as status of success.
         """
+        log.info(f'-------------------------------------------------------------')
         log.info(f'--- New session started at {datetime.strftime(datetime.now(), "%d %b %y %H:%M:%S")}')
+        log.info(f'-------------------------------------------------------------')
+
         log.debug('Setup.')
         log.debug('Check if bank account has enough funds ', )
         if not self._bank_has_enough_funds():
             log.debug(FAILED_MESSAGE)
             return False
-            log.debug(SUCCESS_MESSAGE)
+        log.debug(SUCCESS_MESSAGE)
 
-            log.debug('Unlock bank account ')
+        log.debug('Unlock bank account ')
         if self.bank_node.account.unlock(address=BANK_ACCOUNT.get('address'), password=BANK_ACCOUNT.get('password')):
             log.debug(SUCCESS_MESSAGE)
         else:
@@ -149,16 +172,23 @@ class RunnerEnvironment:
 
             self._create_accounts(count=ACCOUNTS_PER_NODE, node=node)
 
-            target_address = self.accounts_data.accounts.get(node.host)[0].get('address')
-            target_address_funds = node.wallet_balance.get(address=target_address)
+            for account in self.accounts_data.accounts.get(node.host):
+                target_address = account.get('address')
+                target_address_funds = node.wallet_balance.get(address=target_address)
 
-            if target_address_funds < single_node_funds:
-                self._top_up_account(address=target_address, value=single_node_funds)
+                if target_address_funds < single_node_funds:
+                    self._top_up_account(address=target_address, value=single_node_funds)
 
         log.debug('Wait for funds to appear on the topped up accounts...')
         self._wait_for_funds_to_appear(single_node_funds=single_node_funds)
 
         return True
+
+    def save_accounts(self):
+        """
+        Save current accounts data to a file for future use.
+        """
+        self.accounts_data.save()
 
     def cleanup(self):
         """
@@ -168,15 +198,24 @@ class RunnerEnvironment:
 
         self.accounts_data.save()
 
+        bank_funds_before_refund = self.bank_node.wallet_balance.get(address=BANK_ACCOUNT.get('address'))
         value_sum = 0
 
-        log.log.debug('Send all available funds back to the bank account...')
+        log.debug('Send all available funds back to the bank account...')
         # for node in GessNodes():
         for i in range(self.nodes_count):
             node = self.gess_nodes[i]
 
-            for account_address in self.accounts_data.accounts.get(node.host):
-                value = node.wallet_balance.get(address=account_address)
+            for account in self.accounts_data.accounts.get(node.host):
+                account_address = account.get('address')
+
+                balance_value = node.wallet_balance.get(address=account_address)
+                value = balance_value - (TRANSACTION_GAS * TRANSACTION_GAS_PRICE)
+                if value <= 0:
+                    log.warn(
+                        f'Cannot send funds back from address {node.host}::{account_address}. '
+                        f'Balance: {wei_to_gwei(balance_value)} (Need {wei_to_gwei(abs(value))} more).')
+                    continue
 
                 node.wallet_transaction.create(
                     from_=account_address,
@@ -187,9 +226,10 @@ class RunnerEnvironment:
                 )
 
                 value_sum += value
+        print(f'Value sum: {value_sum}')
 
         log.debug('Wait while funds appear at bank account.')
         bank_account_funds = 0
-        while bank_account_funds < value_sum:
+        while (bank_account_funds - bank_funds_before_refund) < value_sum:
             bank_account_funds = self.bank_node.wallet_balance.get(address=BANK_ACCOUNT.get('address'))
             sleep(1)

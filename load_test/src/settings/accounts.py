@@ -16,7 +16,7 @@ ACCOUNTS_PER_NODE = 5
 BANK_ACCOUNTS = [
     {
         'host': GESS_01,
-        'address': '0xfb8a483a4a4a1aedef624ff805174af78cd07dc5',
+        'address': '0xe663179f9f60fb916b9167c7e03da5876aad7098',
         'password': '123',
     },
     {
