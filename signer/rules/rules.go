@@ -13,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
 package rules
 
 import (
@@ -222,6 +221,7 @@ func (r *rulesetUI) ShowInfo(message string) {
 	log.Info(message)
 	r.next.ShowInfo(message)
 }
+
 func (r *rulesetUI) OnSignerStartup(info core.StartupInfo) {
 	jsonInfo, err := json.Marshal(info)
 	if err != nil {
