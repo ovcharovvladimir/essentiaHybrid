@@ -37,10 +37,10 @@ class RequestWrapper:
 
             # request_number = 0
 
-            log.info(f'→ Sent #{request_number} {method.upper()} to {self.url} json: {json_string}')
+            log.info(f'← Sent #{request_number} {method.upper()} to {self.url} json: {json_string}')
             response = request_method(self.url, timeout=(60, 60), **kwargs)
             log.info(
-                f'← Received #{request_number} from {self.url}: {response.content}; '
+                f'→ Received #{request_number} from {self.url}: {response.text.strip()}; '
                 f'Request time: {response.elapsed.total_seconds()}'
             )
 

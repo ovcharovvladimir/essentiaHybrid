@@ -1,1 +1,3 @@
 requests==2.19.1
+rlp==1.0.3
+ethereum==2.3.2

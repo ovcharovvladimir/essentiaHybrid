@@ -1,9 +1,23 @@
+"""
+Provide request JSON generation from template.
+"""
+from random import randint
+from sys import maxsize
+
 DEFAULT_REQUEST_JSON_TEMPLATE = {
     'jsonrpc': '2.0',
     'id': 1,
 }
 
 id_counter = 0
+
+
+def _get_random_int():
+    """
+    Get a random int id from 0 to max int size
+    :return:
+    """
+    return randint(0, maxsize)
 
 
 def get_request_json(method, *params, **kwparams):
@@ -40,7 +54,7 @@ def get_request_json(method, *params, **kwparams):
     request_json.update({
         'method': method,
         'params': parameters,
-        # 'id': id_counter,
+        'id': _get_random_int(),
     })
 
     # id_counter += 1

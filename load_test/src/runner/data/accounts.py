@@ -56,7 +56,7 @@ class AccountsData:
         Save current accounts to file.
         """
         self._update_all_accounts()
-        accounts_json = json.dumps(self._all_accounts, indent=4)
+        accounts_json = json.dumps(self._all_accounts, indent=2)
 
         with open(ACCOUNTS_FILE_NAME, 'w') as accounts_file:
             accounts_file.write(accounts_json)
@@ -65,14 +65,19 @@ class AccountsData:
         """
         Load account from file.
         """
-        accounts_json = '{}'
+        accounts_json = None
 
         try:
             with open(ACCOUNTS_FILE_NAME, 'r') as accounts_file:
                 accounts_json = accounts_file.read()
 
         except FileNotFoundError:
-            pass
+            accounts_json = '{}'
 
-        self.accounts = json.loads(accounts_json)
-        self._all_accounts = json.loads(accounts_json)
+        try:
+            self.accounts = json.loads(accounts_json)
+            self._all_accounts = json.loads(accounts_json)
+
+        except json.decoder.JSONDecodeError:
+            self.accounts = {}
+            self._all_accounts = {}

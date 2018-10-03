@@ -1,7 +1,7 @@
 import multiprocessing
 
 from runner.logger import log
-from runner.gess import Miners, GessNodes
+from runner.nodes import Miners, GessNodes
 
 
 def get_balance_from(node):

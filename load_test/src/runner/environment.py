@@ -75,6 +75,7 @@ class RunnerEnvironment:
                             'password': account_password,
                         })
 
+                        log.info(f'Account exists: {node.host}:{account_address}')
                         known_accounts.remove(known_account)
                         account_exists = True
                         break
@@ -86,7 +87,9 @@ class RunnerEnvironment:
                     'address': account_address,
                     'password': account_password,
                 })
+                log.info(f'Created account: {node.host}:{account_address}')
 
+            log.info(f'Unlock account: {node.host}:{account_address}')
             node.account.unlock(address=account_address, password=account_password)
 
         self.accounts_data.set_actual_accounts_for_node(node_host=node.host, accounts_list=existing_accounts)
@@ -95,8 +98,10 @@ class RunnerEnvironment:
         """
         Top up account with funds from bank account.
         """
-        self.bank_node.wallet_transaction.create(
+        log.info(f'Top up account {address} with {value}.')
+        self.bank_node.wallet_transaction.create_raw(
             from_=BANK_ACCOUNT.get('address'),
+            private_key=BANK_ACCOUNT.get('pk'),
             to=address,
             gas=TRANSACTION_GAS,
             gas_price=TRANSACTION_GAS_PRICE,
@@ -114,13 +119,15 @@ class RunnerEnvironment:
             for i in range(self.nodes_count):
                 node = self.gess_nodes[i]
 
-                # import pdb; pdb.set_trace()
-                target_address = self.accounts_data.accounts.get(node.host)[0].get('address')
+                for account in self.accounts_data.accounts.get(node.host):
+                    target_address = account.get('address')
 
-                wallet_balance = node.wallet_balance.get(address=target_address)
+                    wallet_balance = node.wallet_balance.get(address=target_address)
 
-                if wallet_balance >= single_node_funds:
-                    addresses_with_funds += 1
+                    print(f'Single node balance: {single_node_funds}; Wallet balance: {wallet_balance}')
+                    if wallet_balance >= single_node_funds:
+                        log.info(f'Account: {target_address} has enough funds.')
+                        addresses_with_funds += 1
 
             sleep(1)
 
@@ -144,7 +151,7 @@ class RunnerEnvironment:
         Return bool as status of success.
         """
         log.info(f'-------------------------------------------------------------')
-        log.info(f'--- New session started at {datetime.strftime(datetime.now(), "%d %b %y %H:%M:%S")}')
+        log.info(f'--- New session started on {datetime.strftime(datetime.now(), "%d %b %y at %H:%M:%S")}')
         log.info(f'-------------------------------------------------------------')
 
         log.debug('Setup.')
@@ -154,27 +161,29 @@ class RunnerEnvironment:
             return False
         log.debug(SUCCESS_MESSAGE)
 
-        log.debug('Unlock bank account ')
-        if self.bank_node.account.unlock(address=BANK_ACCOUNT.get('address'), password=BANK_ACCOUNT.get('password')):
-            log.debug(SUCCESS_MESSAGE)
-        else:
-            log(FAILED_MESSAGE)
-            return False
+        # log.debug('Unlock bank account ')
+        # if self.bank_node.account.unlock(address=BANK_ACCOUNT.get('address'), password=BANK_ACCOUNT.get('password')):
+        #     log.debug(SUCCESS_MESSAGE)
+        # else:
+        #     log(FAILED_MESSAGE)
+        #     return False
 
         single_node_funds = self._count_single_account_needed_funds(
-            transaction_price=TRANSACTION_VALUE
+            transaction_price=TRANSACTION_VALUE + (TRANSACTION_GAS_PRICE * TRANSACTION_GAS)
         )
 
         # for node in GessNodes():
         for i in range(self.nodes_count):
-            log.debug(f'Top up account of node #{i + 1}.')
             node = self.gess_nodes[i]
 
+            log.info(f'Create accounts for node #{i + 1}...')
             self._create_accounts(count=ACCOUNTS_PER_NODE, node=node)
 
+            log.debug(f'Top up account of node #{i + 1}:{node.host}.')
             for account in self.accounts_data.accounts.get(node.host):
                 target_address = account.get('address')
                 target_address_funds = node.wallet_balance.get(address=target_address)
+                log.info(f'Account: {target_address}; Funds: {target_address_funds}.')
 
                 if target_address_funds < single_node_funds:
                     self._top_up_account(address=target_address, value=single_node_funds)
