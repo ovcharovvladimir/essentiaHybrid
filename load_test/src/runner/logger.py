@@ -4,6 +4,8 @@ Provide logger for test runner.
 import logging
 
 from settings.logger import (
+    CONSOLE_LOGGING_LEVEL,
+    LOG_FILE_LOGGING_LEVEL,
     LOGGER_OUTPUT_FILE,
     LOGGER_TITLE,
 )
@@ -17,10 +19,10 @@ def __create_logger():
     logger.setLevel(logging.DEBUG)
 
     file_handler = logging.FileHandler(LOGGER_OUTPUT_FILE)
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(LOG_FILE_LOGGING_LEVEL)
 
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(CONSOLE_LOGGING_LEVEL)
 
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)

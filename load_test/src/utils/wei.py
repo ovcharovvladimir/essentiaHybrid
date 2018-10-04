@@ -33,3 +33,8 @@ def wei_to_gwei(wei):
 def gwei_to_ether(gwei):
 
     return int(gwei / math.pow(10, 9))
+
+
+def ether_to_gwei(ether):
+
+    return int(ether * math.pow(10, 9))

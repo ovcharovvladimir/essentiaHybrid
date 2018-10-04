@@ -1,6 +1,7 @@
 """
 Provide single test run functionality.
 """
+from time import sleep
 import random
 from multiprocessing import Pool, Process
 
@@ -13,7 +14,13 @@ from settings.transaction import (
     TRANSACTION_GAS_PRICE,
     TRANSACTION_VALUE,
 )
+from reporter.tool import (
+    ReporterTool,
+    TX_STATUS_CONFIRMED,
+    TX_STATUS_FAILED,
+)
 from runner.logger import log
+from settings.timeouts import TRANSACTION_BLOCK_CHECK_TIMEOUT_SECONDS
 
 
 TRANSACTIONS_MAP = CycleList()
@@ -24,6 +31,8 @@ TRANSACTIONS_MAP.extend([
     (3, 0),
     (4, 0),
 ])
+
+RUNS_BEFORE_TRANSACTION_QUEUE_CHECK = 64
 
 # from settings.nodes import NODES_HOSTS
 # test_accounts = {}
@@ -45,10 +54,12 @@ class SingleNodeRun:
         self.node_index = node_index
         self.load_factor = load_factor
         self.gess_nodes = gess_nodes
-        self.overall_transactions_count = self.load_factor * len(self.gess_nodes)
+        self.overall_transactions_count = self.load_factor
+        # self.overall_transactions_count = self.load_factor * len(self.gess_nodes)
         self.transactions_performed = 0
 
         self.accounts = AccountsData().accounts
+        self.reporter = ReporterTool(logger=log)
         # self.accounts = test_accounts
 
     def _single_run(self):
@@ -60,11 +71,8 @@ class SingleNodeRun:
         """
         source_node = self.gess_nodes[self.node_index]
 
-        # import pdb; pdb.set_trace()
         source_address = self.accounts.get(source_node.host)[0].get('address')
 
-        # random_transaction_index = self.transactions_performed
-        # random_transaction_index = random.randint(0, len(TRANSACTIONS_MAP) - 1)
         random_transaction_index = random.randint(0, self.transactions_performed)
         target_node_index = self.node_index + TRANSACTIONS_MAP[random_transaction_index][0]
         target_address_index = TRANSACTIONS_MAP[random_transaction_index][1]
@@ -72,39 +80,56 @@ class SingleNodeRun:
         target_node = self.gess_nodes[target_node_index]
         target_address = self.accounts.get(target_node.host)[target_address_index].get('address')
 
-        log.info(
-            f'N{self.node_index + 1}#{self.transactions_performed + 1} '
-            f'Performing operation for: {source_address} -> {target_address}'
-        )
-
         try:
-            # log.info(
-            #     f'Sending to send transaction:\nfrom {source_address}'
-            #     f'\nto {target_address}'
-            #     f'\ngas {TRANSACTION_GAS}'
-            #     f'\ngas_price {TRANSACTION_GAS_PRICE}'
-            #     f'\nvalue {TRANSACTION_VALUE}'
-            # )
-            source_node.wallet_transaction.create(
+            transaction_hash = source_node.wallet_transaction.create(
                 from_=source_address,
                 to=target_address,
                 gas=TRANSACTION_GAS,
                 gas_price=TRANSACTION_GAS_PRICE,
                 value=TRANSACTION_VALUE,
             )
-
-        except FailedToCreateTransaction:
-            # log.info(
-            #     f'Failed to send transaction:\nfrom {source_address}'
-            #     f'\nto {target_address}'
-            #     f'\ngas {TRANSACTION_GAS}'
-            #     f'\ngas_price {TRANSACTION_GAS_PRICE}'
-            #     f'\nvalue {TRANSACTION_VALUE}'
-            # )
-            log.error(
-                f'FAILED! N{self.node_index + 1}#{self.transactions_performed + 1} '
-                f'operation for: {source_address} -> {target_address}'
+            self.reporter.transaction(
+                node_number=self.node_index + 1,
+                number=self.transactions_performed + 1,
+                host=source_node.host,
+                hash_=transaction_hash,
+                from_address=source_address,
+                to_address=target_address,
+                gas=TRANSACTION_GAS,
+                gas_price=TRANSACTION_GAS_PRICE,
+                value=TRANSACTION_VALUE,
             )
+
+            while not source_node.wallet_transaction.is_mined(node_number=self.node_index + 1, tx_number=self.transactions_performed, hash_=transaction_hash):
+                sleep(TRANSACTION_BLOCK_CHECK_TIMEOUT_SECONDS)
+
+            self.reporter.transaction(
+                node_number=self.node_index + 1,
+                number=self.transactions_performed + 1,
+                host=source_node.host,
+                hash_=transaction_hash,
+                from_address=source_address,
+                to_address=target_address,
+                gas=TRANSACTION_GAS,
+                gas_price=TRANSACTION_GAS_PRICE,
+                value=TRANSACTION_VALUE,
+                status=TX_STATUS_CONFIRMED
+            )
+
+        except FailedToCreateTransaction as exception:
+            self.reporter.transaction(
+                node_number=self.node_index + 1,
+                number=self.transactions_performed + 1,
+                host=source_node.host,
+                hash_='(no hash)',
+                from_address=source_address,
+                to_address=target_address,
+                gas=TRANSACTION_GAS,
+                gas_price=TRANSACTION_GAS_PRICE,
+                value=TRANSACTION_VALUE,
+                status=TX_STATUS_FAILED,
+            )
+            self.reporter.error(text=f'N{self.node_index + 1}:#{self.transactions_performed + 1}{str(exception)}')
 
         self.transactions_performed += 1
 
@@ -112,19 +137,21 @@ class SingleNodeRun:
         """
         Perform all transactions.
         """
-        log.info(
-            f'STARTED TRANSACTION SWARMING ({self.overall_transactions_count}) '
-            f'FOR {self.gess_nodes[self.node_index].host}'
-        )
+        try:
+            log.info(
+                f'STARTED TRANSACTION SWARMING ({self.overall_transactions_count}) '
+                f'FOR {self.gess_nodes[self.node_index].host}'
+            )
 
-        for i in range(self.overall_transactions_count):
-            print(f'<<<<<<<<<<< TX PERFORMED: {self.transactions_performed}')
-            self._single_run()
+            for i in range(self.overall_transactions_count):
+                self._single_run()
 
-        # while self.transactions_performed < self.overall_transactions_count:
-        #     print(f'<<<<<<<<<<< TX PERFORMED: {self.transactions_performed}')
-        #     self._single_run()
+            self.reporter.run_ended(
+                node_index=self.node_index,
+                transactions_performed=self.transactions_performed,
+                transactions_expected=self.overall_transactions_count,
+            )
 
-        # pool = Pool()
-        # for i in range(self.overall_transactions_count):
-        # pool.map(self._single_run, [i for i in range(self.overall_transactions_count)])
+        except Exception as exception:
+            self.reporter.run_failed(node_index=self.node_index, error_message=str(exception))
+            # log.debug(f'Process #{self.node_index + 1} HAS FAILED WITH ERROR:\{str(exception)}n')

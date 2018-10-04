@@ -8,11 +8,14 @@ import rlp
 from request.wrapper import RequestWrapper
 from request.templates import get_request_json
 
+from settings.transaction import MAX_SEND_RAW_RETRIES_COUNT
 from utils.values import (
     add_hex_prefix,
     hex_to_int,
     strip_hex_prefix,
 )
+
+TRANSACTION_ERROR_CODE = -32000
 
 
 class FailedToCreateTransaction(Exception):
@@ -31,6 +34,14 @@ class FailedToGetTransactionCount(Exception):
     pass
 
 
+class FailedToGetTransactionInfo(Exception):
+    """
+    Failed to get transaction info.
+    """
+
+    pass
+
+
 class WalletTransaction(RequestWrapper):
     """
     Wallet transaction implementation.
@@ -40,6 +51,35 @@ class WalletTransaction(RequestWrapper):
         super(WalletTransaction, self).__init__(*args, **kwargs)
 
         self.internal_counter = 0
+
+    def get(self, hash_):
+        """
+        Get transaction info by hash.
+        """
+        transaction_info, error = self.send(json=get_request_json('eth_getTransactionByHash', hash_))
+
+        if error:
+            raise FailedToGetTransactionInfo(error)
+
+        if transaction_info is None:
+            raise FailedToGetTransactionInfo
+
+        return transaction_info
+
+    def is_mined(self, node_number, tx_number, hash_):
+        """
+        Check if transaction block is mined.
+        """
+        transaction_block_number = self.get(hash_=hash_).get('blockNumber')
+
+        print(f'\n\n>>>>>>>> N{node_number}#{tx_number} TX HASH: {hash_}; TX BLOCKN: {transaction_block_number}\n\n')
+
+        if transaction_block_number is None:
+            return False
+
+        transaction_block_number = hex_to_int(transaction_block_number)
+
+        return transaction_block_number > 0
 
     def create(self, from_, to, gas, gas_price, value):
         """
@@ -68,28 +108,41 @@ class WalletTransaction(RequestWrapper):
         """
         Create a RAW Transaction.
         """
+        transaction_hash = None
+
         if nonce is None:
             nonce = self.get_count(address=from_)
 
-        transaction_data = self._get_raw_data(
-            to=to, gas=gas, gas_price=gas_price, value=value, private_key=private_key, nonce=nonce, data=data,
-        )
+        print(f'<<<<<<<<<<<<<<<< NONCE IS: {nonce}')
 
-        transaction_hash, error = self.send(json=get_request_json('eth_sendRawTransaction', transaction_data))
+        for _ in range(MAX_SEND_RAW_RETRIES_COUNT + 1):
+            transaction_data = self._get_raw_data(
+                to=to, gas=gas, gas_price=gas_price, value=value, private_key=private_key, nonce=nonce, data=data,
+            )
 
-        if error:
-            raise FailedToCreateTransaction(error)
+            transaction_hash, error = self.send(json=get_request_json('eth_sendRawTransaction', transaction_data))
 
-        if transaction_hash is None:
-            raise FailedToCreateTransaction
+            if transaction_hash:
+                return transaction_hash
 
-        return transaction_hash
+            if error:
+                # if error.get('code') == TRANSACTION_ERROR_CODE:
+                #     nonce += self.get_count(address=from_)
+                #
+                #     continue
+
+                raise FailedToCreateTransaction(error)
+
+        raise FailedToCreateTransaction(f'Failed to create transaction after {MAX_SEND_RAW_RETRIES_COUNT} tries!')
 
     @staticmethod
     def _get_raw_data(to, gas, gas_price, value, private_key, nonce=0, data=None):
         """
         Get a RAW Transaction data.
         """
+
+        # print(f'<<<<<<<<<<<<<<<< NONCE IS: {nonce}')
+
         if data is None:
             data = '0x'
 
@@ -116,12 +169,13 @@ class WalletTransaction(RequestWrapper):
 
         transactions_count = hex_to_int(transactions_count)
 
-        print(f'Tx COUNT | RCVD: {transactions_count}; INTR: {self.internal_counter}')
+        return transactions_count
 
-        if self.internal_counter < transactions_count:
-            self.internal_counter = transactions_count
-
-        elif self.internal_counter == transactions_count:
-            self.internal_counter += 1
-
-        return self.internal_counter
+        # print(f'Tx COUNT | RCVD: {transactions_count}; INTR: {self.internal_counter}')
+        #
+        # if self.internal_counter < transactions_count:
+        #     self.internal_counter = transactions_count
+        #
+        # self.internal_counter += 1
+        #
+        # return self.internal_counter

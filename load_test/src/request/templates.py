@@ -1,8 +1,11 @@
 """
 Provide request JSON generation from template.
 """
+from time import time
 from random import randint
 from sys import maxsize
+
+ID_PRECISION_FACTOR = 100000
 
 DEFAULT_REQUEST_JSON_TEMPLATE = {
     'jsonrpc': '2.0',
@@ -15,9 +18,15 @@ id_counter = 0
 def _get_random_int():
     """
     Get a random int id from 0 to max int size
-    :return:
     """
     return randint(0, maxsize)
+
+
+def _get_next_id():
+    """
+    Get next int id based on current elapsed time.
+    """
+    return int(time() * ID_PRECISION_FACTOR)
 
 
 def get_request_json(method, *params, **kwparams):
@@ -54,7 +63,7 @@ def get_request_json(method, *params, **kwparams):
     request_json.update({
         'method': method,
         'params': parameters,
-        'id': _get_random_int(),
+        'id': _get_next_id(),
     })
 
     # id_counter += 1

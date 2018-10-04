@@ -5,6 +5,7 @@ import json
 import requests
 
 from runner.logger import log
+from settings.logger import DEBUG_REQUESTS
 
 
 class RequestWrapper:
@@ -20,7 +21,7 @@ class RequestWrapper:
     @staticmethod
     def _wrap_response(response):
         """
-        Extract JSON object from responce.
+        Extract JSON object from response.
         """
         response_json = json.loads(response.content.decode())
         return response_json.get('result'), response_json.get('error')
@@ -37,12 +38,16 @@ class RequestWrapper:
 
             # request_number = 0
 
-            log.info(f'← Sent #{request_number} {method.upper()} to {self.url} json: {json_string}')
+            if DEBUG_REQUESTS:
+                log.debug(f'← Sent #{request_number} {method.upper()} to {self.url} json: {json_string}')
+
             response = request_method(self.url, timeout=(60, 60), **kwargs)
-            log.info(
-                f'→ Received #{request_number} from {self.url}: {response.text.strip()}; '
-                f'Request time: {response.elapsed.total_seconds()}'
-            )
+
+            if DEBUG_REQUESTS:
+                log.debug(
+                    f'→ Received #{request_number} from {self.url}: {response.text.strip()}; '
+                    f'Request time: {response.elapsed.total_seconds()}'
+                )
 
             RequestWrapper.counter += 1
 
@@ -51,5 +56,7 @@ class RequestWrapper:
         return None
 
     def send(self, **kwargs):
-
+        """
+        Send a post request.
+        """
         return self._send('post', **kwargs)
