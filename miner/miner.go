@@ -35,10 +35,9 @@ import (
 
 // Backend wraps all methods required for mining.
 type Backend interface {
-	 BlockChain() *core.BlockChain
-	 TxPool() *core.TxPool
+	BlockChain() *core.BlockChain
+	TxPool() *core.TxPool
 }
-
 
 // Miner creates blocks and searches for proof-of-work values.
 type Miner struct {
@@ -67,7 +66,6 @@ func New(eth Backend, config *params.ChainConfig, mux *event.TypeMux, engine con
 
 	return miner
 }
-
 
 // update keeps track of the downloader events. Please be aware that this is a one shot type of update loop.
 // It's entered once and as soon as `Done` or `Failed` has been broadcasted the events are unregistered and
@@ -109,7 +107,6 @@ func (self *Miner) update() {
 	}
 }
 
-
 func (self *Miner) Start(coinbase common.Address) {
 	atomic.StoreInt32(&self.shouldStart, 1)
 	self.SetEtherbase(coinbase)
@@ -121,31 +118,27 @@ func (self *Miner) Start(coinbase common.Address) {
 	self.worker.start()
 }
 
-
 func (self *Miner) Stop() {
 	self.worker.stop()
 	atomic.StoreInt32(&self.shouldStart, 0)
 }
-
 
 func (self *Miner) Close() {
 	self.worker.close()
 	close(self.exitCh)
 }
 
-
 func (self *Miner) Mining() bool {
 	return self.worker.isRunning()
 }
-
 
 func (self *Miner) HashRate() uint64 {
 	if pow, ok := self.engine.(consensus.PoW); ok {
 		return uint64(pow.Hashrate())
 	}
+
 	return 0
 }
-
 
 func (self *Miner) SetExtra(extra []byte) error {
 	if uint64(len(extra)) > params.MaximumExtraDataSize {

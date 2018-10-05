@@ -416,7 +416,6 @@ type mineResult struct {
 	nonce     types.BlockNonce
 	mixDigest common.Hash
 	hash      common.Hash
-
 	errc chan error
 }
 
@@ -674,7 +673,9 @@ func (esshash *Ethash) SetThreads(threads int) {
 // hashrate of all remote miner.
 func (esshash *Ethash) Hashrate() float64 {
 	// Short circuit if we are run the esshash in normal/test mode.
+	log.Info("esshash", "mode", esshash.config.PowMode)
 	if esshash.config.PowMode != ModeNormal && esshash.config.PowMode != ModeTest {
+		log.Info("esshash", "ans", esshash.hashrate.Rate1())
 		return esshash.hashrate.Rate1()
 	}
 	var res = make(chan uint64, 1)
@@ -685,7 +686,7 @@ func (esshash *Ethash) Hashrate() float64 {
 		// Return local hashrate only if esshash is stopped.
 		return esshash.hashrate.Rate1()
 	}
-
+	log.Info("esshash", "remote sealers", esshash.hashrate.Rate1()+float64(<-res))
 	// Gather total submitted hash rate of remote sealers.
 	return esshash.hashrate.Rate1() + float64(<-res)
 }

@@ -100,7 +100,7 @@ func TestRemoteSealer(t *testing.T) {
 	}
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
-	sealhash := ethash.SealHash(header)
+	sealhash := esshash.SealHash(header)
 
 	// Push new work.
 	results := make(chan *types.Block)
@@ -121,7 +121,7 @@ func TestRemoteSealer(t *testing.T) {
 	header = &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(1000)}
 	block = types.NewBlockWithHeader(header)
 	sealhash = esshash.SealHash(header)
-	ethash.Seal(nil, block, results, nil)
+	esshash.Seal(nil, block, results, nil)
 
 	if work, err = api.GetWork(); err != nil || work[0] != sealhash.Hex() {
 		t.Error("expect to return the latest pushed work")
