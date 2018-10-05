@@ -141,11 +141,12 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
 			TrieTimeLimit: 5 * time.Minute,
 		}
 	}
-	bodyCache, _ := lru.New(bodyCacheLimit)
+
+	bodyCache, _    := lru.New(bodyCacheLimit)
 	bodyRLPCache, _ := lru.New(bodyCacheLimit)
-	blockCache, _ := lru.New(blockCacheLimit)
+	blockCache, _   := lru.New(blockCacheLimit)
 	futureBlocks, _ := lru.New(maxFutureBlocks)
-	badBlocks, _ := lru.New(badBlockLimit)
+	badBlocks, _    := lru.New(badBlockLimit)
 
 	bc := &BlockChain{
 		chainConfig:    chainConfig,
@@ -163,6 +164,7 @@ func NewBlockChain(db essdb.Database, cacheConfig *CacheConfig, chainConfig *par
 		vmConfig:       vmConfig,
 		badBlocks:      badBlocks,
 	}
+	
 	bc.SetValidator(NewBlockValidator(chainConfig, bc, engine))
 	bc.SetProcessor(NewStateProcessor(chainConfig, bc, engine))
 
