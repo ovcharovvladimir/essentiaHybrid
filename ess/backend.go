@@ -124,9 +124,10 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	}
 	log.Info("Initialised chain configuration", "config", chainConfig)
 
-	if (config.NetworkId==5678){
-		config.Ethash.PowMode=esshash.ModeTest
-	}; 
+	if config.NetworkId == 5678 {
+		config.Ethash.PowMode = esshash.ModeTest
+	}
+
 	eth := &Ethereum{
 		config:         config,
 		chainDb:        chainDb,
@@ -141,7 +142,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 		bloomRequests:  make(chan chan *bloombits.Retrieval),
 		bloomIndexer:   NewBloomIndexer(chainDb, params.BloomBitsBlocks, params.BloomConfirms),
 	}
-
+	log.Info("Consensus", "config", config, "chaincfg", chainConfig)
 	log.Info("Initialising Essentia protocol", "versions", ProtocolVersions, "network", config.NetworkId)
 
 	if !config.SkipBcVersionCheck {
@@ -179,10 +180,9 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	if eth.protocolManager, err = NewProtocolManager(eth.chainConfig, config.SyncMode, config.NetworkId, eth.eventMux, eth.txPool, eth.engine, eth.blockchain, chainDb); err != nil {
 		return nil, err
 	}
-
 	eth.miner = miner.New(eth, eth.chainConfig, eth.EventMux(), eth.engine, config.MinerRecommit, config.MinerGasFloor, config.MinerGasCeil, eth.isLocalBlock)
 	eth.miner.SetExtra(makeExtraData(config.MinerExtraData))
-
+	log.Info("Miner initialized", "eng", eth.engine)
 	eth.APIBackend = &EthAPIBackend{eth, nil}
 	gpoParams := config.GPO
 	if gpoParams.Default == nil {
@@ -248,7 +248,9 @@ func CreateConsensusEngine(ctx *node.ServiceContext, chainConfig *params.ChainCo
 			DatasetsInMem:  config.DatasetsInMem,
 			DatasetsOnDisk: config.DatasetsOnDisk,
 		}, notify, noverify)
-		engine.SetThreads(-1) // Disable CPU mining
+		log.Warn("CreateConsensusEngine")
+		engine.SetThreads(2) // Disable CPU mining
+
 		return engine
 	}
 }
