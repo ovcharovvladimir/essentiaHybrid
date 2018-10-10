@@ -170,7 +170,15 @@ if [ ! -L "$pth/pkg" ]; then
     cd "$root"
 fi
 
+#gopkg.in/gorethink/gorethink.v4
+pth="$workspace/src/gopkg.in"
 
+if [ ! -L "$pth/gorethink" ]; then
+    mkdir -p "$pth"
+    cd "$pth"
+    ln -s $solution/gopkg.in/gorethink/. gorethink
+    cd "$root"
+fi
 
 GOPATH="$workspace"
 export GOPATH 
