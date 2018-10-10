@@ -5,7 +5,7 @@ RED='\033[1;31m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("18.223.115.208" "18.222.11.79" "18.224.25.244" "Upload" "Start All" "Quit")
+options=("18.224.218.68" "18.224.50.75" "52.15.181.235" "Upload" "Start All" "Quit")
 echo "Availible bootnodes:"
 
 print_list(){
@@ -43,8 +43,8 @@ for ((i = 0; i < ${#options[@]}-3; ++i)); do
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
    echo "Press Ctrl+C to continue loading ..."
-   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} nohup  sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/bootnode -verbosity=9 -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} > /dev/null 2>&1 &
+   echo  ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} nohup  sudo /home/release/bootnode -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} 
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/bootnode -nodekey=/home/release/key.bin -addr=$ip4:51901 -nat=extip:${options[$i]} > /dev/null 2>&1 &
 
  done  
 }
@@ -57,19 +57,19 @@ PS3='Select:'
 select opt in "${options[@]}"
 do
     case $opt in
-        "18.223.115.208")
+        "18.224.218.68")
 	    clear
 	echo "**** ${opt} ****"
             ssh -o ConnectTimeout=3 -i block.pem ubuntu@$opt
 	    print_list
 	    ;;
-        "18.222.11.79")
+        "18.224.50.75")
 	    clear
 	echo "**** ${opt} ****"
             ssh -o ConnectTimeout=3 -i block.pem ubuntu@$opt
            print_list
             ;;
-        "18.224.25.244")
+        "52.15.181.235")
 	    clear
 	echo "**** ${opt} ****"
             clear

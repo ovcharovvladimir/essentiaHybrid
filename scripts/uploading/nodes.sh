@@ -5,7 +5,7 @@ GREEN='\033[01;32m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("18.224.0.169" "52.14.180.128" "18.221.62.255" "52.14.5.83"  "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
+options=("18.188.111.198" "18.188.240.197" "18.217.164.134" "18.224.11.186" "18.224.106.72" "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
 echo "Availible nodes:"
 print_list(){
 for ((i = 0; i < ${#options[@]}; ++i)); do
@@ -32,8 +32,8 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
     ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} sudo pkill gess
     ipstr=$( ssh -i block.pem -o ConnectTimeout=5  ubuntu@${options[$i]} hostname -I)
     ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
-   echo  sudo /home/release/gess  --testnet --rpc  --rpcaddr $ip4 --rpcapi eth,net,web3,admin,miner,debug,personal  --nat extip:${options[$i]}
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/gess  --testnet --cache=2048 --rpc  --rpcaddr $ip4 --rpcapi eth,net,web3,admin,miner,debug,personal  --nat extip:${options[$i]} > /dev/null 2>&1 &
+   echo  sudo /home/release/gess  --testnet --rpc  --rpcaddr $ip4 --rpcapi eth,net,web3,personal  --nat extip:${options[$i]}
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo /home/release/gess  --testnet --rpc  --rpcaddr $ip4 --gcmode=archive --rpcapi personal,db,eth,net,web3,txpool,ess  --nat extip:${options[$i]} > gess.out 2>&1 &
    
     echo -e "* ${GREEN} DONE ${NC} *"
  done  
@@ -71,27 +71,33 @@ PS3='Select:'
 select opt in "${options[@]}"
 do
     case $opt in
-        "18.224.0.169")
+        "18.188.111.198")
 	    clear
 	echo "**** ${opt} ****"
             ssh -i block.pem ubuntu@$opt
 	    print_list
 	    ;;
-        "52.14.180.128")
+        "18.188.240.197")
 	    clear
 	echo "**** ${opt} ****"
             ssh -i block.pem ubuntu@$opt
            print_list
             ;;
-        "18.221.62.255")
+        "18.217.164.134")
 	    clear
 	echo "**** ${opt} ****"
             clear
             ssh -i block.pem ubuntu@$opt
             print_list
             ;; 
-        "52.14.5.83")
+        "18.224.11.186")
 	echo "**** ${opt} ****"
+            clear
+            ssh -i block.pem ubuntu@$opt
+            print_list
+            ;; 
+         "18.224.106.72")
+    echo "**** ${opt} ****"
             clear
             ssh -i block.pem ubuntu@$opt
             print_list

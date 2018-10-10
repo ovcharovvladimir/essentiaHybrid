@@ -5,7 +5,7 @@ GREEN='\033[01;32m'
 NC='\033[0m' # No Color
 bin="./bin"
 
-options=("13.59.162.217" "18.219.184.139" "18.222.154.170" "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
+options=(  "18.224.121.61" "18.224.159.84" "18.224.168.178" "18.224.198.158" "Upload" "Start All" "Stop All" "Remove chain data" "Quit")
 echo "Availible miners"
 print_list(){
 for ((i = 0; i < ${#options[@]}; ++i)); do
@@ -38,8 +38,8 @@ for ((i = 0; i < ${#options[@]}-5; ++i)); do
   # ssh -i block.pem -o ConnectTimeout=5 -Y ubuntu@${options[$i]} sudo rm -rv 	/home/ubuntu/.esshash
    echo  --password /home/release/pass.txt account new
    ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} sudo /home/release/gess  --testnet --password /home/release/pass.txt account new
-   echo  sudo  /home/release/gess  --rpc --rpcapi eth,eth,net,web3,admin,miner,debug,personal  --mine --minerthreads=1 --testnet  --rpc --rpcaddr  $ip4 --nat extip:${options[$i]} 
-   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo  /home/release/gess   --rpc --rpcapi eth,eth,net,web3,admin,miner,debug,personal  --mine --minerthreads=1 --testnet  --rpc --rpcaddr$ip4 --nat extip:${options[$i]}  > /dev/null 2>&1 &
+   echo sudo  /home/release/gess   --rpc  --mine --minerthreads=1 -cache=2048 --gcmode=archive --etherbase '0xc129cfc9844fc110b5639bb7357b788c516251c9' --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]}
+   ssh -i block.pem -o ConnectTimeout=5 ubuntu@${options[$i]} nohup sudo  /home/release/gess   --rpc  --mine --minerthreads=1 -cache=2048 --gcmode=archive --etherbase '0xc129cfc9844fc110b5639bb7357b788c516251c9' --testnet  --rpc --rpcaddr $ip4 --nat extip:${options[$i]}  > gess.out 2>&1 &
     echo -e "* ${GREEN} DONE ${NC} *"
  done  
 }
@@ -76,19 +76,27 @@ PS3='Select:'
 select opt in "${options[@]}"
 do
     case $opt in
-        "13.59.162.217")
-	    clear
-	echo "**** ${opt} ****"
-            ssh -i block.pem ubuntu@$opt
-	    print_list
-	    ;;
-        "18.219.184.139")
+        "18.224.121.61")
 	    clear
 	echo "**** ${opt} ****"
             ssh -i block.pem ubuntu@$opt
            print_list
             ;;
-        "18.222.154.170")
+        "18.224.159.84")
+	    clear
+	echo "**** ${opt} ****"
+            clear
+            ssh -i block.pem ubuntu@$opt
+            print_list
+            ;; 
+            "18.224.168.178")
+	    clear
+	echo "**** ${opt} ****"
+            clear
+            ssh -i block.pem ubuntu@$opt
+            print_list
+            ;; 
+          "18.224.198.158")
 	    clear
 	echo "**** ${opt} ****"
             clear

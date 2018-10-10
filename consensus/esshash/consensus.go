@@ -316,7 +316,7 @@ func CalcDifficultyAdj(config *params.ChainConfig, time uint64, mode Mode, paren
 		return big1
 
 	} else {
-
+		
 		next := new(big.Int).Add(parent.Number, big1)
 		switch {
 		case config.IsConstantinople(next):
