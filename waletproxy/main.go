@@ -134,7 +134,7 @@ func main() {
     http.HandleFunc("/actives/",      Active_nodes)           // Show active nodes 
     http.HandleFunc("/down/",         Down_nodes)             // Show down nodes 
     http.HandleFunc("/test/",         Api_test)               // Test service response 
-    http.HandleFunc("/admin/",        Api_admin)              // Test service response 
+    http.HandleFunc("/admin/",        Api_admin)              // Admin panel
     
     err := http.ListenAndServe(Port, nil)
     
