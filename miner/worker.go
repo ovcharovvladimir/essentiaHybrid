@@ -35,62 +35,68 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/event"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
+
+	"os"
 )
+
+
+// resultQueueSize        10                    - это размер канала, слушающего результат уплотнения.
+// txChanSize             4096                  - это размер канала, прослушивающего NewTxsEvent. // Номер ссылается на размер tx-пула.
+// chainHeadChanSize      10                    - это размер канала, прослушивающего ChainHeadEvent.
+// chainSideChanSize      10                    - это размер канала, прослушивающего ChainSideEvent.
+// resubmitAdjustChanSize 10                    - это размер канала коррекции повторного ввода.
+// miningLogAtDepth       7                     - это количество подтверждений, прежде чем регистрировать успешный процесс добычи.
+// minRecommitInterval    1  * time.Second      - это минимальный интервал времени для воссоздания блока интеллектуального анализа данных с помощью всех новых транзакций.
+// maxRecommitInterval    15 * time.Second      - это максимальный интервал времени для воссоздания блока добычи с любыми новыми транзакциями.
+// intervalAdjustRatio    0.1                   - это воздействие, которое имеет одна регулировка интервалов на интервале повторной подачи уплотнения.
+// intervalAdjustBias     200 * 1000.0 * 1000.0   применяется во время нового вычисления интервала повторной передачи в пользу увеличения верхнего предела или уменьшения нижнего предела, чтобы можно было достичь предела.
+// staleThreshold         7                     - максимальная глубина допустимого устаревшего блока.
+
+
+/*
+const (
+	resultQueueSize        = 10                     // resultQueueSize is the size of channel listening to sealing result.
+	txChanSize             = 4096                   // txChanSize is the size of channel listening to NewTxsEvent. // The number is referenced from the size of tx pool.
+	chainHeadChanSize      = 10                     // chainHeadChanSize is the size of channel listening to ChainHeadEvent.
+	chainSideChanSize      = 10                     // chainSideChanSize is the size of channel listening to ChainSideEvent.
+	resubmitAdjustChanSize = 10                     // resubmitAdjustChanSize is the size of resubmitting interval adjustment channel.
+	miningLogAtDepth       = 7                      // miningLogAtDepth is the number of confirmations before logging successful mining.
+	minRecommitInterval    = 1  * time.Second       // minRecommitInterval is the minimal time interval to recreate the mining block with  any newly arrived transactions. 
+	maxRecommitInterval    = 15 * time.Second       // maxRecommitInterval is the maximum time interval to recreate the mining block with  any newly arrived transactions.
+	intervalAdjustRatio    = 0.1                 	// intervalAdjustRatio is the impact a single interval adjustment has on sealing work resubmitting interval.
+	intervalAdjustBias     = 200 * 1000.0 * 1000.0  // intervalAdjustBias is applied during the new resubmit interval calculation in favor of increasing upper limit or decreasing lower limit so that the limit can be reachable.
+	staleThreshold         = 7                      // staleThreshold is the maximum depth of the acceptable stale block.
+)
+*/
+
 
 const (
-	// resultQueueSize is the size of channel listening to sealing result.
-	resultQueueSize = 10
-
-	// txChanSize is the size of channel listening to NewTxsEvent.
-	// The number is referenced from the size of tx pool.
-	txChanSize = 4096
-
-	// chainHeadChanSize is the size of channel listening to ChainHeadEvent.
-	chainHeadChanSize = 10
-
-	// chainSideChanSize is the size of channel listening to ChainSideEvent.
-	chainSideChanSize = 10
-
-	// resubmitAdjustChanSize is the size of resubmitting interval adjustment channel.
-	resubmitAdjustChanSize = 10
-
-	// miningLogAtDepth is the number of confirmations before logging successful mining.
-	miningLogAtDepth = 7
-
-	// minRecommitInterval is the minimal time interval to recreate the mining block with
-	// any newly arrived transactions.
-	minRecommitInterval = 1 * time.Second
-
-	// maxRecommitInterval is the maximum time interval to recreate the mining block with
-	// any newly arrived transactions.
-	maxRecommitInterval = 15 * time.Second
-
-	// intervalAdjustRatio is the impact a single interval adjustment has on sealing work
-	// resubmitting interval.
-	intervalAdjustRatio = 0.1
-
-	// intervalAdjustBias is applied during the new resubmit interval calculation in favor of
-	// increasing upper limit or decreasing lower limit so that the limit can be reachable.
-	intervalAdjustBias = 200 * 1000.0 * 1000.0
-
-	// staleThreshold is the maximum depth of the acceptable stale block.
-	staleThreshold = 7
+	resultQueueSize        = os.Getenv("ResultQueueSize")                    // 10   resultQueueSize is the size of channel listening to sealing result.
+	txChanSize             = os.Getenv("txChanSize")                         // 4096 txChanSize is the size of channel listening to NewTxsEvent. // The number is referenced from the size of tx pool.
+	chainHeadChanSize      = os.Getenv("ChainHeadChanSize")                  // 10   chainHeadChanSize is the size of channel listening to ChainHeadEvent.
+	chainSideChanSize      = os.Getenv("ChainSideChanSize")                  // 10   chainSideChanSize is the size of channel listening to ChainSideEvent.
+	resubmitAdjustChanSize = os.Getenv("ResubmitAdjustChanSize")             // 10   resubmitAdjustChanSize is the size of resubmitting interval adjustment channel.
+	miningLogAtDepth       = os.Getenv("MiningLogAtDepth")                   // 7    miningLogAtDepth is the number of confirmations before logging successful mining.
+	minRecommitInterval    = os.Getenv("MinRecommitInterval") * time.Second  // minRecommitInterval is the minimal time interval to recreate the mining block with  any newly arrived transactions. 
+	maxRecommitInterval    = os.Getenv("MaxRecommitInterval") * time.Second  // maxRecommitInterval is the maximum time interval to recreate the mining block with  any newly arrived transactions.
+	intervalAdjustRatio    = os.Getenv("IntervalAdjustRatio")                // 0.1   intervalAdjustRatio is the impact a single interval adjustment has on sealing work resubmitting interval.
+	intervalAdjustBias     = os.Getenv("IntervalAdjustBias")                 // 200 * 1000.0 * 1000.0  // intervalAdjustBias is applied during the new resubmit interval calculation in favor of increasing upper limit or decreasing lower limit so that the limit can be reachable.
+	staleThreshold         = os.Getenv("staleThreshold")                     // 7  staleThreshold is the maximum depth of the acceptable stale block.
 )
+
 
 // environment is the worker's current environment and holds all of the current state information.
 type environment struct {
-	signer types.Signer
-
-	state     *state.StateDB // apply state changes here
-	ancestors mapset.Set     // ancestor set (used for checking uncle parent validity)
-	family    mapset.Set     // family set (used for checking uncle invalidity)
-	uncles    mapset.Set     // uncle set
-	tcount    int            // tx count in cycle
-	gasPool   *core.GasPool  // available gas used to pack transactions
-
-	header   *types.Header
-	txs      []*types.Transaction
-	receipts []*types.Receipt
+	signer    types.Signer
+	state     *state.StateDB                        // apply state changes here
+	ancestors mapset.Set                            // ancestor set (used for checking uncle parent validity)
+	family    mapset.Set                            // family set (used for checking uncle invalidity)
+	uncles    mapset.Set                            // uncle set
+	tcount    int                                   // tx count in cycle
+	gasPool   *core.GasPool                         // available gas used to pack transactions
+	header    *types.Header                       
+	txs       []*types.Transaction
+	receipts  []*types.Receipt
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -109,9 +115,9 @@ const (
 
 // newWorkReq represents a request for new sealing work submitting with relative interrupt notifier.
 type newWorkReq struct {
-	interrupt *int32
-	noempty   bool
-	timestamp int64
+	interrupt  *int32
+	noempty     bool
+	timestamp   int64
 }
 
 // intervalAdjust represents a resubmitting interval adjustment.
@@ -120,25 +126,26 @@ type intervalAdjust struct {
 	inc   bool
 }
 
+
 // worker is the main object which takes care of submitting new work to consensus engine
 // and gathering the sealing result.
 type worker struct {
-	config *params.ChainConfig
-	engine consensus.Engine
-	eth    Backend
-	chain  *core.BlockChain
+	config            *params.ChainConfig
+	engine             consensus.Engine
+	eth                Backend
+	chain             *core.BlockChain
 
-	gasFloor uint64
-	gasCeil  uint64
+	gasFloor           uint64
+	gasCeil            uint64
 
 	// Subscriptions
-	mux          *event.TypeMux
-	txsCh        chan core.NewTxsEvent
-	txsSub       event.Subscription
-	chainHeadCh  chan core.ChainHeadEvent
-	chainHeadSub event.Subscription
-	chainSideCh  chan core.ChainSideEvent
-	chainSideSub event.Subscription
+	mux                *event.TypeMux
+	txsCh              chan core.NewTxsEvent
+	txsSub             event.Subscription
+	chainHeadCh        chan core.ChainHeadEvent
+	chainHeadSub       event.Subscription
+	chainSideCh        chan core.ChainSideEvent
+	chainSideSub       event.Subscription
 
 	// Channels
 	newWorkCh          chan *newWorkReq
@@ -149,35 +156,37 @@ type worker struct {
 	resubmitIntervalCh chan time.Duration
 	resubmitAdjustCh   chan *intervalAdjust
 
-	current      *environment                 // An environment for current running cycle.
-	localUncles  map[common.Hash]*types.Block // A set of side blocks generated locally as the possible uncle blocks.
-	remoteUncles map[common.Hash]*types.Block // A set of side blocks as the possible uncle blocks.
-	unconfirmed  *unconfirmedBlocks           // A set of locally mined blocks pending canonicalness confirmations.
+	current            *environment                       // An environment for current running cycle.
+	localUncles        map[common.Hash]*types.Block       // A set of side blocks generated locally as the possible uncle blocks.
+	remoteUncles       map[common.Hash]*types.Block       // A set of side blocks as the possible uncle blocks.
+	unconfirmed        *unconfirmedBlocks                 // A set of locally mined blocks pending canonicalness confirmations.
+      
+	mu                 sync.RWMutex                       // The lock used to protect the coinbase and extra fields
+	coinbase           common.Address
+	extra              []byte
 
-	mu       sync.RWMutex // The lock used to protect the coinbase and extra fields
-	coinbase common.Address
-	extra    []byte
+	pendingMu          sync.RWMutex
+	pendingTasks       map[common.Hash]*task
 
-	pendingMu    sync.RWMutex
-	pendingTasks map[common.Hash]*task
-
-	snapshotMu    sync.RWMutex // The lock used to protect the block snapshot and state snapshot
-	snapshotBlock *types.Block
-	snapshotState *state.StateDB
+	snapshotMu         sync.RWMutex                       // The lock used to protect the block snapshot and state snapshot
+	snapshotBlock      *types.Block
+	snapshotState      *state.StateDB
 
 	// atomic status counters
-	running int32 // The indicator whether the consensus engine is running or not.
-	newTxs  int32 // New arrival transaction count since last sealing work submitting.
-
+	running            int32                              // The indicator whether the consensus engine is running or not.
+	newTxs             int32                              // New arrival transaction count since last sealing work submitting.
+                             
 	// External functions
-	isLocalBlock func(block *types.Block) bool // Function used to determine whether the specified block is mined by local miner.
+	isLocalBlock       func(block *types.Block) bool      // Function used to determine whether the specified block is mined by local miner.
 
 	// Test hooks
-	newTaskHook  func(*task)                        // Method to call upon receiving a new sealing task.
-	skipSealHook func(*task) bool                   // Method to decide whether skipping the sealing.
-	fullTaskHook func()                             // Method to call before pushing the full sealing task.
-	resubmitHook func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
+	newTaskHook        func(*task)                        // Method to call upon receiving a new sealing task.
+	skipSealHook       func(*task) bool                   // Method to decide whether skipping the sealing.
+	fullTaskHook       func()                             // Method to call before pushing the full sealing task.
+	resubmitHook       func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
 }
+
+
 
 func newWorker(config *params.ChainConfig, engine consensus.Engine, eth Backend, mux *event.TypeMux, recommit time.Duration, gasFloor, gasCeil uint64, isLocalBlock func(*types.Block) bool) *worker {
 	worker := &worker{
@@ -204,16 +213,15 @@ func newWorker(config *params.ChainConfig, engine consensus.Engine, eth Backend,
 		resubmitIntervalCh: make(chan time.Duration),
 		resubmitAdjustCh:   make(chan *intervalAdjust, resubmitAdjustChanSize),
 	}
-	// Subscribe NewTxsEvent for tx pool
-	worker.txsSub = eth.TxPool().SubscribeNewTxsEvent(worker.txsCh)
-	// Subscribe events for blockchain
-	worker.chainHeadSub = eth.BlockChain().SubscribeChainHeadEvent(worker.chainHeadCh)
+	
+	worker.txsSub = eth.TxPool().SubscribeNewTxsEvent(worker.txsCh)                         // Subscribe NewTxsEvent for tx pool
+	worker.chainHeadSub = eth.BlockChain().SubscribeChainHeadEvent(worker.chainHeadCh)      // Subscribe events for blockchain
 	worker.chainSideSub = eth.BlockChain().SubscribeChainSideEvent(worker.chainSideCh)
 
 	// Sanitize recommit interval if the user-specified one is too short.
 	if recommit < minRecommitInterval {
-		log.Warn("Sanitizing miner recommit interval", "provided", recommit, "updated", minRecommitInterval)
-		recommit = minRecommitInterval
+	   log.Warn("Sanitizing miner recommit interval", "provided", recommit, "updated", minRecommitInterval)
+	   recommit = minRecommitInterval
 	}
 
 	go worker.mainLoop()
@@ -223,7 +231,6 @@ func newWorker(config *params.ChainConfig, engine consensus.Engine, eth Backend,
 
 	// Submit first work to initialize pending state.
 	worker.startCh <- struct{}{}
-
 	return worker
 }
 
@@ -689,6 +696,7 @@ func (w *worker) updateSnapshot() {
 	w.snapshotState = w.current.state.Copy()
 }
 
+
 func (w *worker) commitTransaction(tx *types.Transaction, coinbase common.Address) ([]*types.Log, error) {
 	snap := w.current.state.Snapshot()
 
@@ -702,6 +710,8 @@ func (w *worker) commitTransaction(tx *types.Transaction, coinbase common.Addres
 
 	return receipt.Logs, nil
 }
+
+
 
 func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32) bool {
 	// Short circuit if current is nil
@@ -746,23 +756,26 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 		if tx == nil {
 			break
 		}
+
 		// Error may be ignored here. The error has already been checked
 		// during transaction acceptance is the transaction pool.
 		//
 		// We use the eip155 signer regardless of the current hf.
 		from, _ := types.Sender(w.current.signer, tx)
+		
 		// Check whether the tx is replay protected. If we're not in the EIP155 hf
 		// phase, start ignoring the sender until we do.
 		if tx.Protected() && !w.config.IsEIP155(w.current.header.Number) {
 			log.Trace("Ignoring reply protected transaction", "hash", tx.Hash(), "eip155", w.config.EIP155Block)
-
 			txs.Pop()
 			continue
 		}
+
 		// Start executing the transaction
 		w.current.state.Prepare(tx.Hash(), common.Hash{}, w.current.tcount)
 
 		logs, err := w.commitTransaction(tx, coinbase)
+
 		switch err {
 		case core.ErrGasLimitReached:
 			// Pop the current out-of-gas transaction without shifting in the next from the account
@@ -802,9 +815,10 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 		// logs by filling in the block hash when the block was mined by the local miner. This can
 		// cause a race condition if a log was "upgraded" before the PendingLogsEvent is processed.
 		cpy := make([]*types.Log, len(coalescedLogs))
+
 		for i, l := range coalescedLogs {
 			cpy[i] = new(types.Log)
-			*cpy[i] = *l
+		   *cpy[i] = *l
 		}
 		go w.mux.Post(core.PendingLogsEvent{Logs: cpy})
 	}
@@ -827,6 +841,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	if parent.Time().Cmp(new(big.Int).SetInt64(timestamp)) >= 0 {
 		timestamp = parent.Time().Int64() + 1
 	}
+
 	// this will ensure we're not going off too far in the future
 	if now := time.Now().Unix(); timestamp > now+1 {
 		wait := time.Duration(timestamp-now) * time.Second
@@ -834,14 +849,17 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		time.Sleep(wait)
 	}
 
+
 	num := parent.Number()
+
 	header := &types.Header{
-		ParentHash: parent.Hash(),
-		Number:     num.Add(num, common.Big1),
-		GasLimit:   core.CalcGasLimit(parent, w.gasFloor, w.gasCeil),
-		Extra:      w.extra,
-		Time:       big.NewInt(timestamp),
+		       ParentHash: parent.Hash(),
+		       Number:     num.Add(num, common.Big1),
+		       GasLimit:   core.CalcGasLimit(parent, w.gasFloor, w.gasCeil),
+		       Extra:      w.extra,
+		       Time:       big.NewInt(timestamp),
 	}
+
 	// Only set the coinbase if our consensus engine is running (avoid spurious block rewards)
 	if w.isRunning() {
 		if w.coinbase == (common.Address{}) {
@@ -850,14 +868,17 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		}
 		header.Coinbase = w.coinbase
 	}
+
 	if err := w.engine.Prepare(w.chain, header); err != nil {
 		log.Error("Failed to prepare header for mining", "err", err)
 		return
 	}
+
 	// If we are care about TheDAO hard-fork check whether to override the extra-data or not
 	if daoBlock := w.config.DAOForkBlock; daoBlock != nil {
 		// Check whether the block is among the fork extra-override range
 		limit := new(big.Int).Add(daoBlock, params.DAOForkExtraRange)
+		
 		if header.Number.Cmp(daoBlock) >= 0 && header.Number.Cmp(limit) < 0 {
 			// Depending whether we support or oppose the fork, override differently
 			if w.config.DAOForkSupport {
@@ -867,19 +888,23 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			}
 		}
 	}
+
 	// Could potentially happen if starting to mine in an odd state.
 	err := w.makeCurrent(parent, header)
 	if err != nil {
 		log.Error("Failed to create mining context", "err", err)
 		return
 	}
+
 	// Create the current work task and check any fork transitions needed
 	env := w.current
 	if w.config.DAOForkSupport && w.config.DAOForkBlock != nil && w.config.DAOForkBlock.Cmp(header.Number) == 0 {
 		misc.ApplyDAOHardFork(env.state)
 	}
+
 	// Accumulate the uncles for the current block
 	uncles := make([]*types.Header, 0, 2)
+	
 	commitUncles := func(blocks map[common.Hash]*types.Block) {
 		// Clean up stale uncle blocks first
 		for hash, uncle := range blocks {
@@ -887,6 +912,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 				delete(blocks, hash)
 			}
 		}
+
 		for hash, uncle := range blocks {
 			if len(uncles) == 2 {
 				break
@@ -899,6 +925,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			}
 		}
 	}
+
 	// Prefer to locally generated uncle
 	commitUncles(w.localUncles)
 	commitUncles(w.remoteUncles)
@@ -915,11 +942,13 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		log.Error("Failed to fetch pending transactions", "err", err)
 		return
 	}
+
 	// Short circuit if there is no available pending transactions
 	if len(pending) == 0 {
 		w.updateSnapshot()
 		return
 	}
+	
 	// Split the pending transactions into locals and remotes
 	localTxs, remoteTxs := make(map[common.Address]types.Transactions), pending
 	for _, account := range w.eth.TxPool().Locals() {
@@ -928,12 +957,14 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			localTxs[account] = txs
 		}
 	}
+	
 	if len(localTxs) > 0 {
 		txs := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs)
 		if w.commitTransactions(txs, w.coinbase, interrupt) {
 			return
 		}
 	}
+	
 	if len(remoteTxs) > 0 {
 		txs := types.NewTransactionsByPriceAndNonce(w.current.signer, remoteTxs)
 		if w.commitTransactions(txs, w.coinbase, interrupt) {
@@ -943,20 +974,24 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	w.commit(uncles, w.fullTaskHook, true, tstart)
 }
 
+
 // commit runs any post-transaction state modifications, assembles the final block
 // and commits new work if consensus engine is running.
 func (w *worker) commit(uncles []*types.Header, interval func(), update bool, start time.Time) error {
+	
 	// Deep copy receipts here to avoid interaction between different tasks.
 	receipts := make([]*types.Receipt, len(w.current.receipts))
 	for i, l := range w.current.receipts {
 		receipts[i] = new(types.Receipt)
 		*receipts[i] = *l
 	}
+
 	s := w.current.state.Copy()
 	block, err := w.engine.Finalize(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
 	if err != nil {
 		return err
 	}
+	
 	if w.isRunning() {
 		if interval != nil {
 			interval()

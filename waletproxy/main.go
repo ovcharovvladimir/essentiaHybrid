@@ -1,5 +1,4 @@
-// 
-// Copyright 2018 Essentia
+// Copyright 2018 
 // https://github.com/ovcharovvladimir/essentiaHybrid/tree/master/waletproxy
 
 package main
@@ -14,27 +13,31 @@ import (
     "net/url"
     "strconv"
     "bytes"
-
+    "github.com/fatih/color"
 )
+
 
 // Node structure
 type Node  struct {
-             Ip string     `json:"Ip"`
-             Port string   `json:"Port"`
-             Note string   `json:"Note"`
-             Status string `json:"Status"`
+     Ip string     `json:"Ip"`
+     Port string   `json:"Port"`
+     Note string   `json:"Note"`
+     Status string `json:"Status"`
 } 
 
 // Sdetting structure
 type Sett struct {
-    Mainport string `json:"Mainport"`
-    Version  string `json:"Version"`
-    Nodes   []Node
+     Mainport string `json:"Mainport"`
+     Version  string `json:"Version"`
+     Nodes   []Node
 }
 
 type transport struct {
   http.RoundTripper
 }
+
+var _ http.RoundTripper = &transport{}
+
 
 //************************************************************
 //  Name    : Transport
@@ -62,28 +65,43 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
   resp.ContentLength = int64(len(b))
   resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
   resp.Header.Set("Content-Type", "application/json")
- 
-  // fmt.Println(resp.ContentLength)
+  resp.Header.Set("Content-Type", "text/plain; charset=utf-8")
+  
   return resp, nil
 }
 
-var _ http.RoundTripper = &transport{}
-
-
 //************************************************************
-//  Name    : Main  
+//  Name    : Main 
+
+         // {"Ip":"18.188.111.198", "Port":"8545", "Note":"Gess 01"},
+         // {"Ip":"18.188.240.197", "Port":"8545", "Note":"Gess 02"},
+         // {"Ip":"18.217.164.134", "Port":"8545", "Note":"Gess 03"},
+         // {"Ip":"18.224.11.186",  "Port":"8545", "Note":"Gess 04"},
+         // {"Ip":"18.224.106.72",  "Port":"8545", "Note":"Gess 05"},   
 //************************************************************
 func main() {
 
-    Host  := ActiveNode()
+    // Set color
+    Whites  := color.New(color.FgWhite).PrintlnFunc()
+    FgMag   := color.New(color.FgHiYellow)
+    Cyan    := color.New(color.Bold, color.FgCyan)
+    FgRed   := color.New(color.Bold, color.FgRed).PrintlnFunc()
+    FgGreen := color.New(color.Bold, color.FgGreen).PrintlnFunc()
+    FgGreen("Proxy server")
+    Whites("Version: 1.00 (Testing)")
+
+    // Active node
+    Host  := ActiveNode()      
     Sett  := ReadSettingFile()
     Port  := ":"+ Sett.Mainport
-    
+
+    FgMag.Print("Active node : ")    
+    FgRed(Host)
+    Cyan.Printf("Listen proxy port %s \n", Port)    
+
     // Check active node
     if Host== "" {
        Host="Error: All nodes disabled."
-       // fmt.Println(Host)
-       // return
     }
 
     // For test with other resources
@@ -94,12 +112,14 @@ func main() {
 
     // Proxy
     proxy.Director = func(req *http.Request) {
+        // Allows
         req.Header.Set("Content-Type", "application/json")
         req.Header.Set("Access-Control-Allow-Origin", "*")
         req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
+        req.Header.Set("Content-Type", "text/plain; charset=utf-8")
         req.Header.Set("X-Forwarded-For", Host)
 
-        log.Println("Host redirect:", Host) 
+        // log.Println("Host redirect : ", Host) 
         req.Host       = Host
         req.URL.Host   = Host
         req.URL.Scheme = "http"    
@@ -116,9 +136,6 @@ func main() {
     http.HandleFunc("/test/",         Api_test)               // Test service response 
     http.HandleFunc("/admin/",        Api_admin)              // Test service response 
     
-    // View settings   
-    fmt.Printf("Proxy server walet %s \nActive node : %s", Port, Host )
-   
     err := http.ListenAndServe(Port, nil)
     
     // Error
