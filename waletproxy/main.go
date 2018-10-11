@@ -33,14 +33,13 @@ type Sett struct {
 }
 
 type transport struct {
-  http.RoundTripper
+     http.RoundTripper
 }
 
 var _ http.RoundTripper = &transport{}
 
-
 //************************************************************
-//  Name    : Transport
+//  Transport
 //************************************************************
 func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 
@@ -51,34 +50,30 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
 
   b, err := ioutil.ReadAll(resp.Body)
   if err != nil {
-    return nil, err
+     return nil, err
   }
+
+  // fmt.Println("Body === ",string(b))
 
   err = resp.Body.Close()
   if err != nil {
      return nil, err
   }
 
-  b = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
+  b     = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
   body := ioutil.NopCloser(bytes.NewReader(b))
   resp.Body = body
   resp.ContentLength = int64(len(b))
   resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
   resp.Header.Set("Content-Type", "application/json")
-  resp.Header.Set("Content-Type", "text/plain; charset=utf-8")
-  
   return resp, nil
 }
 
-//************************************************************
-//  Name    : Main 
 
-         // {"Ip":"18.188.111.198", "Port":"8545", "Note":"Gess 01"},
-         // {"Ip":"18.188.240.197", "Port":"8545", "Note":"Gess 02"},
-         // {"Ip":"18.217.164.134", "Port":"8545", "Note":"Gess 03"},
-         // {"Ip":"18.224.11.186",  "Port":"8545", "Note":"Gess 04"},
-         // {"Ip":"18.224.106.72",  "Port":"8545", "Note":"Gess 05"},   
-//************************************************************
+
+//**********************************************************
+// Main 
+//**********************************************************
 func main() {
 
     // Set color
@@ -116,17 +111,15 @@ func main() {
         req.Header.Set("Content-Type", "application/json")
         req.Header.Set("Access-Control-Allow-Origin", "*")
         req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
-        req.Header.Set("Content-Type", "text/plain; charset=utf-8")
         req.Header.Set("X-Forwarded-For", Host)
-
-        // log.Println("Host redirect : ", Host) 
+       
         req.Host       = Host
         req.URL.Host   = Host
         req.URL.Scheme = "http"    
     }
 
     // Proxy 
-     http.Handle("/",   proxy)
+    http.Handle("/",                  proxy)                  // Proxy 
     
     // Routing
     http.HandleFunc("/nodes/",        ShowNodes)              // Show all nodes
@@ -135,7 +128,7 @@ func main() {
     http.HandleFunc("/down/",         Down_nodes)             // Show down nodes 
     http.HandleFunc("/test/",         Api_test)               // Test service response 
     http.HandleFunc("/admin/",        Api_admin)              // Admin panel
-    
+  
     err := http.ListenAndServe(Port, nil)
     
     // Error
@@ -179,7 +172,7 @@ func Active_node(w http.ResponseWriter, req *http.Request) {
 }
 
 //************************************************************
-// Show active nodes
+// Show all active nodes
 //************************************************************
 func Active_nodes(w http.ResponseWriter, req *http.Request) {
     Nd := ReadSettingFile()
@@ -260,7 +253,7 @@ func addCORS(handler http.Handler) http.Handler {
 }
 
 //************************************************************
-//  Name    : Get info about first active note 
+// Get info about first active note 
 //************************************************************
 func ActiveNode() string {
     Rip := ""
@@ -269,15 +262,16 @@ func ActiveNode() string {
     // Looop for nodes
     for _,nd:=range Nd.Nodes{
         if ChekNodeWork(nd.Ip, nd.Port){
-            Rip=nd.Ip+":"+ nd.Port                
-            break
+           Rip=nd.Ip+":"+ nd.Port                
+           break
           }
     }
     return Rip
 }
 
+
 //************************************************************
-//  Name    : Reading  setting from file json 
+// Reading  setting from file json 
 //************************************************************
 func ReadSettingFile() Sett {
     // Setting structure
@@ -302,7 +296,7 @@ func ReadSettingFile() Sett {
 }
 
 //************************************************************
-//  Name    : Check node 
+// Check node 
 //************************************************************
 func ChekNodeWork(Ip,Port string) bool {
      timeout := time.Duration(500 * time.Millisecond )
