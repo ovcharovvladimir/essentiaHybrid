@@ -65,7 +65,7 @@ func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error
   resp.Body = body
   resp.ContentLength = int64(len(b))
   resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
-  resp.Header.Set("Content-Type", "application/json")
+  resp.Header.Set("Content-Type", "application/json; charset=utf-8")
   return resp, nil
 }
 
@@ -108,7 +108,7 @@ func main() {
     // Proxy
     proxy.Director = func(req *http.Request) {
         // Allows
-        req.Header.Set("Content-Type", "application/json")
+        req.Header.Set("Content-Type", "application/json; charset=utf-8")
         req.Header.Set("Access-Control-Allow-Origin", "*")
         req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
         req.Header.Set("X-Forwarded-For", Host)
