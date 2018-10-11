@@ -13,16 +13,19 @@ import (
     "net/url"
     "strconv"
     "bytes"
+    "html/template"
+    "path"
     "github.com/fatih/color"
 )
 
-
 // Node structure
 type Node  struct {
-     Ip string     `json:"Ip"`
-     Port string   `json:"Port"`
-     Note string   `json:"Note"`
-     Status string `json:"Status"`
+     Ip        string   `json:"Ip"`
+     Port      string   `json:"Port"`
+     Note      string   `json:"Note"`
+     Status    string   `json:"Status"`
+     Disabled  string   `json:"Disabled"`
+     Datetime  string   `json:"Datetime"`
 } 
 
 // Sdetting structure
@@ -32,42 +35,13 @@ type Sett struct {
      Nodes   []Node
 }
 
+// Transport structure
 type transport struct {
      http.RoundTripper
 }
 
 var _ http.RoundTripper = &transport{}
-
-//************************************************************
-//  Transport
-//************************************************************
-func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
-
-  resp, err = t.RoundTripper.RoundTrip(req)
-  if err != nil {
-     return nil, err
-  }
-
-  b, err := ioutil.ReadAll(resp.Body)
-  if err != nil {
-     return nil, err
-  }
-
-  // fmt.Println("Body === ",string(b))
-
-  err = resp.Body.Close()
-  if err != nil {
-     return nil, err
-  }
-
-  b     = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
-  body := ioutil.NopCloser(bytes.NewReader(b))
-  resp.Body = body
-  resp.ContentLength = int64(len(b))
-  resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
-  resp.Header.Set("Content-Type", "application/json; charset=utf-8")
-  return resp, nil
-}
+type Mst map[string]interface{}                              
 
 
 
@@ -82,8 +56,9 @@ func main() {
     Cyan    := color.New(color.Bold, color.FgCyan)
     FgRed   := color.New(color.Bold, color.FgRed).PrintlnFunc()
     FgGreen := color.New(color.Bold, color.FgGreen).PrintlnFunc()
+    
     FgGreen("Proxy server")
-    Whites("Version: 1.00 (Testing)")
+    Whites("Version: 1.01 (Testing)")
 
     // Active node
     Host  := ActiveNode()      
@@ -108,10 +83,10 @@ func main() {
     // Proxy
     proxy.Director = func(req *http.Request) {
         // Allows
-        req.Header.Set("Content-Type", "application/json; charset=utf-8")
-        req.Header.Set("Access-Control-Allow-Origin", "*")
-        req.Header.Set("Access-Control-Allow-Headers", "X-Requested-With")
-        req.Header.Set("X-Forwarded-For", Host)
+        req.Header.Set("Content-Type","application/json;charset=utf-8")
+        req.Header.Set("Access-Control-Allow-Origin","*")
+        req.Header.Set("Access-Control-Allow-Headers","X-Requested-With")
+        req.Header.Set("X-Forwarded-For",Host)
        
         req.Host       = Host
         req.URL.Host   = Host
@@ -128,15 +103,44 @@ func main() {
     http.HandleFunc("/down/",         Down_nodes)             // Show down nodes 
     http.HandleFunc("/test/",         Api_test)               // Test service response 
     http.HandleFunc("/admin/",        Api_admin)              // Admin panel
+    http.HandleFunc("/report/node/",  Nodes_report)           // Node report
   
     err := http.ListenAndServe(Port, nil)
     
     // Error
     if err != nil {
-       log.Println("Error service",err.Error())
+       log.Println("Error start service.",err.Error())
     }
 }
 
+//************************************************************
+//  Transport
+//************************************************************
+func (t *transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+
+  resp, err = t.RoundTripper.RoundTrip(req)
+  if err != nil {
+     return nil, err
+  }
+
+  b, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+     return nil, err
+  }
+
+  err = resp.Body.Close()
+  if err != nil {
+     return nil, err
+  }
+
+  b = bytes.Replace(b, []byte("server"), []byte("schmerver"), -1)
+  body := ioutil.NopCloser(bytes.NewReader(b))
+  resp.Body = body
+  resp.ContentLength = int64(len(b))
+  resp.Header.Set("Content-Length", strconv.Itoa(len(b)))
+  resp.Header.Set("Content-Type", "application/json; charset=utf-8")
+  return resp, nil
+}
 
 //************************************************************
 // Show all nodes 
@@ -246,6 +250,7 @@ func sameHost(handler http.Handler) http.Handler {
 //************************************************************
 func addCORS(handler http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json;charset=utf-8")
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
         handler.ServeHTTP(w, r)
@@ -269,7 +274,6 @@ func ActiveNode() string {
     return Rip
 }
 
-
 //************************************************************
 // Reading  setting from file json 
 //************************************************************
@@ -278,12 +282,9 @@ func ReadSettingFile() Sett {
     var m Sett
     
     // Open file with settings
-    // (in Unix ./config.json)
     file, err := ioutil.ReadFile("./setting.json")
-
-    // Error
     if err != nil {
-       log.Println("Error reading setting.") 
+       log.Println("Error reading setting file.") 
        return Sett{}
     }
     
@@ -318,72 +319,74 @@ func ChekNodeWork(Ip,Port string) bool {
 // Admin panel
 // *********************************************************************
 func Api_admin(w http.ResponseWriter, req *http.Request) {
+    
+    fp := path.Join("tmp", "node.html")                                 
+    tmpl, err := template.ParseFiles(fp, "tmp/main.html")                  
+    Err(err, "Error template execute.")
 
-html:=`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Admin</title>
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-        <style>
-              body {color: #060f21b5; font-family: 'Roboto';  font-size: 16px;}
-              .card-header1 {background-color: #108c84; color:white; font-weight:bold;}
-        </style>
-</head>
-
-<body>
-    <div class="container">
-        <h2>Proxy inform panel</h2>
-
-        <!-- Grey with black text -->
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-              <ul class="navbar-nav">
-                <li class="nav-item active"> <a class="nav-link" href="#">Active</a></li>
-                <li class="nav-item"> <a class="nav-link" href="#">Link</a> </li>
-                <li class="nav-item"> <a class="nav-link" href="#">Link</a> </li>
-                <li class="nav-item"> <a class="nav-link disabled" href="#">Disabled</a> </li>
-              </ul>
-        </nav>
-        
-
-        <!--
-            <div class="card bg-info text-white">
-                <div class="card-body">Proxy inform panel</div>
-            </div>
-        -->
-
-        <br>
-        <div class="card">
-                    <div class="card-header" style="background-color:#red;">
-                         <h5>Admin panel</h5>
-                    </div>
-
-                    <div class="card-body">
-                          <a href="/nodes/">Preview all nodes</a><br>
-                          <a href="/active/">Preview <b>first</b> active node</a><br>
-                          <a href="/actives">Preview all <b>active</b> nodes</a><br>
-                          <a href="/down/">Preview all <b>Disabled</b> nodes</a><br>
-                          <a href="/test/">Test service</a><br>
-                    </div>      
-                    <div class="card-footer">Essentia</div>           
-                </div>
-
-        </div>    
-    </div>    
-</body>
-</html>
- `
-Wprn(html,w)
+    errf := tmpl.Execute(w, nil)
+    Err(errf, "Error template execute.")
 }
+
+
+// *********************************************************************
+// Node journal 
+// /report/node/
+// *********************************************************************
+func Nodes_report(w http.ResponseWriter, req *http.Request) {
+     Nd:=ReadSettingFile()
+     
+    
+    // Looop for nodes
+    for i, nd:=range Nd.Nodes{
+          if ChekNodeWork(nd.Ip, nd.Port){
+             Nd.Nodes[i].Status="Active"
+             Nd.Nodes[i].Disabled="success"
+          }else{
+             Nd.Nodes[i].Status="Disabled"
+             Nd.Nodes[i].Disabled="danger"
+          }
+          
+          Nd.Nodes[i].Datetime=time.Now().Format("02.01.2006 15:04:05")
+
+    }
+
+    Dt:= Mst{"Dts": Nd.Nodes, "Title": "Active Nodes ", "Descript": "Serach" }
+
+
+    fp := path.Join("tmp", "journal.html")                                 
+    tmpl, err := template.ParseFiles(fp, "tmp/main.html")                  
+    Err(err, "Error template execute.")
+
+    errf := tmpl.Execute(w, Dt)
+    Err(errf, "Error template execute.")
+
+
+}
+
+/***************************************************************
+  Check Eror
+ ****************************************************************/
+func Err(Er error, Txt string) {
+    if Er != nil {
+       log.Println("ERROR : " + Txt)
+       return
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

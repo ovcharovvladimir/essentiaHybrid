@@ -1,0 +1,116 @@
+<!-- Libs for strt settings -->
+{{define "libs"}}
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+      
+    <!--   <script src="/static/js/notify.js"></script>  -->
+      
+      <!-- Bootstrup -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" >
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" ></script>
+      
+      <!-- Fonts -->
+      <link href="http://fonts.googleapis.com/css?family=Roboto" rel='stylesheet' type='text/css'>
+      
+      <!-- Awesome font -->
+      <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+      <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+      
+      <!-- Datanet table-->
+      <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" ></script>
+      <link   href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel='stylesheet' type='text/css'>
+     
+	    <!-- <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script> -->
+      <script src="http://momentjs.com/downloads/moment.js"></script>
+
+      
+      
+      <style>
+						     .table-condensed>tbody>tr>td, 
+						     .table-condensed>tbody>tr>th, 
+						     .table-condensed>tfoot>tr>td, 
+						     .table-condensed>tfoot>tr>th, 
+						     .table-condensed>thead>tr>td, 
+						     .table-condensed>thead>tr>th {padding: 2px; font-size:14px; margin:2px; vertical-align:middle; padding-left: 10px;}
+						     .container-fluent{margin: 10px;}
+
+                 /*Table hack*/
+                 /*.table-striped tbody tr:nth-of-type(odd) {background-color: #f0f3f5;}*/
+                 table {border-collapse: collapse !important;} 
+				         table.dataTable tbody th, 
+                 table.dataTable tbody td {padding: 1px 10px;}
+				         input[type=search]       {border: 1px solid #CCC; border-radius: 3px; font-weight: bold;}
+				         table.dataTable thead th, 
+                 table.dataTable thead td {border-bottom: 3px solid #C2C4C5;}
+
+
+                 
+				         /* Main css */
+                 body          {font-family:'Roboto'; font-size: 16px;}
+                 h1            {color:#C70039;font-weight:bold;}
+                 a             {color:#3D3C44;}
+                 h5            {color:#2188DA; font-weight:bold;}
+                 
+                 .card-header  {padding: 10px 0px 0px 50px !important;}
+                 .card         {border: 2px solid #CCC; box-shadow: 10px -5px 10px #CCC;}
+                 .form-control {line-height: 0px; border-radius: 2px;font-weight: bold; background-color: #FFFFF0 !important;}
+                 /*http://www.html5admin.com/demo/pages/invoice.html*/
+                 tr:hover      {cursor: pointer;}
+                 .form-group   {margin-bottom: 4px;}
+                 .theadst{background-color: #554080;color: #ccc;}
+	  </style>        
+{{end}}
+
+
+<!-- Header -->
+{{define "header"}}
+		<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+		      <button class="navbar-toggler navbar-toggler-right" type="button" 
+		              data-toggle="collapse" data-target="#navbarNavDropdown" 
+		              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+		              <span class="navbar-toggler-icon"></span>
+		      </button>
+
+		      <a class="navbar-brand" href="#" style="color:#CCC; font-weight: bold;">
+		         <!-- <img class="d-inline-block align-top"  src="/static/logo.png" height="45"> -->
+             Essentia
+		      </a>
+
+		      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		        <ul class="navbar-nav">
+		            <li class="nav-item"> <a class="nav-link" href="/admin/"> Home <span class="sr-only">(current)</span></a></li>
+                <li class="nav-item"> <a class="nav-link" href="/report/node/" target="_top"> All Nodes </a></li>
+                
+		            <li class="nav-item"> <a class="nav-link" href="/nodes/"   target="_top" >Nodes</a> </li>
+                <li class="nav-item"> <a class="nav-link" href="/active/"  target="_top" >Active Node</a> </li>
+                <li class="nav-item"> <a class="nav-link" href="/actives/" target="_top" >Active Nodes</a> </li>
+                <li class="nav-item"> <a class="nav-link" href="/actives/" target="_top" >Active Nodes</a> </li>
+                
+                <li class="nav-item">  </li>
+                <li class="nav-item">  <a class="nav-link" href="/about">About</a></li>
+                
+		        </ul>
+		  </div>
+		</nav>
+{{end}}
+
+
+
+<!-- Footer -->
+{{define "footer"}}
+          <br>
+          <hr>
+		      <footer style="text-align:center; color: #CCC;">
+                 <p id="pyear"> <a href="http://essentia.com" title="Essentia">All Rights Reserved</a> </p>
+		      </footer>
+
+          <script type="text/javascript">
+                  var time = new Date();
+                  var year = time.getFullYear();
+                  $("#pyear").html("&copy " + year + " Essentia");
+          </script>
+{{end}}
+
+
+

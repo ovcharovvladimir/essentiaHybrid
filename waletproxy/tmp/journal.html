@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+          <title>Nodes</title>
+
+          <style>
+              .theadst{background-color: #554080;color: #ccc;}
+              thead>tr>th {text-align: center;}
+          </style>
+
+	      {{template "libs"}}
+	      <script type="text/javascript">
+                    // Table css
+					$(document).ready(function() {
+					      $('#rls').DataTable({
+								          "language": {
+														"decimal":      ",",
+														"thousands":    ".",
+														"search":       "Search ",
+														"lengthMenu":   "Display _MENU_ records per page",
+                                                        "zeroRecords":  "No data",
+                                                        "info":         "Showing page _PAGE_ of _PAGES_",
+                                                        "infoEmpty":    "No records available",
+                                                        "infoFiltered": "(filtered from _MAX_ total records)"
+													},
+
+								        "scrollY":        "600px",
+                                        "scrollCollapse": true,
+								        "paging":         false,
+								        "ordering":       true,
+								        "info":           false,
+								        "order":          [[ 2, "desc" ]]
+								        //"dom":            '<"toolbar">frtip'
+
+
+								    });
+
+                                    $("div.toolbar").html('<h4>{{.Title}} </h4> <b>{{.Descript}} Date : {{.Datrep}}</b>');
+					});
+	      </script>
+    </head>
+
+<body>
+	<div class="container">
+    
+    {{template "header"}}
+
+	<br>
+    <h2>Stage Nodes</h2>
+
+    <table id="rls" class="table table-bordered table-striped table-hovers table-sm">
+		<thead class="theadst">
+			<tr>
+			    <th>Ip</th>
+			    <th>Port</th>
+			    <th>Description</th>
+			    <th>Status</th>
+			    <th>Time</th>
+			    <th>Network ID</th>
+			</tr>
+		</thead> 
+
+        <tbody>
+		  	{{range .Dts}}
+		    <tr>
+	            <td> <b>{{.Ip}}</b> </td>
+	            <td style="width: 100px; text-align: center;"> {{.Port}} </td>
+	            <td> {{.Note}} </td>
+	            <td style="width: 150px; text-align: center;"> <span class="badge badge-{{.Disabled}}">{{.Status}}</span></td>
+	            <td style="width: 200px; text-align: center;"> {{.Datetime}} </td>
+	            <td style="width: 200px; text-align: center;">  </td>
+		   	</tr> 
+		 	{{end}}
+		</tbody>
+	</table>
+	{{template "footer"}}
+</div>							         	  	  
+
+</html>

@@ -7,9 +7,15 @@
 		     {"Ip":"18.217.164.134", "Port":"8545", "Note":"Gess 03"},
 		     {"Ip":"18.224.11.186",  "Port":"8545", "Note":"Gess 04"},
 		     {"Ip":"18.224.106.72",  "Port":"8545", "Note":"Gess 05"},
-		     {"Ip":"18.224.121.61",  "Port":"8545", "Note":"amazon-miner-01"},
-		     {"Ip":"18.224.159.84",  "Port":"8545", "Note":"amazon-miner-02"},
-		     {"Ip":"18.224.168.178", "Port":"8545", "Note":"amazon-miner-03"},
-		     {"Ip":"18.224.198.158", "Port":"8545", "Note":"amazon-miner-04"}
-            ]
+		     
+             {"Ip":"18.224.121.61",  "Port":"8545", "Note":"Amazon miner 01"},
+		     {"Ip":"18.224.159.84",  "Port":"8545", "Note":"Amazon miner 02"},
+		     {"Ip":"18.224.168.178", "Port":"8545", "Note":"Amazon miner 03"},
+		     {"Ip":"18.224.198.158", "Port":"8545", "Note":"Amazon miner 04"},
+         
+             {"Ip":"18.224.218.68", "Port":"8545", "Note":"Amazon bootnode 01"},
+             {"Ip":"18.224.50.75",  "Port":"8545", "Note":"Amazon bootnode 02"},
+             {"Ip":"52.15.181.235", "Port":"8545", "Note":"Amazon bootnode 03"}
+         ]
 }
+
