@@ -22,11 +22,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/ovcharovvladimir/essentiaHybrid//common"
-	"github.com/ovcharovvladimir/essentiaHybrid//core"
-	"github.com/ovcharovvladimir/essentiaHybrid//core/types"
-	"github.com/ovcharovvladimir/essentiaHybrid//core/vm"
-	"github.com/ovcharovvladimir/essentiaHybrid//crypto"
+	"github.com/ovcharovvladimir/essentiaHybrid/common"
+	"github.com/ovcharovvladimir/essentiaHybrid/core"
+	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
+	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
+	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 )

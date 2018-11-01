@@ -551,7 +551,7 @@ func (s *Service) assembleBlockStats(block *types.Block) *blockStats {
 		td = s.les.BlockChain().GetTd(header.Hash(), header.Number.Uint64())
 		txs = []txStats{}
 	}
-	
+
 	// Assemble and return the block stats
 	author, _ := s.engine.Author(header)
 
@@ -619,7 +619,6 @@ func (s *Service) reportHistory(conn *websocket.Conn, list []uint64) error {
 		history = history[len(history)-i:]
 		break
 	}
-
 
 	// Assemble the history report and send it to the server
 	if len(history) > 0 {

@@ -410,9 +410,9 @@ func (s *Server) readRequest(codec ServerCodec) ([]*serverRequest, bool, Error) 
 		if r.isPubSub { // ess_subscribe, r.method contains the subscription method name
 			log.Warn("isPubSub", "svc.subscriptions", svc, "rm", r.method)
 			if callb, ok := svc.subscriptions[r.method]; ok {
-				log.Warn("eth_subscribe", "rs", r.method, "ss", svc.subscriptions)
+				//log.Warn("eth_subscribe", "rs", r.method, "ss", svc.subscriptions)
 				requests[i] = &serverRequest{id: r.id, svcname: svc.name, callb: callb}
-				log.Warn("eth_subscribe", "rid", r.id, "svcname", svc.name, "callb", callb)
+				//log.Warn("eth_subscribe", "rid", r.id, "svcname", svc.name, "callb", callb)
 				if r.params != nil && len(callb.argTypes) > 0 {
 					argTypes := []reflect.Type{reflect.TypeOf("")}
 					argTypes = append(argTypes, callb.argTypes...)

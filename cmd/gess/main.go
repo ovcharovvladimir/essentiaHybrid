@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/elastic/gosigar"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts/keystore"
@@ -35,17 +36,18 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
 	"github.com/ovcharovvladimir/essentiaHybrid/node"
+
+	//"github.com/pkg/profile"
 	"gopkg.in/urfave/cli.v1"
-	"github.com/pkg/profile"
 )
 
 const (
-	clientIdentifier = "gess"                            // Client identifier to advertise over the network
+	clientIdentifier = "gess" // Client identifier to advertise over the network
 )
 
 var (
-	gitCommit = ""   	                                // Git SHA1 commit hash of the release (set via linker flags)
-	app = utils.NewApp(gitCommit, "the Essentia CLI")   // The app that holds all commands and flags.
+	gitCommit = ""                                          // Git SHA1 commit hash of the release (set via linker flags)
+	app       = utils.NewApp(gitCommit, "the Essentia CLI") // The app that holds all commands and flags.
 
 	// flags that configure the node
 	nodeFlags = []cli.Flag{
@@ -163,15 +165,15 @@ var (
 )
 
 //************************************************************
-//  Name    init  
+//  Name    init
 //************************************************************
 func init() {
 
 	// Initialize the CLI app and start Geth
-	app.Action      = geth
+	app.Action = geth
 	app.HideVersion = true // we have a command to print the version
-	app.Copyright   = "Copyright 2013-2018 The go-ethereum Authors"
-	app.Commands    = []cli.Command{
+	app.Copyright = "Copyright 2013-2018 The go-ethereum Authors"
+	app.Commands = []cli.Command{
 		// See chaincmd.go:
 		initCommand,
 		importCommand,
@@ -213,11 +215,11 @@ func init() {
 
 		logdir := ""
 		if ctx.GlobalBool(utils.DashboardEnabledFlag.Name) {
-		   logdir = (&node.Config{DataDir: utils.MakeDataDir(ctx)}).ResolvePath("logs")
+			logdir = (&node.Config{DataDir: utils.MakeDataDir(ctx)}).ResolvePath("logs")
 		}
 
 		if err := debug.Setup(ctx, logdir); err != nil {
-		   return err
+			return err
 		}
 
 		// Cap the cache allowance and tune the garbage collector
@@ -225,18 +227,18 @@ func init() {
 
 		if err := mem.Get(); err == nil {
 			allowance := int(mem.Total / 1024 / 1024 / 3)
-			
+
 			if cache := ctx.GlobalInt(utils.CacheFlag.Name); cache > allowance {
-			   log.Warn("Sanitizing cache to Go's GC limits", "provided", cache, "updated", allowance)
-			   ctx.GlobalSet(utils.CacheFlag.Name, strconv.Itoa(allowance))
+				log.Warn("Sanitizing cache to Go's GC limits", "provided", cache, "updated", allowance)
+				ctx.GlobalSet(utils.CacheFlag.Name, strconv.Itoa(allowance))
 			}
 		}
-		
+
 		// Ensure Go's GC ignores the database cache for trigger percentage
 		cache := ctx.GlobalInt(utils.CacheFlag.Name)
-		gogc  := math.Max(20, math.Min(100, 100/(float64(cache)/1024)))
+		gogc := math.Max(20, math.Min(100, 100/(float64(cache)/1024)))
 
-		log.Debug("Sanitizing Go's GC trigger","percent", int(gogc))
+		log.Debug("Sanitizing Go's GC trigger", "percent", int(gogc))
 		godebug.SetGCPercent(int(gogc))
 
 		// Start metrics export if enabled
@@ -249,7 +251,6 @@ func init() {
 		return nil
 	}
 
-
 	app.After = func(ctx *cli.Context) error {
 		debug.Exit()
 		console.Stdin.Close() // Resets terminal mode.
@@ -257,19 +258,18 @@ func init() {
 	}
 }
 
-
 //************************************************************
-// Main  
+// Main
 //************************************************************
 func main() {
 	// CPU profileing
 	// defer profile.Start().Stop()
 	// Memory profiling
-	defer profile.Start(profile.MemProfile).Stop()
+	//defer profile.Start(profile.MemProfile).Stop()
 
 	if err := app.Run(os.Args); err != nil {
-	   fmt.Fprintln(os.Stderr, err)
-	   os.Exit(1)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 
@@ -278,7 +278,7 @@ func main() {
 // blocking mode, waiting for it to be shut down.
 func geth(ctx *cli.Context) error {
 	if args := ctx.Args(); len(args) > 0 {
-	   return fmt.Errorf("invalid command: %q", args[0])
+		return fmt.Errorf("invalid command: %q", args[0])
 	}
 
 	node := makeFullNode(ctx)
@@ -287,24 +287,23 @@ func geth(ctx *cli.Context) error {
 	return nil
 }
 
-
 // startNode boots up the system node and all registered protocols, after which
 // it unlocks any requested accounts, and starts the RPC/IPC interfaces and the
 // miner.
 func startNode(ctx *cli.Context, stack *node.Node) {
-	 debug.Memsize.Add("node", stack)
+	debug.Memsize.Add("node", stack)
 
 	// Start up the node itself
 	utils.StartNode(stack)
 
 	// Unlock any account specifically requested
-	ks        := stack.AccountManager().Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
+	ks := stack.AccountManager().Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
 	passwords := utils.MakePasswordList(ctx)
-	unlocks   := strings.Split(ctx.GlobalString(utils.UnlockedAccountFlag.Name), ",")
-	
+	unlocks := strings.Split(ctx.GlobalString(utils.UnlockedAccountFlag.Name), ",")
+
 	for i, account := range unlocks {
 		if trimmed := strings.TrimSpace(account); trimmed != "" {
-		   unlockAccount(ctx, ks, trimmed, i, passwords)
+			unlockAccount(ctx, ks, trimmed, i, passwords)
 		}
 	}
 
@@ -312,12 +311,11 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 	events := make(chan accounts.WalletEvent, 16)
 	stack.AccountManager().Subscribe(events)
 
-
 	go func() {
 		// Create a chain state reader for self-derivation
 		rpcClient, err := stack.Attach()
 		if err != nil {
-		   utils.Fatalf("Failed to attach to self: %v", err)
+			utils.Fatalf("Failed to attach to self: %v", err)
 		}
 
 		stateReader := essclient.NewClient(rpcClient)
@@ -325,7 +323,7 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		// Open any wallets already attached
 		for _, wallet := range stack.AccountManager().Wallets() {
 			if err := wallet.Open(""); err != nil {
- 			   log.Warn("Failed to open wallet", "url", wallet.URL(), "err", err)
+				log.Warn("Failed to open wallet", "url", wallet.URL(), "err", err)
 			}
 		}
 
@@ -354,10 +352,9 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		}
 	}()
 
-
 	// Start auxiliary services if enabled
 	if ctx.GlobalBool(utils.MiningEnabledFlag.Name) || ctx.GlobalBool(utils.DeveloperFlag.Name) {
-		
+
 		// Mining only makes sense if a full Ethereum node is running
 		if ctx.GlobalString(utils.SyncModeFlag.Name) == "light" {
 			utils.Fatalf("Light clients do not support mining")
@@ -365,23 +362,23 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 
 		var ethereum *ess.Ethereum
 		if err := stack.Service(&ethereum); err != nil {
-		   utils.Fatalf("Ethereum service not running: %v", err)
+			utils.Fatalf("Ethereum service not running: %v", err)
 		}
 
 		// Set the gas price to the limits from the CLI and start mining
 		gasprice := utils.GlobalBig(ctx, utils.MinerLegacyGasPriceFlag.Name)
 		if ctx.IsSet(utils.MinerGasPriceFlag.Name) {
-		   gasprice = utils.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
+			gasprice = utils.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
 		}
 		ethereum.TxPool().SetGasPrice(gasprice)
 
 		threads := ctx.GlobalInt(utils.MinerLegacyThreadsFlag.Name)
 		if ctx.GlobalIsSet(utils.MinerThreadsFlag.Name) {
-		   threads = ctx.GlobalInt(utils.MinerThreadsFlag.Name)
+			threads = ctx.GlobalInt(utils.MinerThreadsFlag.Name)
 		}
 
 		if err := ethereum.StartMining(threads); err != nil {
-		   utils.Fatalf("Failed to start mining: %v", err)
+			utils.Fatalf("Failed to start mining: %v", err)
 		}
 	}
 }

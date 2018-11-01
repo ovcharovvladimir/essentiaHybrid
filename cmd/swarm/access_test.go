@@ -28,6 +28,7 @@ import (
 	gorand "math/rand"
 	"net/http"
 	"os"
+
 	// "path/filepath"
 	"strings"
 	"testing"
@@ -38,7 +39,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/api"
 	swarm "github.com/ovcharovvladimir/essentiaHybrid/swarm/api/client"
-	"github.com/ovcharovvladimir/essentiaHybrid//swarm/testutil"
+	"github.com/ovcharovvladimir/essentiaHybrid/swarm/testutil"
 )
 
 const (

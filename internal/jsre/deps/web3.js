@@ -1884,33 +1884,33 @@ var sha3 = require('./sha3.js');
 var utf8 = require('utf8');
 
 var unitMap = {
-    'noether':      '0',
+    'noess':      '0',
     'wei':          '1',
     'kwei':         '1000',
     'Kwei':         '1000',
     'babbage':      '1000',
-    'femtoether':   '1000',
+    'femtoess':   '1000',
     'mwei':         '1000000',
     'Mwei':         '1000000',
     'lovelace':     '1000000',
-    'picoether':    '1000000',
+    'pico':    '1000000',
     'gwei':         '1000000000',
     'Gwei':         '1000000000',
     'shannon':      '1000000000',
-    'nanoether':    '1000000000',
+    'nano':    '1000000000',
     'nano':         '1000000000',
     'szabo':        '1000000000000',
-    'microether':   '1000000000000',
+    'micro':   '1000000000000',
     'micro':        '1000000000000',
     'finney':       '1000000000000000',
-    'milliether':    '1000000000000000',
+    'milliess':    '1000000000000000',
     'milli':         '1000000000000000',
-    'ether':        '1000000000000000000',
+    'ess':        '1000000000000000000',
     'kether':       '1000000000000000000000',
     'grand':        '1000000000000000000000',
-    'mether':       '1000000000000000000000000',
-    'gether':       '1000000000000000000000000000',
-    'tether':       '1000000000000000000000000000000'
+    'mega':       '1000000000000000000000000',
+    'giga':       '1000000000000000000000000000',
+    'tera':       '1000000000000000000000000000000'
 };
 
 /**
@@ -6509,7 +6509,7 @@ RequestManager.prototype.poll = function () {
     var pollsIdMap = {};
     payload.forEach(function(load, index){
         pollsIdMap[load.id] = pollsIds[index];
-    });
+    });F
 
 
     var self = this;
