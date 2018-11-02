@@ -16,12 +16,10 @@
 
 package storage
 
-// this is a clone of an earlier state of the ethereum essdb/database
+// this is a clone of an earlier state of the ethereum ethdb/database
 // no need for queueing/caching
 
 import (
-	"fmt"
-
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
@@ -46,13 +44,10 @@ func NewLDBDatabase(file string) (*LDBDatabase, error) {
 	return database, nil
 }
 
-func (db *LDBDatabase) Put(key []byte, value []byte) {
+func (db *LDBDatabase) Put(key []byte, value []byte) error {
 	metrics.GetOrRegisterCounter("ldbdatabase.put", nil).Inc(1)
 
-	err := db.db.Put(key, value, nil)
-	if err != nil {
-		fmt.Println("Error put", err)
-	}
+	return db.db.Put(key, value, nil)
 }
 
 func (db *LDBDatabase) Get(key []byte) ([]byte, error) {

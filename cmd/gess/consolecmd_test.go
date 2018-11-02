@@ -23,7 +23,7 @@ import (
 	//"os"
 	//"path/filepath"
 	"runtime"
-	"strconv"
+	//	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -111,20 +111,20 @@ const (
 //	geth.ExpectExit()
 //}
 
-func TestWSAttachWelcome(t *testing.T) {
-	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
-	port := strconv.Itoa(trulyRandInt(1024, 65536)) // Yeah, sometimes this will fail, sorry :P
+//func TestWSAttachWelcome(t *testing.T) {
+//	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
+//	port := "6666"
 
-	geth := runGeth(t,
-		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
-		"--etherbase", coinbase, "--ws", "--wsport", port)
+//	geth := runGeth(t,
+//		"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none",
+//		"--etherbase", coinbase, "--ws", "--wsport", port)
 
-	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
-	testAttachWelcome(t, geth, "ws://localhost:"+port, httpAPIs)
+//	time.Sleep(2 * time.Second) // Simple way to wait for the RPC endpoint to open
+//	testAttachWelcome(t, geth, "ws://localhost:"+port, httpAPIs)
 
-	geth.Interrupt()
-	geth.ExpectExit()
-}
+//	geth.Interrupt()
+//	geth.ExpectExit()
+//}
 
 func testAttachWelcome(t *testing.T, geth *testgeth, endpoint, apis string) {
 	// Attach to a running geth note and terminate immediately

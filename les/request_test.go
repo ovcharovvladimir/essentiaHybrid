@@ -24,7 +24,6 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-	"github.com/ovcharovvladimir/essentiaHybrid/ess"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/light"
 )
@@ -94,8 +93,7 @@ func testAccess(t *testing.T, protocol int, fn accessTestFn) {
 			if req := fn(client.db, bhash, i); req != nil {
 				ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
 				defer cancel()
-
-				err := odr.Retrieve(ctx, req)
+				err := client.pm.odr.Retrieve(ctx, req)
 				got := err == nil
 				exp := i < expFail
 				if exp && !got {

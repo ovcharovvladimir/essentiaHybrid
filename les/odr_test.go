@@ -30,7 +30,8 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/state"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
-	"github.com/ovcharovvladimir/essentiaHybrid/ess"
+
+	//	"github.com/ovcharovvladimir/essentiaHybrid/ess"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/light"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"

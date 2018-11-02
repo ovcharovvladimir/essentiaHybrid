@@ -403,12 +403,12 @@ func (s *Server) readRequest(codec ServerCodec) ([]*serverRequest, bool, Error) 
 		if svc, ok = s.services[r.service]; !ok { // rpc method isn't available
 
 			requests[i] = &serverRequest{id: r.id, err: &methodNotFoundError{r.service, r.method}}
-			log.Warn("rpc service ", "req.total", i+1, "s", r.service, "m", r.method)
+
 			continue
 		}
 
 		if r.isPubSub { // ess_subscribe, r.method contains the subscription method name
-			log.Warn("isPubSub", "svc.subscriptions", svc, "rm", r.method)
+
 			if callb, ok := svc.subscriptions[r.method]; ok {
 				//log.Warn("eth_subscribe", "rs", r.method, "ss", svc.subscriptions)
 				requests[i] = &serverRequest{id: r.id, svcname: svc.name, callb: callb}

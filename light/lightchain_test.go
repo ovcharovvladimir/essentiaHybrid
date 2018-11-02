@@ -55,7 +55,7 @@ func newCanonical(n int) (essdb.Database, *LightChain, error) {
 	db := essdb.NewMemDatabase()
 	gspec := core.Genesis{Config: params.TestChainConfig}
 	genesis := gspec.MustCommit(db)
-	blockchain, _ := NewLightChain(&dummyOdr{db: db, indexerConfig: TestClientIndexerConfig}, gspec.Config, ethash.NewFaker())
+	blockchain, _ := NewLightChain(&dummyOdr{db: db, indexerConfig: TestClientIndexerConfig}, gspec.Config, esshash.NewFaker())
 
 	// Create and inject the requested chain
 	if n == 0 {
