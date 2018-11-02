@@ -128,7 +128,7 @@ func BenchmarkDiscovery_256_4(b *testing.B) { benchmarkDiscovery(b, 256, 4) }
 
 func TestDiscoverySimulationDockerAdapter(t *testing.T) {
 	return
-	testDiscoverySimulationDockerAdapter(t, *nodeCount, *initCount)
+	//testDiscoverySimulationDockerAdapter(t, *nodeCount, *initCount)
 }
 
 func testDiscoverySimulationDockerAdapter(t *testing.T, nodes, conns int) {

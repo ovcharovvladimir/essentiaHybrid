@@ -28,13 +28,12 @@ import (
 	gorand "math/rand"
 	"net/http"
 	"os"
-
-	// "path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
+	"github.com/ovcharovvladimir/essentiaHybrid/crypto/ecies"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto/sha3"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/api"
@@ -55,9 +54,8 @@ var DefaultCurve = crypto.S256()
 // is then fetched through 2nd node. since the tested code is not key-aware - we can just
 // fetch from the 2nd node using HTTP BasicAuth
 func TestAccessPassword(t *testing.T) {
-	cluster := newTestCluster(t, 1)
-	defer cluster.Shutdown()
-	proxyNode := cluster.Nodes[0]
+	srv := testutil.NewTestSwarmServer(t, serverFunc, nil)
+	defer srv.Close()
 
 	dataFilename := testutil.TempFileWithContent(t, data)
 	defer os.RemoveAll(dataFilename)
@@ -65,7 +63,7 @@ func TestAccessPassword(t *testing.T) {
 	// upload the file with 'swarm up' and expect a hash
 	up := runSwarm(t,
 		"--bzzapi",
-		proxyNode.URL, //it doesn't matter through which node we upload content
+		srv.URL, //it doesn't matter through which node we upload content
 		"up",
 		"--encrypt",
 		dataFilename)
@@ -139,7 +137,7 @@ func TestAccessPassword(t *testing.T) {
 	if a.Publisher != "" {
 		t.Fatal("should be empty")
 	}
-	client := swarm.NewClient(cluster.Nodes[0].URL)
+	client := swarm.NewClient(srv.URL)
 
 	hash, err := client.UploadManifest(&m, false)
 	if err != nil {
@@ -148,7 +146,7 @@ func TestAccessPassword(t *testing.T) {
 
 	httpClient := &http.Client{}
 
-	url := cluster.Nodes[0].URL + "/" + "bzz:/" + hash
+	url := srv.URL + "/" + "bzz:/" + hash
 	response, err := httpClient.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -190,7 +188,7 @@ func TestAccessPassword(t *testing.T) {
 	//download file with 'swarm down' with wrong password
 	up = runSwarm(t,
 		"--bzzapi",
-		proxyNode.URL,
+		srv.URL,
 		"down",
 		"bzz:/"+hash,
 		tmp,
@@ -232,7 +230,6 @@ func TestAccessPK(t *testing.T) {
 	}
 
 	ref := matches[0]
-
 	pk := cluster.Nodes[0].PrivateKey
 	granteePubKey := crypto.CompressPubkey(&pk.PublicKey)
 
@@ -501,9 +498,6 @@ func testAccessACT(t *testing.T, bogusEntries int) {
 	if len(a.Salt) < 32 {
 		t.Fatalf(`got salt with length %v, expected not less the 32 bytes`, len(a.Salt))
 	}
-	//if a.KdfParams != nil {
-	//	t.Fatal("manifest access kdf params should be nil")
-	//}
 
 	if a.Publisher != pkComp {
 		t.Fatal("publisher key did not match")
@@ -594,8 +588,7 @@ func TestKeypairSanity(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		hasher := sha3.NewKeccak256()
-		hasher.Write(salt)
+		hasher := sha3.NewKeccak256()		hasher.Write(salt)
 		shared, err := hex.DecodeString(sharedSecret)
 		if err != nil {
 			t.Fatal(err)
