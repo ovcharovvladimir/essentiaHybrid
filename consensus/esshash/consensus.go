@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethash
+package esshash
 
 import (
 	"bytes"
@@ -32,6 +32,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/state"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto/sha3"
+	"github.com/ovcharovvladimir/essentiaHybrid/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 	"github.com/ovcharovvladimir/essentiaHybrid/rlp"
 )
@@ -307,7 +308,6 @@ func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, p
 	mode := esshash.config.PowMode
 	return CalcDifficultyAdj(chain.Config(), time, mode, parent)
 }
-}
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
@@ -317,7 +317,7 @@ func CalcDifficultyAdj(config *params.ChainConfig, time uint64, mode Mode, paren
 		return big1
 
 	} else {
-		
+
 		next := new(big.Int).Add(parent.Number, big1)
 		switch {
 		case config.IsConstantinople(next):
