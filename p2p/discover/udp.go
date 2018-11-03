@@ -22,6 +22,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net"
 	"sync"
 	"time"
@@ -70,6 +71,7 @@ type (
 		Version    uint
 		From, To   rpcEndpoint
 		Expiration uint64
+		Nonse      []byte
 		// Ignore additional fields (for forward compatibility).
 		Rest []rlp.RawValue `rlp:"tail"`
 	}
@@ -83,6 +85,7 @@ type (
 
 		ReplyTok   []byte // This contains the hash of the ping packet.
 		Expiration uint64 // Absolute timestamp at which the packet becomes invalid.
+		Nonse      []byte
 		// Ignore additional fields (for forward compatibility).
 		Rest []rlp.RawValue `rlp:"tail"`
 	}
@@ -292,10 +295,17 @@ func (t *udp) ping(toid enode.ID, toaddr *net.UDPAddr) error {
 // sendPing sends a ping message to the given node and invokes the callback
 // when the reply arrives.
 func (t *udp) sendPing(toid enode.ID, toaddr *net.UDPAddr, callback func()) <-chan error {
+
+	var e []byte
+	e = eid()
+	n := string(e)
+	n = n + toaddr.IP.String()
+
 	req := &ping{
 		Version:    4,
 		From:       t.ourEndpoint(),
 		To:         makeEndpoint(toaddr, 0), // TODO: maybe use known TCP port from DB
+		Nonse:      crypto.Keccak256([]byte(n)),
 		Expiration: uint64(time.Now().Add(expiration).Unix()),
 	}
 	packet, hash, err := encodePacket(t.priv, pingPacket, req)
@@ -623,6 +633,19 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromKey encPubkey, mac []byte
 	if err != nil {
 		return fmt.Errorf("invalid public key: %v", err)
 	}
+	if expired(req.Expiration) {
+		return errExpired
+	}
+	ns := string(req.Nonse)
+	ns = ns + req.From.IP.String()
+	cn := crypto.Keccak256([]byte(ns))
+
+	var pp pong
+	pp.To = makeEndpoint(from, req.From.TCP)
+	pp.ReplyTok = mac
+	pp.Nonse = cn
+	pp.Expiration = uint64(time.Now().Add(expiration).Unix())
+
 	t.send(from, pongPacket, &pong{
 		To:         makeEndpoint(from, req.From.TCP),
 		ReplyTok:   mac,
@@ -630,10 +653,19 @@ func (req *ping) handle(t *udp, from *net.UDPAddr, fromKey encPubkey, mac []byte
 	})
 	n := wrapNode(enode.NewV4(key, from.IP, int(req.From.TCP), from.Port))
 	t.handleReply(n.ID(), pingPacket, req)
-	if time.Since(t.db.LastPongReceived(n.ID())) > bondExpiration {
-		t.sendPing(n.ID(), from, func() { t.tab.addThroughPing(n) })
-	} else {
-		t.tab.addThroughPing(n)
+
+	ex := string(req.Nonse)
+	ex = ex + req.From.IP.String()
+	exa := crypto.Keccak256([]byte(ex))
+	//log.Trace("Essentia ", "exa", string(exa[:]), "pp", string(pp.Nonse[:]))
+	rs := bytes.Compare(pp.Nonse, exa)
+	if rs == 0 {
+		log.Trace("Essentia node founded", "ip", from.IP)
+		if time.Since(t.db.LastPongReceived(n.ID())) > bondExpiration {
+			t.sendPing(n.ID(), from, func() { t.tab.addThroughPing(n) })
+		} else {
+			t.tab.addThroughPing(n)
+		}
 	}
 	t.localNode.UDPEndpointStatement(from, &net.UDPAddr{IP: req.To.IP, Port: int(req.To.UDP)})
 	t.db.UpdateLastPingReceived(n.ID(), time.Now())
@@ -712,4 +744,16 @@ func (req *neighbors) name() string { return "NEIGHBORS/v4" }
 
 func expired(ts uint64) bool {
 	return time.Unix(int64(ts), 0).Before(time.Now())
+}
+func eid() []byte {
+	var bytes = make([]byte, 5)
+	for i := 0; i < 5; i++ {
+		bytes[i] = byte(randInt(0, 255))
+	}
+
+	return bytes
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
 }

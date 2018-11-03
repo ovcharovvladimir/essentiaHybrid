@@ -28,15 +28,15 @@ import (
 	"testing"
 	"time"
 
+	colorable "github.com/mattn/go-colorable"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/node"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/simulations/adapters"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/api"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/network/simulation"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/storage"
-	colorable "github.com/mattn/go-colorable"
 )
 
 var (
@@ -151,13 +151,13 @@ func TestSwarmNetwork(t *testing.T) {
 			name: "dec_inc_node_count",
 			steps: []testSwarmNetworkStep{
 				{
-					nodeCount: 5,
-				},
-				{
 					nodeCount: 3,
 				},
 				{
-					nodeCount: 10,
+					nodeCount: 1,
+				},
+				{
+					nodeCount: 5,
 				},
 			},
 			options: &testSwarmNetworkOptions{
@@ -234,14 +234,14 @@ type testSwarmNetworkStep struct {
 type file struct {
 	addr   storage.Address
 	data   string
-	nodeID discover.NodeID
+	nodeID enode.ID
 }
 
 // check represents a reference to a file that is retrieved
 // from a particular node.
 type check struct {
 	key    string
-	nodeID discover.NodeID
+	nodeID enode.ID
 }
 
 // testSwarmNetworkOptions contains optional parameters for running
@@ -440,7 +440,7 @@ func retrieve(
 
 			checkCount++
 			wg.Add(1)
-			go func(f file, id discover.NodeID) {
+			go func(f file, id enode.ID) {
 				defer wg.Done()
 
 				log.Debug("api get: check file", "node", id.String(), "key", f.addr.String(), "total files found", atomic.LoadUint64(totalFoundCount))
@@ -466,7 +466,7 @@ func retrieve(
 			}(f, id)
 		}
 
-		go func(id discover.NodeID) {
+		go func(id enode.ID) {
 			defer totalWg.Done()
 			wg.Wait()
 

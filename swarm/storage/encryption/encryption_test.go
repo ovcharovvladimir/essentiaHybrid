@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
+	"github.com/ovcharovvladimir/essentiaHybrid/common/hexutil"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto/sha3"
 )
 

@@ -200,7 +200,7 @@ func TestParseEnsAPIAddress(t *testing.T) {
 		{
 			description: "IPC endpoint",
 			value:       "/data/testnet/gess.ipc",
-			endpoint:    "/data/testnet/gess.ipc",
+			endpoint:    "/data/testnet/geth.ipc",
 		},
 		{
 			description: "HTTP endpoint",
@@ -232,8 +232,8 @@ func TestParseEnsAPIAddress(t *testing.T) {
 		},
 		{
 			description: "IPC Endpoint and contract address",
-			value:       "314159265dD8dbb310642f98f50C066173C1259b@/data/testnet/gess.ipc",
-			endpoint:    "/data/testnet/gess.ipc",
+			value:       "314159265dD8dbb310642f98f50C066173C1259b@/data/testnet/geth.ipc",
+			endpoint:    "/data/testnet/geth.ipc",
 			addr:        common.HexToAddress("314159265dD8dbb310642f98f50C066173C1259b"),
 		},
 		{
@@ -250,8 +250,8 @@ func TestParseEnsAPIAddress(t *testing.T) {
 		},
 		{
 			description: "IPC Endpoint, TLD and contract address",
-			value:       "test:314159265dD8dbb310642f98f50C066173C1259b@/data/testnet/gess.ipc",
-			endpoint:    "/data/testnet/gess.ipc",
+			value:       "test:314159265dD8dbb310642f98f50C066173C1259b@/data/testnet/geth.ipc",
+			endpoint:    "/data/testnet/geth.ipc",
 			addr:        common.HexToAddress("314159265dD8dbb310642f98f50C066173C1259b"),
 			tld:         "test",
 		},
@@ -316,11 +316,11 @@ func TestLocalStoreAndRetrieve(t *testing.T) {
 	}
 
 	// by default, test only the lonely chunk cases
-	sizes := []int{1, 60, 4097, 524288 + 1, 7*524288 + 1, 128*524288 + 1}
+	sizes := []int{1, 60, 4097, 524288 + 1, 7*524288 + 1}
 
 	if *longrunning {
 		// test broader set of cases if -longruning flag is set
-		sizes = append(sizes, 83, 179, 253, 1024, 4095, 4096, 8191, 8192, 8193, 12287, 12288, 12289, 123456, 2345678, 67298391, 524288, 524288+4096, 524288+4097, 7*524288, 7*524288+4096, 7*524288+4097, 128*524288, 128*524288+4096, 128*524288+4097, 816778334)
+		sizes = append(sizes, 83, 179, 253, 1024, 4095, 4096, 8191, 8192, 8193, 12287, 12288, 12289, 123456, 2345678, 67298391, 524288, 524288+4096, 524288+4097, 7*524288, 7*524288+4096, 7*524288+4097, 128*524288+1, 128*524288, 128*524288+4096, 128*524288+4097, 816778334)
 	}
 	for _, n := range sizes {
 		testLocalStoreAndRetrieve(t, swarm, n, true)

@@ -25,7 +25,7 @@ import (
 
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/node"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/simulations"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/simulations/adapters"
 )
@@ -45,8 +45,8 @@ type Simulation struct {
 
 	serviceNames []string
 	cleanupFuncs []func()
-	buckets      map[discover.NodeID]*sync.Map
-	pivotNodeID  *discover.NodeID
+	buckets      map[enode.ID]*sync.Map
+	pivotNodeID  *enode.ID
 	shutdownWG   sync.WaitGroup
 	done         chan struct{}
 	mu           sync.RWMutex
@@ -70,7 +70,7 @@ type ServiceFunc func(ctx *adapters.ServiceContext, bucket *sync.Map) (s node.Se
 // simulations.Network initialized with provided services.
 func New(services map[string]ServiceFunc) (s *Simulation) {
 	s = &Simulation{
-		buckets: make(map[discover.NodeID]*sync.Map),
+		buckets: make(map[enode.ID]*sync.Map),
 		done:    make(chan struct{}),
 	}
 

@@ -41,7 +41,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/nat"
 	"github.com/ovcharovvladimir/essentiaHybrid/whisper/mailserver"
 	whisper "github.com/ovcharovvladimir/essentiaHybrid/whisper/whisperv6"
@@ -97,11 +97,11 @@ var (
 	argPoW       = flag.Float64("pow", whisper.DefaultMinimumPoW, "PoW for normal messages in float format (e.g. 2.7)")
 	argServerPoW = flag.Float64("mspow", whisper.DefaultMinimumPoW, "PoW requirement for Mail Server request")
 
-	argIP      = flag.String("ip", "", "IP address and port of this node (e.g. 127.0.0.1:51903)")
+	argIP      = flag.String("ip", "", "IP address and port of this node (e.g. 127.0.0.1:30303)")
 	argPub     = flag.String("pub", "", "public key for asymmetric encryption")
 	argDBPath  = flag.String("dbpath", "", "path to the server's DB directory")
 	argIDFile  = flag.String("idfile", "", "file name with node id (private key)")
-	argEnode   = flag.String("boot", "", "bootstrap node you want to connect to (e.g. essnode://e454......08d50@52.176.211.200:16428)")
+	argEnode   = flag.String("boot", "", "bootstrap node you want to connect to (e.g. enode://e454......08d50@52.176.211.200:16428)")
 	argTopic   = flag.String("topic", "", "topic in hexadecimal format (e.g. 70a4beef)")
 	argSaveDir = flag.String("savedir", "", "directory where all incoming messages will be saved as files")
 )
@@ -124,7 +124,7 @@ func processArgs() {
 		}
 	}
 
-	const enodePrefix = "essnode://"
+	const enodePrefix = "enode://"
 	if len(*argEnode) > 0 {
 		if (*argEnode)[:len(enodePrefix)] != enodePrefix {
 			*argEnode = enodePrefix + *argEnode
@@ -175,7 +175,7 @@ func initialize() {
 	log.Root().SetHandler(log.LvlFilterHandler(log.Lvl(*argVerbosity), log.StreamHandler(os.Stderr, log.TerminalFormat(false))))
 
 	done = make(chan struct{})
-	var peers []*discover.Node
+	var peers []*enode.Node
 	var err error
 
 	if *generateKey {
@@ -201,9 +201,9 @@ func initialize() {
 		*bootstrapMode = true
 	} else {
 		if len(*argEnode) == 0 {
-			argEnode = scanLineA("Please enter the peer's essnode: ")
+			argEnode = scanLineA("Please enter the peer's enode: ")
 		}
-		peer := discover.MustParseNode(*argEnode)
+		peer := enode.MustParseV4(*argEnode)
 		peers = append(peers, peer)
 	}
 
@@ -747,11 +747,11 @@ func requestExpiredMessagesLoop() {
 }
 
 func extractIDFromEnode(s string) []byte {
-	n, err := discover.ParseNode(s)
+	n, err := enode.ParseV4(s)
 	if err != nil {
-		utils.Fatalf("Failed to parse essnode: %s", err)
+		utils.Fatalf("Failed to parse enode: %s", err)
 	}
-	return n.ID[:]
+	return n.ID().Bytes()
 }
 
 // obfuscateBloom adds 16 random bits to the bloom

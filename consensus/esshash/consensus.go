@@ -32,7 +32,6 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/state"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto/sha3"
-	"github.com/ovcharovvladimir/essentiaHybrid/esshash"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 	"github.com/ovcharovvladimir/essentiaHybrid/rlp"
 )
@@ -304,7 +303,7 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func (ethash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, parent *types.Header) *big.Int {
+func (esshash *Ethash) CalcDifficulty(chain consensus.ChainReader, time uint64, parent *types.Header) *big.Int {
 	mode := esshash.config.PowMode
 	return CalcDifficultyAdj(chain.Config(), time, mode, parent)
 }

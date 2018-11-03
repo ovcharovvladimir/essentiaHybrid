@@ -30,21 +30,19 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/core/state"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
-
-	//	"github.com/ovcharovvladimir/essentiaHybrid/ess"
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/light"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 	"github.com/ovcharovvladimir/essentiaHybrid/rlp"
 )
 
-type odrTestFn func(ctx context.Context, db essdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte
+type odrTestFn func(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte
 
 func TestOdrGetBlockLes1(t *testing.T) { testOdr(t, 1, 1, odrGetBlock) }
 
 func TestOdrGetBlockLes2(t *testing.T) { testOdr(t, 2, 1, odrGetBlock) }
 
-func odrGetBlock(ctx context.Context, db essdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
+func odrGetBlock(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
 	var block *types.Block
 	if bc != nil {
 		block = bc.GetBlockByHash(bhash)
@@ -62,7 +60,7 @@ func TestOdrGetReceiptsLes1(t *testing.T) { testOdr(t, 1, 1, odrGetReceipts) }
 
 func TestOdrGetReceiptsLes2(t *testing.T) { testOdr(t, 2, 1, odrGetReceipts) }
 
-func odrGetReceipts(ctx context.Context, db essdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
+func odrGetReceipts(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
 	var receipts types.Receipts
 	if bc != nil {
 		if number := rawdb.ReadHeaderNumber(db, bhash); number != nil {
@@ -84,7 +82,7 @@ func TestOdrAccountsLes1(t *testing.T) { testOdr(t, 1, 1, odrAccounts) }
 
 func TestOdrAccountsLes2(t *testing.T) { testOdr(t, 2, 1, odrAccounts) }
 
-func odrAccounts(ctx context.Context, db essdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
+func odrAccounts(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
 	dummyAddr := common.HexToAddress("1234567812345678123456781234567812345678")
 	acc := []common.Address{testBankAddress, acc1Addr, acc2Addr, dummyAddr}
 
@@ -120,7 +118,7 @@ type callmsg struct {
 
 func (callmsg) CheckNonce() bool { return false }
 
-func odrContractCall(ctx context.Context, db essdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
+func odrContractCall(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte {
 	data := common.Hex2Bytes("60CD26850000000000000000000000000000000000000000000000000000000000000000")
 
 	var res []byte
@@ -187,7 +185,6 @@ func testOdr(t *testing.T, protocol int, expFail uint64, fn odrTestFn) {
 			}
 		}
 	}
-
 	// temporarily remove peer to test odr fails
 	// expect retrievals to fail (except genesis block) without a les peer
 	client.peers.Unregister(client.rPeer.id)
@@ -197,7 +194,7 @@ func testOdr(t *testing.T, protocol int, expFail uint64, fn odrTestFn) {
 	client.peers.Register(client.rPeer)
 	time.Sleep(time.Millisecond * 10) // ensure that all peerSetNotify callbacks are executed
 	client.peers.lock.Lock()
-	client.rPeer.hasBlock = func(common.Hash, uint64) bool { return true }
+	client.rPeer.hasBlock = func(common.Hash, uint64, bool) bool { return true }
 	client.peers.lock.Unlock()
 	test(5)
 	// still expect all retrievals to pass, now data should be cached locally

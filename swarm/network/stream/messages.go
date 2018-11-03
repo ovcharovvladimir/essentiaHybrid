@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go"
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/log"
 	bv "github.com/ovcharovvladimir/essentiaHybrid/swarm/network/bitvector"
@@ -75,8 +75,17 @@ type RequestSubscriptionMsg struct {
 }
 
 func (p *Peer) handleRequestSubscription(ctx context.Context, req *RequestSubscriptionMsg) (err error) {
-	log.Debug(fmt.Sprintf("handleRequestSubscription: streamer %s to subscribe to %s with stream %s", p.streamer.addr.ID(), p.ID(), req.Stream))
-	return p.streamer.Subscribe(p.ID(), req.Stream, req.History, req.Priority)
+	log.Debug(fmt.Sprintf("handleRequestSubscription: streamer %s to subscribe to %s with stream %s", p.streamer.addr, p.ID(), req.Stream))
+	if err = p.streamer.Subscribe(p.ID(), req.Stream, req.History, req.Priority); err != nil {
+		// The error will be sent as a subscribe error message
+		// and will not be returned as it will prevent any new message
+		// exchange between peers over p2p. Instead, error will be returned
+		// only if there is one from sending subscribe error message.
+		err = p.Send(ctx, SubscribeErrorMsg{
+			Error: err.Error(),
+		})
+	}
+	return err
 }
 
 func (p *Peer) handleSubscribeMsg(ctx context.Context, req *SubscribeMsg) (err error) {
@@ -84,15 +93,17 @@ func (p *Peer) handleSubscribeMsg(ctx context.Context, req *SubscribeMsg) (err e
 
 	defer func() {
 		if err != nil {
-			if e := p.Send(context.TODO(), SubscribeErrorMsg{
+			// The error will be sent as a subscribe error message
+			// and will not be returned as it will prevent any new message
+			// exchange between peers over p2p. Instead, error will be returned
+			// only if there is one from sending subscribe error message.
+			err = p.Send(context.TODO(), SubscribeErrorMsg{
 				Error: err.Error(),
-			}); e != nil {
-				log.Error("send stream subscribe error message", "err", err)
-			}
+			})
 		}
 	}()
 
-	log.Debug("received subscription", "from", p.streamer.addr.ID(), "peer", p.ID(), "stream", req.Stream, "history", req.History)
+	log.Debug("received subscription", "from", p.streamer.addr, "peer", p.ID(), "stream", req.Stream, "history", req.History)
 
 	f, err := p.streamer.GetServerFunc(req.Stream.Name)
 	if err != nil {
@@ -147,6 +158,7 @@ type SubscribeErrorMsg struct {
 }
 
 func (p *Peer) handleSubscribeErrorMsg(req *SubscribeErrorMsg) (err error) {
+	//TODO the error should be channeled to whoever calls the subscribe
 	return fmt.Errorf("subscribe to peer %s: %v", p.ID(), req.Error)
 }
 
@@ -195,10 +207,16 @@ func (p *Peer) handleOfferedHashesMsg(ctx context.Context, req *OfferedHashesMsg
 	if err != nil {
 		return err
 	}
+
 	hashes := req.Hashes
-	want, err := bv.New(len(hashes) / HashSize)
+	lenHashes := len(hashes)
+	if lenHashes%HashSize != 0 {
+		return fmt.Errorf("error invalid hashes length (len: %v)", lenHashes)
+	}
+
+	want, err := bv.New(lenHashes / HashSize)
 	if err != nil {
-		return fmt.Errorf("error initiaising bitvector of length %v: %v", len(hashes)/HashSize, err)
+		return fmt.Errorf("error initiaising bitvector of length %v: %v", lenHashes/HashSize, err)
 	}
 
 	ctr := 0
@@ -206,7 +224,7 @@ func (p *Peer) handleOfferedHashesMsg(ctx context.Context, req *OfferedHashesMsg
 	ctx, cancel := context.WithTimeout(ctx, syncBatchTimeout)
 
 	ctx = context.WithValue(ctx, "source", p.ID().String())
-	for i := 0; i < len(hashes); i += HashSize {
+	for i := 0; i < lenHashes; i += HashSize {
 		hash := hashes[i : i+HashSize]
 
 		if wait := c.NeedData(ctx, hash); wait != nil {
@@ -254,7 +272,7 @@ func (p *Peer) handleOfferedHashesMsg(ctx context.Context, req *OfferedHashesMsg
 		c.sessionAt = req.From
 	}
 	from, to := c.nextBatch(req.To + 1)
-	log.Trace("set next batch", "peer", p.ID(), "stream", req.Stream, "from", req.From, "to", req.To, "addr", p.streamer.addr.ID())
+	log.Trace("set next batch", "peer", p.ID(), "stream", req.Stream, "from", req.From, "to", req.To, "addr", p.streamer.addr)
 	if from == to {
 		return nil
 	}
@@ -318,8 +336,7 @@ func (p *Peer) handleWantedHashesMsg(ctx context.Context, req *WantedHashesMsg) 
 	// launch in go routine since GetBatch blocks until new hashes arrive
 	go func() {
 		if err := p.SendOfferedHashes(s, req.From, req.To); err != nil {
-			log.Warn("SendOfferedHashes dropping peer", "err", err)
-			p.Drop(err)
+			log.Warn("SendOfferedHashes error", "err", err)
 		}
 	}()
 	// go p.SendOfferedHashes(s, req.From, req.To)

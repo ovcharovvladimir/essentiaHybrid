@@ -21,9 +21,10 @@ import (
 	"errors"
 
 	"fmt"
+
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/network"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/spancontext"
@@ -46,7 +47,7 @@ var (
 type Delivery struct {
 	chunkStore storage.SyncChunkStore
 	kad        *network.Kademlia
-	getPeer    func(discover.NodeID) *Peer
+	getPeer    func(enode.ID) *Peer
 }
 
 func NewDelivery(kad *network.Kademlia, chunkStore storage.SyncChunkStore) *Delivery {
@@ -95,6 +96,11 @@ func (s *SwarmChunkServer) processDeliveries() {
 	}
 }
 
+// SessionIndex returns zero in all cases for SwarmChunkServer.
+func (s *SwarmChunkServer) SessionIndex() (uint64, error) {
+	return 0, nil
+}
+
 // SetNextBatch
 func (s *SwarmChunkServer) SetNextBatch(_, _ uint64) (hashes []byte, from uint64, to uint64, proof *HandoverProof, err error) {
 	select {
@@ -127,6 +133,7 @@ func (s *SwarmChunkServer) GetData(ctx context.Context, key []byte) ([]byte, err
 type RetrieveRequestMsg struct {
 	Addr      storage.Address
 	SkipCheck bool
+	HopCount  uint8
 }
 
 func (d *Delivery) handleRetrieveRequestMsg(ctx context.Context, sp *Peer, req *RetrieveRequestMsg) error {
@@ -139,7 +146,7 @@ func (d *Delivery) handleRetrieveRequestMsg(ctx context.Context, sp *Peer, req *
 		"retrieve.request")
 	defer osp.Finish()
 
-	s, err := sp.getServer(NewStream(swarmChunkServerStreamName, "", false))
+	s, err := sp.getServer(NewStream(swarmChunkServerStreamName, "", true))
 	if err != nil {
 		return err
 	}
@@ -147,7 +154,9 @@ func (d *Delivery) handleRetrieveRequestMsg(ctx context.Context, sp *Peer, req *
 
 	var cancel func()
 	// TODO: do something with this hardcoded timeout, maybe use TTL in the future
-	ctx, cancel = context.WithTimeout(context.WithValue(ctx, "peer", sp.ID().String()), network.RequestTimeout)
+	ctx = context.WithValue(ctx, "peer", sp.ID().String())
+	ctx = context.WithValue(ctx, "hopcount", req.HopCount)
+	ctx, cancel = context.WithTimeout(ctx, network.RequestTimeout)
 
 	go func() {
 		select {
@@ -180,11 +189,21 @@ func (d *Delivery) handleRetrieveRequestMsg(ctx context.Context, sp *Peer, req *
 	return nil
 }
 
+//Chunk delivery always uses the same message type....
 type ChunkDeliveryMsg struct {
 	Addr  storage.Address
 	SData []byte // the stored chunk Data (incl size)
 	peer  *Peer  // set in handleChunkDeliveryMsg
 }
+
+//...but swap accounting needs to disambiguate if it is a delivery for syncing or for retrieval
+//as it decides based on message type if it needs to account for this message or not
+
+//defines a chunk delivery for retrieval (with accounting)
+type ChunkDeliveryMsgRetrieval ChunkDeliveryMsg
+
+//defines a chunk delivery for syncing (without accounting)
+type ChunkDeliveryMsgSyncing ChunkDeliveryMsg
 
 // TODO: Fix context SNAFU
 func (d *Delivery) handleChunkDeliveryMsg(ctx context.Context, sp *Peer, req *ChunkDeliveryMsg) error {
@@ -212,7 +231,7 @@ func (d *Delivery) handleChunkDeliveryMsg(ctx context.Context, sp *Peer, req *Ch
 }
 
 // RequestFromPeers sends a chunk retrieve request to
-func (d *Delivery) RequestFromPeers(ctx context.Context, req *network.Request) (*discover.NodeID, chan struct{}, error) {
+func (d *Delivery) RequestFromPeers(ctx context.Context, req *network.Request) (*enode.ID, chan struct{}, error) {
 	requestFromPeersCount.Inc(1)
 	var sp *Peer
 	spID := req.Source
@@ -246,6 +265,7 @@ func (d *Delivery) RequestFromPeers(ctx context.Context, req *network.Request) (
 	err := sp.SendPriority(ctx, &RetrieveRequestMsg{
 		Addr:      req.Addr,
 		SkipCheck: req.SkipCheck,
+		HopCount:  req.HopCount,
 	}, Top)
 	if err != nil {
 		return nil, nil, err

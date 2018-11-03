@@ -304,25 +304,25 @@ func (tab *Table) lookup(targetKey encPubkey, refreshIfEmpty bool) []*node {
 
 func (tab *Table) findnode(n *node, targetKey encPubkey, reply chan<- []*node) {
 	fails := tab.db.FindFails(n.ID())
+	//log.Debug("PRFN Fails", "fails", fails)
 	r, err := tab.net.findnode(n.ID(), n.addr(), targetKey)
+	//log.Debug("PRFN", "id", n.ID, "addr", n.addr(), "target", targetID, "err", err)
 	if err != nil || len(r) == 0 {
 		fails++
 		tab.db.UpdateFindFails(n.ID(), fails)
-		log.Trace("Findnode failed", "id", n.ID(), "failcount", fails, "err", err)
+		log.Trace("Findnode failed", "id", n.ID, "failcount", fails, "err", err)
 		if fails >= maxFindnodeFailures {
-			log.Trace("Too many findnode failures, dropping", "id", n.ID(), "failcount", fails)
+			log.Trace("Too many findnode failures, dropping", "id", n.ID, "failcount", fails)
 			tab.delete(n)
 		}
 	} else if fails > 0 {
-		tab.db.UpdateFindFails(n.ID(), fails-1)
+		if fails >= maxFindnodeFailures {
+			log.Trace("Too many findnode failures, dropping", "id", n.ID, "failcount", fails)
+			tab.delete(n)
+		} else {
+			tab.db.UpdateFindFails(n.ID(), fails-1)
+		}
 	}
-
-	// Grab as many nodes as possible. Some of them might not be alive anymore, but we'll
-	// just remove those again during revalidation.
-	for _, n := range r {
-		tab.add(n)
-	}
-	reply <- r
 }
 
 func (tab *Table) refresh() <-chan struct{} {

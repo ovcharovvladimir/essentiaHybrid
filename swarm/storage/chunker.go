@@ -23,12 +23,12 @@ import (
 	"io"
 	"sync"
 
-	opentracing "github.com/opentracing/opentracing-go"
-	olog "github.com/opentracing/opentracing-go/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/metrics"
 	ch "github.com/ovcharovvladimir/essentiaHybrid/swarm/chunk"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/swarm/spancontext"
+	opentracing "github.com/opentracing/opentracing-go"
+	olog "github.com/opentracing/opentracing-go/log"
 )
 
 /*

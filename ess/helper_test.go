@@ -28,7 +28,7 @@ import (
 	"testing"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-	"github.com/ovcharovvladimir/essentiaHybrid/consensus/esshash"
+	"github.com/ovcharovvladimir/essentiaHybrid/consensus/ethash"
 	"github.com/ovcharovvladimir/essentiaHybrid/core"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 	"github.com/ovcharovvladimir/essentiaHybrid/core/vm"
@@ -37,7 +37,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/event"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 )
 
@@ -49,11 +49,11 @@ var (
 // newTestProtocolManager creates a new protocol manager for testing purposes,
 // with the given number of blocks already known, and potential notification
 // channels for different events.
-func newTestProtocolManager(mode downloader.SyncMode, blocks int, generator func(int, *core.BlockGen), newtx chan<- []*types.Transaction) (*ProtocolManager, *essdb.MemDatabase, error) {
+func newTestProtocolManager(mode downloader.SyncMode, blocks int, generator func(int, *core.BlockGen), newtx chan<- []*types.Transaction) (*ProtocolManager, *ethdb.MemDatabase, error) {
 	var (
 		evmux  = new(event.TypeMux)
-		engine = esshash.NewFaker()
-		db     = essdb.NewMemDatabase()
+		engine = ethash.NewFaker()
+		db     = ethdb.NewMemDatabase()
 		gspec  = &core.Genesis{
 			Config: params.TestChainConfig,
 			Alloc:  core.GenesisAlloc{testBank: {Balance: big.NewInt(1000000)}},
@@ -61,7 +61,7 @@ func newTestProtocolManager(mode downloader.SyncMode, blocks int, generator func
 		genesis       = gspec.MustCommit(db)
 		blockchain, _ = core.NewBlockChain(db, nil, gspec.Config, engine, vm.Config{}, nil)
 	)
-	chain, _ := core.GenerateChain(gspec.Config, genesis, esshash.NewFaker(), db, blocks, generator)
+	chain, _ := core.GenerateChain(gspec.Config, genesis, ethash.NewFaker(), db, blocks, generator)
 	if _, err := blockchain.InsertChain(chain); err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ func newTestProtocolManager(mode downloader.SyncMode, blocks int, generator func
 // with the given number of blocks already known, and potential notification
 // channels for different events. In case of an error, the constructor force-
 // fails the test.
-func newTestProtocolManagerMust(t *testing.T, mode downloader.SyncMode, blocks int, generator func(int, *core.BlockGen), newtx chan<- []*types.Transaction) (*ProtocolManager, *essdb.MemDatabase) {
+func newTestProtocolManagerMust(t *testing.T, mode downloader.SyncMode, blocks int, generator func(int, *core.BlockGen), newtx chan<- []*types.Transaction) (*ProtocolManager, *ethdb.MemDatabase) {
 	pm, db, err := newTestProtocolManager(mode, blocks, generator, newtx)
 	if err != nil {
 		t.Fatalf("Failed to create protocol manager: %v", err)
@@ -148,7 +148,7 @@ func newTestPeer(name string, version int, pm *ProtocolManager, shake bool) (*te
 	app, net := p2p.MsgPipe()
 
 	// Generate a random id and create the peer
-	var id discover.NodeID
+	var id enode.ID
 	rand.Read(id[:])
 
 	peer := pm.newPeer(version, p2p.NewPeer(id, name, nil), net)
