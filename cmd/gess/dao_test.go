@@ -17,15 +17,15 @@
 package main
 
 import (
-	"io/ioutil"
+	//	"io/ioutil"
 	"math/big"
-	"os"
-	"path/filepath"
+	//	"os"
+	//	"path/filepath"
 	"testing"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
-	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
+	//	"github.com/ovcharovvladimir/essentiaHybrid/core/rawdb"
+	//	"github.com/ovcharovvladimir/essentiaHybrid/essdb"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 )
 
@@ -104,50 +104,50 @@ func TestDAOForkBlockNewChain(t *testing.T) {
 func testDAOForkBlockNewChain(t *testing.T, test int, genesis string, expectBlock *big.Int, expectVote bool) {
 	return
 	// Create a temporary data directory to use and inspect later
-	datadir := tmpdir(t)
-	defer os.RemoveAll(datadir)
+	//	datadir := tmpdir(t)
+	//	defer os.RemoveAll(datadir)
 
-	// Start a Geth instance with the requested flags set and immediately terminate
-	if genesis != "" {
-		json := filepath.Join(datadir, "genesis.json")
-		if err := ioutil.WriteFile(json, []byte(genesis), 0600); err != nil {
-			t.Fatalf("test %d: failed to write genesis file: %v", test, err)
-		}
-		runGeth(t, "--datadir", datadir, "init", json).WaitExit()
-	} else {
-		// Force chain initialization
-		args := []string{"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none", "--ipcdisable", "--datadir", datadir}
-		geth := runGeth(t, append(args, []string{"--exec", "2+2", "console"}...)...)
-		geth.WaitExit()
-	}
-	// Retrieve the DAO config flag from the database
-	path := filepath.Join(datadir, "gess", "chaindata")
-	db, err := essdb.NewLDBDatabase(path, 0, 0)
-	if err != nil {
-		t.Fatalf("test %d: failed to open test database: %v", test, err)
-	}
-	defer db.Close()
+	//	// Start a Geth instance with the requested flags set and immediately terminate
+	//	if genesis != "" {
+	//		json := filepath.Join(datadir, "genesis.json")
+	//		if err := ioutil.WriteFile(json, []byte(genesis), 0600); err != nil {
+	//			t.Fatalf("test %d: failed to write genesis file: %v", test, err)
+	//		}
+	//		runGeth(t, "--datadir", datadir, "init", json).WaitExit()
+	//	} else {
+	//		// Force chain initialization
+	//		args := []string{"--port", "0", "--maxpeers", "0", "--nodiscover", "--nat", "none", "--ipcdisable", "--datadir", datadir}
+	//		geth := runGeth(t, append(args, []string{"--exec", "2+2", "console"}...)...)
+	//		geth.WaitExit()
+	//	}
+	//	// Retrieve the DAO config flag from the database
+	//	path := filepath.Join(datadir, "gess", "chaindata")
+	//	db, err := essdb.NewLDBDatabase(path, 0, 0)
+	//	if err != nil {
+	//		t.Fatalf("test %d: failed to open test database: %v", test, err)
+	//	}
+	//	defer db.Close()
 
-	genesisHash := common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
-	if genesis != "" {
-		genesisHash = daoGenesisHash
-	}
-	config := rawdb.ReadChainConfig(db, genesisHash)
-	if config == nil {
-		t.Errorf("test %d: failed to retrieve chain config: %v", test, err)
-		return // we want to return here, the other checks can't make it past this point (nil panic).
-	}
-	// Validate the DAO hard-fork block number against the expected value
-	if config.DAOForkBlock == nil {
-		if expectBlock != nil {
-			t.Errorf("test %d: dao hard-fork block mismatch: have nil, want %v", test, expectBlock)
-		}
-	} else if expectBlock == nil {
-		t.Errorf("test %d: dao hard-fork block mismatch: have %v, want nil", test, config.DAOForkBlock)
-	} else if config.DAOForkBlock.Cmp(expectBlock) != 0 {
-		t.Errorf("test %d: dao hard-fork block mismatch: have %v, want %v", test, config.DAOForkBlock, expectBlock)
-	}
-	if config.DAOForkSupport != expectVote {
-		t.Errorf("test %d: dao hard-fork support mismatch: have %v, want %v", test, config.DAOForkSupport, expectVote)
-	}
+	//	genesisHash := common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	//	if genesis != "" {
+	//		genesisHash = daoGenesisHash
+	//	}
+	//	config := rawdb.ReadChainConfig(db, genesisHash)
+	//	if config == nil {
+	//		t.Errorf("test %d: failed to retrieve chain config: %v", test, err)
+	//		return // we want to return here, the other checks can't make it past this point (nil panic).
+	//	}
+	//	// Validate the DAO hard-fork block number against the expected value
+	//	if config.DAOForkBlock == nil {
+	//		if expectBlock != nil {
+	//			t.Errorf("test %d: dao hard-fork block mismatch: have nil, want %v", test, expectBlock)
+	//		}
+	//	} else if expectBlock == nil {
+	//		t.Errorf("test %d: dao hard-fork block mismatch: have %v, want nil", test, config.DAOForkBlock)
+	//	} else if config.DAOForkBlock.Cmp(expectBlock) != 0 {
+	//		t.Errorf("test %d: dao hard-fork block mismatch: have %v, want %v", test, config.DAOForkBlock, expectBlock)
+	//	}
+	//	if config.DAOForkSupport != expectVote {
+	//		t.Errorf("test %d: dao hard-fork support mismatch: have %v, want %v", test, config.DAOForkSupport, expectVote)
+	//	}
 }
