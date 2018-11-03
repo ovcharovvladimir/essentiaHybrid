@@ -588,7 +588,8 @@ func TestKeypairSanity(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		hasher := sha3.NewKeccak256()		hasher.Write(salt)
+		hasher := sha3.NewKeccak256()
+		hasher.Write(salt)
 		shared, err := hex.DecodeString(sharedSecret)
 		if err != nil {
 			t.Fatal(err)

@@ -49,7 +49,7 @@ const (
 	softResponseLimit = 2 * 1024 * 1024 // Target maximum size of returned blocks, headers or node data.
 	estHeaderRlpSize  = 500             // Approximate size of an RLP encoded block header
 
-	ethVersion = 63 // equivalent eth version for the downloader
+	ethVersion = 63 // equivalent ess version for the downloader
 
 	MaxHeaderFetch           = 192 // Amount of block headers to be fetched per retrieval request
 	MaxBodyFetch             = 32  // Amount of block bodies to be fetched per retrieval request
@@ -213,8 +213,7 @@ func (pm *ProtocolManager) runPeer(version uint, p *p2p.Peer, rw p2p.MsgReadWrit
 	var entry *poolEntry
 	peer := pm.newPeer(int(version), pm.networkId, p, rw)
 	if pm.serverPool != nil {
-		addr := p.RemoteAddr().(*net.TCPAddr)
-		entry = pm.serverPool.connect(peer, addr.IP, uint16(addr.Port))
+		entry = pm.serverPool.connect(peer, peer.Node())
 	}
 	peer.poolEntry = entry
 	select {
@@ -382,7 +381,7 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
 		}
 
 		if p.requestAnnounceType == announceTypeSigned {
-			if err := req.checkSignature(p.pubKey); err != nil {
+			if err := req.checkSignature(p.ID()); err != nil {
 				p.Log().Trace("Invalid announcement signature", "err", err)
 				return err
 			}

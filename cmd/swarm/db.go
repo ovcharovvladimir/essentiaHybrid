@@ -1,4 +1,4 @@
-// Copyright 2016 The go-ethereum Authors
+// Copyright 2017 The go-ethereum Authors
 // This file is part of go-ethereum.
 //
 // go-ethereum is free software: you can redistribute it and/or modify
@@ -17,416 +17,131 @@
 package main
 
 import (
-	"crypto/ecdsa"
-	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
-	"os/signal"
-	"runtime"
-	"sort"
-	"strconv"
-	"strings"
-	"syscall"
+	"path/filepath"
 
-	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
-	"github.com/ovcharovvladimir/essentiaHybrid/accounts/keystore"
 	"github.com/ovcharovvladimir/essentiaHybrid/cmd/utils"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-	"github.com/ovcharovvladimir/essentiaHybrid/console"
-	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-	"github.com/ovcharovvladimir/essentiaHybrid/internal/debug"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
-	"github.com/ovcharovvladimir/essentiaHybrid/node"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
-	"github.com/ovcharovvladimir/essentiaHybrid/swarm"
-	bzzapi "github.com/ovcharovvladimir/essentiaHybrid/swarm/api"
-	swarmmetrics "github.com/ovcharovvladimir/essentiaHybrid/swarm/metrics"
-	"github.com/ovcharovvladimir/essentiaHybrid/swarm/tracing"
-	sv "github.com/ovcharovvladimir/essentiaHybrid/swarm/version"
-
+	"github.com/ovcharovvladimir/essentiaHybrid/swarm/storage"
 	"gopkg.in/urfave/cli.v1"
 )
 
-const clientIdentifier = "swarm"
-const helpTemplate = `NAME:
-{{.HelpName}} - {{.Usage}}
-
-USAGE:
-{{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}}{{if .VisibleFlags}} [command options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}{{if .Category}}
-
-CATEGORY:
-{{.Category}}{{end}}{{if .Description}}
-
-DESCRIPTION:
-{{.Description}}{{end}}{{if .VisibleFlags}}
-
-OPTIONS:
-{{range .VisibleFlags}}{{.}}
-{{end}}{{end}}
-`
-
-var (
-	gitCommit string // Git SHA1 commit hash of the release (set via linker flags)
-)
-
-//declare a few constant error messages, useful for later error check comparisons in test
-var (
-	SWARM_ERR_NO_BZZACCOUNT   = "bzzaccount option is required but not set; check your config file, command line or environment variables"
-	SWARM_ERR_SWAP_SET_NO_API = "SWAP is enabled but --swap-api is not set"
-)
-
-// this help command gets added to any subcommand that does not define it explicitly
-var defaultSubcommandHelp = cli.Command{
-	Action:             func(ctx *cli.Context) { cli.ShowCommandHelpAndExit(ctx, "", 1) },
+var dbCommand = cli.Command{
+	Name:               "db",
 	CustomHelpTemplate: helpTemplate,
-	Name:               "help",
-	Usage:              "shows this help",
-	Hidden:             true,
-}
-
-var defaultNodeConfig = node.DefaultConfig
-
-// This init function sets defaults so cmd/swarm can run alongside geth.
-func init() {
-	defaultNodeConfig.Name = clientIdentifier
-	defaultNodeConfig.Version = sv.VersionWithCommit(gitCommit)
-	defaultNodeConfig.P2P.ListenAddr = ":30399"
-	defaultNodeConfig.IPCPath = "bzzd.ipc"
-	// Set flag defaults for --help display.
-	utils.ListenPortFlag.Value = 30399
-}
-
-var app = utils.NewApp("", "Ethereum Swarm")
-
-// This init function creates the cli.App.
-func init() {
-	app.Action = bzzd
-	app.Version = sv.ArchiveVersion(gitCommit)
-	app.Copyright = "Copyright 2013-2016 The go-ethereum Authors"
-	app.Commands = []cli.Command{
+	Usage:              "manage the local chunk database",
+	ArgsUsage:          "db COMMAND",
+	Description:        "Manage the local chunk database",
+	Subcommands: []cli.Command{
 		{
-			Action:             version,
+			Action:             dbExport,
 			CustomHelpTemplate: helpTemplate,
-			Name:               "version",
-			Usage:              "Print version numbers",
-			Description:        "The output of this command is supposed to be machine-readable",
+			Name:               "export",
+			Usage:              "export a local chunk database as a tar archive (use - to send to stdout)",
+			ArgsUsage:          "<chunkdb> <file>",
+			Description: `
+Export a local chunk database as a tar archive (use - to send to stdout).
+
+    swarm db export ~/.ethereum/swarm/bzz-KEY/chunks chunks.tar
+
+The export may be quite large, consider piping the output through the Unix
+pv(1) tool to get a progress bar:
+
+    swarm db export ~/.ethereum/swarm/bzz-KEY/chunks - | pv > chunks.tar
+`,
 		},
 		{
-			Action:             keys,
+			Action:             dbImport,
 			CustomHelpTemplate: helpTemplate,
-			Name:               "print-keys",
-			Flags:              []cli.Flag{SwarmCompressedFlag},
-			Usage:              "Print public key information",
-			Description:        "The output of this command is supposed to be machine-readable",
+			Name:               "import",
+			Usage:              "import chunks from a tar archive into a local chunk database (use - to read from stdin)",
+			ArgsUsage:          "<chunkdb> <file>",
+			Description: `Import chunks from a tar archive into a local chunk database (use - to read from stdin).
+
+    swarm db import ~/.ethereum/swarm/bzz-KEY/chunks chunks.tar
+
+The import may be quite large, consider piping the input through the Unix
+pv(1) tool to get a progress bar:
+
+    pv chunks.tar | swarm db import ~/.ethereum/swarm/bzz-KEY/chunks -`,
 		},
-		// See upload.go
-		upCommand,
-		// See access.go
-		accessCommand,
-		// See feeds.go
-		feedCommand,
-		// See list.go
-		listCommand,
-		// See hash.go
-		hashCommand,
-		// See download.go
-		downloadCommand,
-		// See manifest.go
-		manifestCommand,
-		// See fs.go
-		fsCommand,
-		// See db.go
-		dbCommand,
-		// See config.go
-		DumpConfigCommand,
-	}
-
-	// append a hidden help subcommand to all commands that have subcommands
-	// if a help command was already defined above, that one will take precedence.
-	addDefaultHelpSubcommands(app.Commands)
-
-	sort.Sort(cli.CommandsByName(app.Commands))
-
-	app.Flags = []cli.Flag{
-		utils.IdentityFlag,
-		utils.DataDirFlag,
-		utils.BootnodesFlag,
-		utils.KeyStoreDirFlag,
-		utils.ListenPortFlag,
-		utils.NoDiscoverFlag,
-		utils.DiscoveryV5Flag,
-		utils.NetrestrictFlag,
-		utils.NodeKeyFileFlag,
-		utils.NodeKeyHexFlag,
-		utils.MaxPeersFlag,
-		utils.NATFlag,
-		utils.IPCDisabledFlag,
-		utils.IPCPathFlag,
-		utils.PasswordFileFlag,
-		// bzzd-specific flags
-		CorsStringFlag,
-		EnsAPIFlag,
-		SwarmTomlConfigPathFlag,
-		SwarmSwapEnabledFlag,
-		SwarmSwapAPIFlag,
-		SwarmSyncDisabledFlag,
-		SwarmSyncUpdateDelay,
-		SwarmMaxStreamPeerServersFlag,
-		SwarmLightNodeEnabled,
-		SwarmDeliverySkipCheckFlag,
-		SwarmListenAddrFlag,
-		SwarmPortFlag,
-		SwarmAccountFlag,
-		SwarmNetworkIdFlag,
-		ChequebookAddrFlag,
-		// upload flags
-		SwarmApiFlag,
-		SwarmRecursiveFlag,
-		SwarmWantManifestFlag,
-		SwarmUploadDefaultPath,
-		SwarmUpFromStdinFlag,
-		SwarmUploadMimeType,
-		// storage flags
-		SwarmStorePath,
-		SwarmStoreCapacity,
-		SwarmStoreCacheCapacity,
-	}
-	rpcFlags := []cli.Flag{
-		utils.WSEnabledFlag,
-		utils.WSListenAddrFlag,
-		utils.WSPortFlag,
-		utils.WSApiFlag,
-		utils.WSAllowedOriginsFlag,
-	}
-	app.Flags = append(app.Flags, rpcFlags...)
-	app.Flags = append(app.Flags, debug.Flags...)
-	app.Flags = append(app.Flags, swarmmetrics.Flags...)
-	app.Flags = append(app.Flags, tracing.Flags...)
-	app.Before = func(ctx *cli.Context) error {
-		runtime.GOMAXPROCS(runtime.NumCPU())
-		if err := debug.Setup(ctx, ""); err != nil {
-			return err
-		}
-		swarmmetrics.Setup(ctx)
-		tracing.Setup(ctx)
-		return nil
-	}
-	app.After = func(ctx *cli.Context) error {
-		debug.Exit()
-		return nil
-	}
+	},
 }
 
-func main() {
-	if err := app.Run(os.Args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+func dbExport(ctx *cli.Context) {
+	args := ctx.Args()
+	if len(args) != 3 {
+		utils.Fatalf("invalid arguments, please specify both <chunkdb> (path to a local chunk database), <file> (path to write the tar archive to, - for stdout) and the base key")
 	}
-}
 
-func keys(ctx *cli.Context) error {
-	privateKey := getPrivKey(ctx)
-	pub := hex.EncodeToString(crypto.FromECDSAPub(&privateKey.PublicKey))
-	pubCompressed := hex.EncodeToString(crypto.CompressPubkey(&privateKey.PublicKey))
-	if !ctx.Bool(SwarmCompressedFlag.Name) {
-		fmt.Println(fmt.Sprintf("publicKey=%s", pub))
-	}
-	fmt.Println(fmt.Sprintf("publicKeyCompressed=%s", pubCompressed))
-	return nil
-}
-
-func version(ctx *cli.Context) error {
-	fmt.Println(strings.Title(clientIdentifier))
-	fmt.Println("Version:", sv.VersionWithMeta)
-	if gitCommit != "" {
-		fmt.Println("Git Commit:", gitCommit)
-	}
-	fmt.Println("Go Version:", runtime.Version())
-	fmt.Println("OS:", runtime.GOOS)
-	return nil
-}
-
-func bzzd(ctx *cli.Context) error {
-	//build a valid bzzapi.Config from all available sources:
-	//default config, file config, command line and env vars
-
-	bzzconfig, err := buildConfig(ctx)
+	store, err := openLDBStore(args[0], common.Hex2Bytes(args[2]))
 	if err != nil {
-		utils.Fatalf("unable to configure swarm: %v", err)
+		utils.Fatalf("error opening local chunk database: %s", err)
 	}
+	defer store.Close()
 
-	cfg := defaultNodeConfig
-
-	//pss operates on ws
-	cfg.WSModules = append(cfg.WSModules, "pss")
-
-	//geth only supports --datadir via command line
-	//in order to be consistent within swarm, if we pass --datadir via environment variable
-	//or via config file, we get the same directory for geth and swarm
-	if _, err := os.Stat(bzzconfig.Path); err == nil {
-		cfg.DataDir = bzzconfig.Path
-	}
-
-	//optionally set the bootnodes before configuring the node
-	setSwarmBootstrapNodes(ctx, &cfg)
-	//setup the ethereum node
-	utils.SetNodeConfig(ctx, &cfg)
-	stack, err := node.New(&cfg)
-	if err != nil {
-		utils.Fatalf("can't create node: %v", err)
-	}
-
-	//a few steps need to be done after the config phase is completed,
-	//due to overriding behavior
-	initSwarmNode(bzzconfig, stack, ctx)
-	//register BZZ as node.Service in the ethereum node
-	registerBzzService(bzzconfig, stack)
-	//start the node
-	utils.StartNode(stack)
-
-	go func() {
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, syscall.SIGTERM)
-		defer signal.Stop(sigc)
-		<-sigc
-		log.Info("Got sigterm, shutting swarm down...")
-		stack.Stop()
-	}()
-
-	stack.Wait()
-	return nil
-}
-
-func registerBzzService(bzzconfig *bzzapi.Config, stack *node.Node) {
-	//define the swarm service boot function
-	boot := func(_ *node.ServiceContext) (node.Service, error) {
-		// In production, mockStore must be always nil.
-		return swarm.NewSwarm(bzzconfig, nil)
-	}
-	//register within the ethereum node
-	if err := stack.Register(boot); err != nil {
-		utils.Fatalf("Failed to register the Swarm service: %v", err)
-	}
-}
-
-func getAccount(bzzaccount string, ctx *cli.Context, stack *node.Node) *ecdsa.PrivateKey {
-	//an account is mandatory
-	if bzzaccount == "" {
-		utils.Fatalf(SWARM_ERR_NO_BZZACCOUNT)
-	}
-	// Try to load the arg as a hex key file.
-	if key, err := crypto.LoadECDSA(bzzaccount); err == nil {
-		log.Info("Swarm account key loaded", "address", crypto.PubkeyToAddress(key.PublicKey))
-		return key
-	}
-	// Otherwise try getting it from the keystore.
-	am := stack.AccountManager()
-	ks := am.Backends(keystore.KeyStoreType)[0].(*keystore.KeyStore)
-
-	return decryptStoreAccount(ks, bzzaccount, utils.MakePasswordList(ctx))
-}
-
-// getPrivKey returns the private key of the specified bzzaccount
-// Used only by client commands, such as `feed`
-func getPrivKey(ctx *cli.Context) *ecdsa.PrivateKey {
-	// booting up the swarm node just as we do in bzzd action
-	bzzconfig, err := buildConfig(ctx)
-	if err != nil {
-		utils.Fatalf("unable to configure swarm: %v", err)
-	}
-	cfg := defaultNodeConfig
-	if _, err := os.Stat(bzzconfig.Path); err == nil {
-		cfg.DataDir = bzzconfig.Path
-	}
-	utils.SetNodeConfig(ctx, &cfg)
-	stack, err := node.New(&cfg)
-	if err != nil {
-		utils.Fatalf("can't create node: %v", err)
-	}
-	return getAccount(bzzconfig.BzzAccount, ctx, stack)
-}
-
-func decryptStoreAccount(ks *keystore.KeyStore, account string, passwords []string) *ecdsa.PrivateKey {
-	var a accounts.Account
-	var err error
-	if common.IsHexAddress(account) {
-		a, err = ks.Find(accounts.Account{Address: common.HexToAddress(account)})
-	} else if ix, ixerr := strconv.Atoi(account); ixerr == nil && ix > 0 {
-		if accounts := ks.Accounts(); len(accounts) > ix {
-			a = accounts[ix]
-		} else {
-			err = fmt.Errorf("index %d higher than number of accounts %d", ix, len(accounts))
-		}
+	var out io.Writer
+	if args[1] == "-" {
+		out = os.Stdout
 	} else {
-		utils.Fatalf("Can't find swarm account key %s", account)
-	}
-	if err != nil {
-		utils.Fatalf("Can't find swarm account key: %v - Is the provided bzzaccount(%s) from the right datadir/Path?", err, account)
-	}
-	keyjson, err := ioutil.ReadFile(a.URL.Path)
-	if err != nil {
-		utils.Fatalf("Can't load swarm account key: %v", err)
-	}
-	for i := 0; i < 3; i++ {
-		password := getPassPhrase(fmt.Sprintf("Unlocking swarm account %s [%d/3]", a.Address.Hex(), i+1), i, passwords)
-		key, err := keystore.DecryptKey(keyjson, password)
-		if err == nil {
-			return key.PrivateKey
-		}
-	}
-	utils.Fatalf("Can't decrypt swarm account key")
-	return nil
-}
-
-// getPassPhrase retrieves the password associated with bzz account, either by fetching
-// from a list of pre-loaded passwords, or by requesting it interactively from user.
-func getPassPhrase(prompt string, i int, passwords []string) string {
-	// non-interactive
-	if len(passwords) > 0 {
-		if i < len(passwords) {
-			return passwords[i]
-		}
-		return passwords[len(passwords)-1]
-	}
-
-	// fallback to interactive mode
-	if prompt != "" {
-		fmt.Println(prompt)
-	}
-	password, err := console.Stdin.PromptPassword("Passphrase: ")
-	if err != nil {
-		utils.Fatalf("Failed to read passphrase: %v", err)
-	}
-	return password
-}
-
-// addDefaultHelpSubcommand scans through defined CLI commands and adds
-// a basic help subcommand to each
-// if a help command is already defined, it will take precedence over the default.
-func addDefaultHelpSubcommands(commands []cli.Command) {
-	for i := range commands {
-		cmd := &commands[i]
-		if cmd.Subcommands != nil {
-			cmd.Subcommands = append(cmd.Subcommands, defaultSubcommandHelp)
-			addDefaultHelpSubcommands(cmd.Subcommands)
-		}
-	}
-}
-
-func setSwarmBootstrapNodes(ctx *cli.Context, cfg *node.Config) {
-	if ctx.GlobalIsSet(utils.BootnodesFlag.Name) || ctx.GlobalIsSet(utils.BootnodesV4Flag.Name) {
-		return
-	}
-
-	cfg.P2P.BootstrapNodes = []*enode.Node{}
-
-	for _, url := range SwarmBootnodes {
-		node, err := enode.ParseV4(url)
+		f, err := os.Create(args[1])
 		if err != nil {
-			log.Error("Bootstrap URL invalid", "enode", url, "err", err)
+			utils.Fatalf("error opening output file: %s", err)
 		}
-		cfg.P2P.BootstrapNodes = append(cfg.P2P.BootstrapNodes, node)
+		defer f.Close()
+		out = f
 	}
-	log.Debug("added default swarm bootnodes", "length", len(cfg.P2P.BootstrapNodes))
+
+	count, err := store.Export(out)
+	if err != nil {
+		utils.Fatalf("error exporting local chunk database: %s", err)
+	}
+
+	log.Info(fmt.Sprintf("successfully exported %d chunks", count))
+}
+
+func dbImport(ctx *cli.Context) {
+	args := ctx.Args()
+	if len(args) != 3 {
+		utils.Fatalf("invalid arguments, please specify both <chunkdb> (path to a local chunk database), <file> (path to read the tar archive from, - for stdin) and the base key")
+	}
+
+	store, err := openLDBStore(args[0], common.Hex2Bytes(args[2]))
+	if err != nil {
+		utils.Fatalf("error opening local chunk database: %s", err)
+	}
+	defer store.Close()
+
+	var in io.Reader
+	if args[1] == "-" {
+		in = os.Stdin
+	} else {
+		f, err := os.Open(args[1])
+		if err != nil {
+			utils.Fatalf("error opening input file: %s", err)
+		}
+		defer f.Close()
+		in = f
+	}
+
+	count, err := store.Import(in)
+	if err != nil {
+		utils.Fatalf("error importing local chunk database: %s", err)
+	}
+
+	log.Info(fmt.Sprintf("successfully imported %d chunks", count))
+}
+
+func openLDBStore(path string, basekey []byte) (*storage.LDBStore, error) {
+	if _, err := os.Stat(filepath.Join(path, "CURRENT")); err != nil {
+		return nil, fmt.Errorf("invalid chunkdb path: %s", err)
+	}
+
+	storeparams := storage.NewDefaultStoreParams()
+	ldbparams := storage.NewLDBStoreParams(storeparams, path)
+	ldbparams.BaseKey = basekey
+	return storage.NewLDBStore(ldbparams)
 }
