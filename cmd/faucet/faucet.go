@@ -54,8 +54,8 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/node"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p"
-	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discover"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/discv5"
+	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enode"
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/nat"
 	"github.com/ovcharovvladimir/essentiaHybrid/params"
 	"golang.org/x/net/websocket"
@@ -64,8 +64,8 @@ import (
 var (
 	genesisFlag = flag.String("genesis", "", "Genesis json file to seed the chain with")
 	apiPortFlag = flag.Int("apiport", 8080, "Listener port for the HTTP API connection")
-	ethPortFlag = flag.Int("ethport", 51903, "Listener port for the devp2p connection")
-	bootFlag    = flag.String("bootnodes", "", "Comma separated bootnode essnode URLs to seed with")
+	ethPortFlag = flag.Int("ethport", 30303, "Listener port for the devp2p connection")
+	bootFlag    = flag.String("bootnodes", "", "Comma separated bootnode enode URLs to seed with")
 	netFlag     = flag.Uint64("network", 0, "Network ID to use for the Ethereum protocol")
 	statsFlag   = flag.String("ethstats", "", "Ethstats network monitoring auth string")
 
@@ -144,7 +144,7 @@ func main() {
 	if err = json.Unmarshal(blob, genesis); err != nil {
 		log.Crit("Failed to parse genesis block json", "err", err)
 	}
-	// Convert the bootnodes to internal essnode representations
+	// Convert the bootnodes to internal enode representations
 	var enodes []*discv5.Node
 	for _, boot := range strings.Split(*bootFlag, ",") {
 		if url, err := discv5.ParseNode(boot); err == nil {
@@ -255,8 +255,10 @@ func newFaucet(genesis *core.Genesis, port int, enodes []*discv5.Node, network u
 		return nil, err
 	}
 	for _, boot := range enodes {
-		old, _ := discover.ParseNode(boot.String())
-		stack.Server().AddPeer(old)
+		old, err := enode.ParseV4(boot.String())
+		if err != nil {
+			stack.Server().AddPeer(old)
+		}
 	}
 	// Attach to the client and retrieve and interesting metadatas
 	api, err := stack.Attach()
@@ -447,7 +449,7 @@ func (f *faucet) apiHandler(conn *websocket.Conn) {
 		case *noauthFlag:
 			username, avatar, address, err = authNoAuth(msg.URL)
 		default:
-			err = errors.New("Something funky happened, please open an issue at https://github.com/ethereum/go-ethereum/issues")
+			err = errors.New("Something funky happened, please open an issue at https://github.com/ovcharovvladimir/essentiaHybrid/issues")
 		}
 		if err != nil {
 			if err = sendError(conn, err); err != nil {
