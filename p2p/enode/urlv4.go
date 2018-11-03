@@ -31,7 +31,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/p2p/enr"
 )
 
-var incompleteNodeURL = regexp.MustCompile("(?i)^(?:enode://)?([0-9a-f]+)$")
+var incompleteNodeURL = regexp.MustCompile("(?i)^(?:essnode://)?([0-9a-f]+)$")
 
 // MustParseV4 parses a node URL. It panics if the URL is not valid.
 func MustParseV4(rawurl string) *Node {
@@ -51,7 +51,7 @@ func MustParseV4(rawurl string) *Node {
 //
 // For incomplete nodes, the designator must look like one of these
 //
-//    enode://<hex node id>
+//    essnode://<hex node id>
 //    <hex node id>
 //
 // For complete nodes, the node ID is encoded in the username portion
@@ -65,7 +65,7 @@ func MustParseV4(rawurl string) *Node {
 // a node with IP address 10.3.58.6, TCP listening port 30303
 // and UDP discovery port 30301.
 //
-//    enode://<hex node id>@10.3.58.6:30303?discport=30301
+//    essnode://<hex node id>@10.3.58.6:30303?discport=30301
 func ParseV4(rawurl string) (*Node, error) {
 	if m := incompleteNodeURL.FindStringSubmatch(rawurl); m != nil {
 		id, err := parsePubkey(m[1])
@@ -108,8 +108,8 @@ func parseComplete(rawurl string) (*Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	if u.Scheme != "enode" {
-		return nil, errors.New("invalid URL scheme, want \"enode\"")
+	if u.Scheme != "essnode" {
+		return nil, errors.New("invalid URL scheme, want \"essnode\"")
 	}
 	// Parse the Node ID from the user portion.
 	if u.User == nil {
@@ -171,7 +171,7 @@ func (n *Node) v4URL() string {
 	default:
 		nodeid = fmt.Sprintf("%s.%x", scheme, n.id[:])
 	}
-	u := url.URL{Scheme: "enode"}
+	u := url.URL{Scheme: "essnode"}
 	if n.Incomplete() {
 		u.Host = nodeid
 	} else {
