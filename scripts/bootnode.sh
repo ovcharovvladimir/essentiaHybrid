@@ -1,6 +1,7 @@
 ipstr=$(hostname -I)
 ip4="$(echo "${ipstr}" | sed -e 's/[[:space:]]*$//')"
-echo "Ypur host is :" $ip4
+echo "Your host is :" $ip4
 echo "***Bootnode***"
-konsole -e ./bootnode -nodekey=key1.bin  -addr=$ip4:51901
+chmod +x bootnode
+./bootnode -nodekey=key1.bin  -addr=$ip4:51901
 

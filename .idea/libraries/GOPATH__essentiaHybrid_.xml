@@ -8,7 +8,6 @@
       <root url="file://$PROJECT_DIR$/../../../bin" />
       <root url="file://$PROJECT_DIR$/../../../bitbucket.org" />
     </CLASSES>
-    <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/../.." />
       <root url="file://$PROJECT_DIR$/../../../golang.org" />
