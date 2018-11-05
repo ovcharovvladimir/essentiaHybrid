@@ -22,3 +22,9 @@ logserv/logserv
 *.test
 
 waletproxy/waletproxy
+
+cmd/gess/gess
+
+cmd/snhelper/snhelper
+
+cmd/snhelper/shelper
