@@ -42,10 +42,10 @@ func (w *panel) run() {
 	fmt.Println()
 	switch w.connection {
 	case Ipc:
-		fmt.Println(GREEN + "ESSENTIA rpc channel : " + WHITE + w.path + RESET)
+		fmt.Println(GREEN + "ESSENTIA ipc channel : " + WHITE + w.path + RESET)
 
 	case Rpc:
-		fmt.Println(GREEN + "ESSENTIA ipc channel : " + WHITE + w.path + RESET)
+		fmt.Println(GREEN + "ESSENTIA rpc channel : " + WHITE + w.path + RESET)
 	}
 
 	rpcClient, err = rpc.Dial(w.path)
@@ -72,7 +72,11 @@ func (w *panel) run() {
 			if err != nil {
 				log.Error("Fatal", "err", err)
 			}
-			fmt.Printf("Public key: 0x%s \n", res)
+			fmt.Printf(GREEN+"Public key:"+RESET+" 0x%s \n", res)
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println("NOW you may run supernode:")
+			fmt.Println("> ./sness ---vrcaddr {contract_address}  --pubkey {public_key} --enable-powchain")
+			fmt.Println("--------------------------------------------------------------------------------")
 		case choice == "2":
 			fmt.Println("2")
 		case choice == "q":
