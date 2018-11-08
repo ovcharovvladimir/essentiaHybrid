@@ -11,7 +11,7 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 )
 
-func Key() (string, error) {
+func KeyGen() (string, error) {
 
 	key, err := crypto.GenerateKey()
 	if err != nil {

@@ -28,3 +28,5 @@ cmd/gess/gess
 cmd/snhelper/snhelper
 
 cmd/snhelper/shelper
+
+cmd/snhelper/password\.txt

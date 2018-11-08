@@ -57,6 +57,8 @@ type panel struct {
 	connection ConnectionEnum
 	in         *bufio.Reader // Wrapper around stdin to allow reading user input
 	lock       sync.Mutex    // Lock to protect configs during concurrent service discovery
+	utcfile    string        // UTC file
+	passfile   string        // Password file
 }
 
 // read reads a single line from stdin, trimming if from spaces.
@@ -67,6 +69,15 @@ func (w *panel) read() string {
 		log.Crit("Failed to read user input", "err", err)
 	}
 	return strings.TrimSpace(text)
+}
+func (w *panel) readHex() []byte {
+	fmt.Printf("> ")
+	text, err := w.in.ReadString('\n')
+	if err != nil {
+		log.Crit("Failed to read user input", "err", err)
+	}
+	str := strings.TrimSpace(text)
+	return []byte(str)
 }
 
 // readString reads a single line from stdin, trimming if from spaces, enforcing
