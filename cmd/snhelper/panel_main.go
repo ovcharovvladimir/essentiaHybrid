@@ -3,6 +3,10 @@ package main
 import (
 	"bufio"
 
+	//	"path/filepath"
+
+	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
+
 	"context"
 	"errors"
 	"fmt"
@@ -11,28 +15,34 @@ import (
 	"os"
 	"time"
 
-	"github.com/ovcharovvladimir/essentiaHybrid"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts/abi/bind"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts/keystore"
-	"github.com/ovcharovvladimir/essentiaHybrid/cmd/snhelper/util"
+	"golang.org/x/crypto/ssh/terminal"
+
+	//	"github.com/ovcharovvladimir/essentiaHybrid/cmd/utils"
+
+	//"github.com/ovcharovvladimir/essentiaHybrid/cmd/snhelper/util"
+	//	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
 
-	//"github.com/ovcharovvladimir/essentiaHybrid/core/types"
+	//	"github.com/ovcharovvladimir/essentiaHybrid/internal/essapi"
 
-	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
+	//	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
+
+	//	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/essclient"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/rpc"
 )
 
-func makePanel(conn string, typ ConnectionEnum, utc string, pass string) *panel {
+func makePanel(conn string, typ ConnectionEnum, dir string, pass string) *panel {
 
 	return &panel{
 		path:       conn,
 		in:         bufio.NewReader(os.Stdin),
 		connection: typ,
-		utcfile:    utc,
+		datadir:    dir,
 		passfile:   pass,
 	}
 }
@@ -46,8 +56,9 @@ func (w *panel) run() {
 	var err error
 	var modules map[string]string
 	var account common.Address
-	var msg ethereum.CallMsg
-	var result []byte
+
+	//	var msg ethereum.CallMsg
+	//	var result []byte
 
 	fmt.Println("+-----------------------------------------------------------+")
 	fmt.Println("|       Wellcome to the ESSENTIA Supernode Helper           |")
@@ -56,9 +67,9 @@ func (w *panel) run() {
 
 	switch w.connection {
 	case Ipc:
-		log.Info("ESSENTIA ipc channel", "addr=", w.path, "utc", w.utcfile, "pass", w.passfile)
+		log.Info("ESSENTIA ipc channel", "addr=", w.path, "utc", w.datadir, "pass", w.passfile)
 	case Rpc:
-		log.Info("ESSENTIA rpc channel", "addr", w.path, "utc", w.utcfile, "pass", w.passfile)
+		log.Info("ESSENTIA rpc channel", "addr", w.path, "utc", w.datadir, "pass", w.passfile)
 	}
 
 	rpcClient, err = rpc.Dial(w.path)
@@ -87,10 +98,7 @@ func (w *panel) run() {
 	} else {
 		log.Error("ESS Client", "err", err)
 	}
-	fmt.Println("Enter account address:")
-	input := w.read()
-	account = common.HexToAddress(input)
-	log.Info("Account", "adr", account)
+
 	// Basics done, loop ad infinitum about what to do
 	for {
 
@@ -110,21 +118,21 @@ func (w *panel) run() {
 			}
 			log.Info("Result", "public key", res)
 		case choice == "2":
-
-			fmt.Println("Enter contract address:")
+			fmt.Println("Enter account address:")
 			input := w.read()
+			account = common.HexToAddress(input)
+			log.Info("Account", "adr", account)
+			fmt.Println("Enter contract address:")
+			input = w.read()
 			contract := common.HexToAddress(input)
 			log.Info("Contract", "addr", contract)
 
-			msg.From = account
-			msg.To = &contract
-			msg.Value = util.ToWei(32, 18)
-
-			//
-			//client.SendTransaction(context.Background(), tx)
-			result, err = client.CallContract(context.Background(), msg, nil)
-			log.Info("res", "r", result)
-
+			//			contract := bind.NewBoundContract(
+			//				addr,
+			//				Containers.Containers[w.Container].Contracts[w.Contract].Abi,
+			//				Client,
+			//				Client,
+			//			)
 		case choice == "3":
 			privKey, error := KeysLoader(w)
 			if error != nil {
@@ -148,32 +156,36 @@ func (w *panel) run() {
 			log.Info("New contract deployed", "addr", addr.Hex())
 
 		case choice == "4":
-			if w.passfile == "" || w.utcfile == "" {
-				log.Error("error")
+
+			fmt.Println("Enter account address:")
+			input := w.read()
+			address := common.HexToAddress(input)
+			fmt.Println("Enter passphrase:")
+			password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+
+			var acc accounts.Account
+			acc.Address = address
+
+			ks := keystore.NewKeyStore(w.datadir, keystore.StandardScryptN, keystore.StandardScryptP)
+			signAcc, err := ks.Find(acc)
+			if err != nil {
+				log.Crit(err.Error())
+			}
+			var res bool
+			res, err = ks.TimedUnlock(signAcc, string(password), time.Duration(6000))
+
+			if err == nil {
+				log.Info("Unlock", "result", res, "account", signAcc.Address.String())
+
+				balance, err := client.BalanceAt(context.Background(), address, nil)
+				if err == nil {
+					log.Info("Balance", "amount", balance)
+				} else {
+					log.Info("Balance", "err", err.Error())
+				}
+
 			} else {
-				file, err := os.Open(w.passfile)
-				if err != nil {
-					log.Error("Error when open password file")
-				}
-
-				scanner := bufio.NewScanner(file)
-				scanner.Split(bufio.ScanWords)
-				scanner.Scan()
-				password := scanner.Text()
-
-				keyJSON, err := ioutil.ReadFile(w.utcfile)
-				if err != nil {
-					log.Error("Error when read utc file")
-				}
-				privKey, err := keystore.DecryptKey(keyJSON, password)
-				if err != nil {
-					log.Error("Error when get decrypt key")
-				}
-
-				publicKey := privKey.PrivateKey.PublicKey
-				address := crypto.PubkeyToAddress(publicKey).Hex()
-				log.Info("Address: %v", address)
-
+				log.Info("Unlock", "result", res, "err", err.Error())
 			}
 
 		case choice == "q":
@@ -186,7 +198,7 @@ func (w *panel) run() {
 }
 
 func KeysLoader(w *panel) (*keystore.Key, error) {
-	if w.passfile == "" || w.utcfile == "" {
+	if w.passfile == "" || w.datadir == "" {
 		return nil, errors.New("No key or passphrase")
 	} else {
 		file, err := os.Open(w.passfile)
@@ -198,14 +210,15 @@ func KeysLoader(w *panel) (*keystore.Key, error) {
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanWords)
 		scanner.Scan()
-		password := scanner.Text()
+		//		password := scanner.Text()
 
-		keyJSON, err := ioutil.ReadFile(w.utcfile)
+		keyJSON, err := ioutil.ReadFile(w.datadir + "/keystore/")
 		if err != nil {
 			log.Crit("Error when read utc file")
 			return nil, err
 		}
-		privKey, err := keystore.DecryptKey(keyJSON, password)
+		privKey, err := keystore.DecryptKey(keyJSON, "123")
+
 		if err != nil {
 			log.Crit("Error when get decrypt key")
 			return nil, err
@@ -214,4 +227,5 @@ func KeysLoader(w *panel) (*keystore.Key, error) {
 		return privKey, nil
 
 	}
+
 }

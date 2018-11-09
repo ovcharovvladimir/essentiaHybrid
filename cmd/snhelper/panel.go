@@ -57,7 +57,7 @@ type panel struct {
 	connection ConnectionEnum
 	in         *bufio.Reader // Wrapper around stdin to allow reading user input
 	lock       sync.Mutex    // Lock to protect configs during concurrent service discovery
-	utcfile    string        // UTC file
+	datadir    string        // ESS data directory path (~/.essentia by dafeault)
 	passfile   string        // Password file
 }
 

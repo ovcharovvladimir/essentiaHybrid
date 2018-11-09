@@ -313,7 +313,7 @@ func (ks *KeyStore) SignTxWithPassphrase(a accounts.Account, passphrase string, 
 }
 
 // Unlock unlocks the given account indefinitely.
-func (ks *KeyStore) Unlock(a accounts.Account, passphrase string) error {
+func (ks *KeyStore) Unlock(a accounts.Account, passphrase string) (bool, error) {
 	return ks.TimedUnlock(a, passphrase, 0)
 }
 
@@ -336,10 +336,10 @@ func (ks *KeyStore) Lock(addr common.Address) error {
 // If the account address is already unlocked for a duration, TimedUnlock extends or
 // shortens the active unlock timeout. If the address was previously unlocked
 // indefinitely the timeout is not altered.
-func (ks *KeyStore) TimedUnlock(a accounts.Account, passphrase string, timeout time.Duration) error {
+func (ks *KeyStore) TimedUnlock(a accounts.Account, passphrase string, timeout time.Duration) (bool, error) {
 	a, key, err := ks.getDecryptedKey(a, passphrase)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	ks.mu.Lock()
@@ -350,7 +350,8 @@ func (ks *KeyStore) TimedUnlock(a accounts.Account, passphrase string, timeout t
 			// The address was unlocked indefinitely, so unlocking
 			// it with a timeout would be confusing.
 			zeroKey(key.PrivateKey)
-			return nil
+
+			return true, nil
 		}
 		// Terminate the expire goroutine and replace it below.
 		close(u.abort)
@@ -362,7 +363,7 @@ func (ks *KeyStore) TimedUnlock(a accounts.Account, passphrase string, timeout t
 		u = &unlocked{Key: key}
 	}
 	ks.unlocked[a.Address] = u
-	return nil
+	return true, nil
 }
 
 // Find resolves the given account into a unique entry in the keystore.

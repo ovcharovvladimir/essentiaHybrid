@@ -2,8 +2,10 @@ package util
 
 import (
 	"math/big"
+	"os"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -111,4 +113,14 @@ func SigRSV(isig interface{}) ([32]byte, [32]byte, uint8) {
 	V := uint8(vI + 27)
 
 	return R, S, V
+}
+func GetUserHomePath() string {
+	if runtime.GOOS == "windows" {
+		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home == "" {
+			home = os.Getenv("USERPROFILE")
+		}
+		return home
+	}
+	return os.Getenv("HOME")
 }
