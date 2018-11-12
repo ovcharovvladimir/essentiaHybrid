@@ -179,7 +179,15 @@ if [ ! -L "$pth/gorethink" ]; then
     ln -s $solution/gopkg.in/gorethink/. gorethink
     cd "$root"
 fi
+#github.com/shopspring/decimal
+pth="$workspace/src/github.com"
 
+if [ ! -L "$pth/shopspring" ]; then
+    mkdir -p "$pth"
+    cd "$pth"
+    ln -s $solution/shopspring/. shopspring
+    cd "$root"
+fi
 GOPATH="$workspace"
 export GOPATH 
 

@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ovcharovvladimir/essentiaHybrid/common"
+	"github.com/ovcharovvladimir/essentiaHybrid/common/hexutil"
 	"github.com/shopspring/decimal"
 )
 
