@@ -3,12 +3,13 @@ package main
 import (
 	"bufio"
 
-	//	"path/filepath"
+	"path/filepath"
+	"strings"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
 
 	"context"
-	"errors"
+	//"errors"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -36,14 +37,14 @@ import (
 	"github.com/ovcharovvladimir/essentiaHybrid/rpc"
 )
 
-func makePanel(conn string, typ ConnectionEnum, dir string, pass string) *panel {
+func makePanel(conn string, typ ConnectionEnum, dir string, address string) *panel {
 
 	return &panel{
 		path:       conn,
 		in:         bufio.NewReader(os.Stdin),
 		connection: typ,
 		datadir:    dir,
-		passfile:   pass,
+		address:    address,
 	}
 }
 
@@ -67,9 +68,9 @@ func (w *panel) run() {
 
 	switch w.connection {
 	case Ipc:
-		log.Info("ESSENTIA ipc channel", "addr=", w.path, "utc", w.datadir, "pass", w.passfile)
+		log.Info("ESSENTIA ipc channel", "addr=", w.path, "utc", w.datadir)
 	case Rpc:
-		log.Info("ESSENTIA rpc channel", "addr", w.path, "utc", w.datadir, "pass", w.passfile)
+		log.Info("ESSENTIA rpc channel", "addr", w.path, "utc", w.datadir)
 	}
 
 	rpcClient, err = rpc.Dial(w.path)
@@ -134,13 +135,25 @@ func (w *panel) run() {
 			//				Client,
 			//			)
 		case choice == "3":
-			privKey, error := KeysLoader(w)
-			if error != nil {
-				log.Crit(error.Error())
+			fmt.Println("Enter account address:")
+			input := w.read()
+			address := common.HexToAddress(input)
+			w.address = address.Hex()
+			fmt.Println("Enter passphrase:")
+			password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+
+			if err != nil {
+				log.Crit(err.Error())
+			}
+			privKey, err := KeysLoader(w, string(password))
+			if err != nil {
+				log.Crit(err.Error())
 			}
 			txOps := bind.NewKeyedTransactor(privKey.PrivateKey)
 			txOps.Value = big.NewInt(0)
+
 			// Deploy validator registration contract
+			log.Info("Wait for contract to mine")
 			addr, tx, _, err := DeployValidatorRegistration(txOps, client)
 			if err != nil {
 				log.Error("Error when deploy contract")
@@ -198,35 +211,46 @@ func (w *panel) run() {
 	rpcClient.Close()
 }
 
-func KeysLoader(w *panel) (*keystore.Key, error) {
-	if w.passfile == "" || w.datadir == "" {
-		return nil, errors.New("No key or passphrase")
-	} else {
-		file, err := os.Open(w.passfile)
-		if err != nil {
-			log.Crit("Error when open password file")
-			return nil, err
+func KeysLoader(w *panel, password string) (*keystore.Key, error) {
+	var fp string
+	// the function that handles each file or dir
+	var ff = func(pathX string, infoX os.FileInfo, errX error) error {
+
+		// first thing to do, check error. and decide what to do about it
+		if errX != nil {
+			log.Info("Error", "msg", errX, "path", pathX)
+			return errX
+		}
+		// find out if it's a dir or file, if file, print info
+		if !infoX.IsDir() {
+			cs := strings.Replace(w.address, "0x", "", -1)
+
+			if strings.Contains(strings.ToLower(infoX.Name()), strings.ToLower(cs)) {
+				fp = pathX
+			} else {
+				log.Crit("Address not founded")
+			}
+
 		}
 
-		scanner := bufio.NewScanner(file)
-		scanner.Split(bufio.ScanWords)
-		scanner.Scan()
-		//		password := scanner.Text()
-
-		keyJSON, err := ioutil.ReadFile(w.datadir + "/keystore/")
-		if err != nil {
-			log.Crit("Error when read utc file")
-			return nil, err
-		}
-		privKey, err := keystore.DecryptKey(keyJSON, "123")
-
-		if err != nil {
-			log.Crit("Error when get decrypt key")
-			return nil, err
-		}
-
-		return privKey, nil
-
+		return nil
 	}
+	err := filepath.Walk(w.datadir, ff)
+
+	if err != nil {
+		log.Crit("Error when get decrypt key")
+		return nil, err
+	}
+	if err != nil {
+		log.Info("error walking the path ", w.datadir)
+	}
+	keyJSON, err := ioutil.ReadFile(fp)
+	if err != nil {
+		log.Crit("Error when read utc file")
+		return nil, err
+	}
+	privKey, err := keystore.DecryptKey(keyJSON, password)
+
+	return privKey, nil
 
 }

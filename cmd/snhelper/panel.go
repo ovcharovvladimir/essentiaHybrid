@@ -58,7 +58,7 @@ type panel struct {
 	in         *bufio.Reader // Wrapper around stdin to allow reading user input
 	lock       sync.Mutex    // Lock to protect configs during concurrent service discovery
 	datadir    string        // ESS data directory path (~/.essentia by dafeault)
-	passfile   string        // Password file
+	address    string        // Password file
 }
 
 // read reads a single line from stdin, trimming if from spaces.
