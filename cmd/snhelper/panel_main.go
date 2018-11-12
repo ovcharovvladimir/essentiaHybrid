@@ -179,6 +179,7 @@ func (w *panel) run() {
 
 				balance, err := client.BalanceAt(context.Background(), address, nil)
 				if err == nil {
+
 					log.Info("Balance", "amount", balance)
 				} else {
 					log.Info("Balance", "err", err.Error())

@@ -207,13 +207,15 @@ func accountList(ctx *cli.Context) error {
 // tries unlocking the specified account a few times.
 func unlockAccount(ctx *cli.Context, ks *keystore.KeyStore, address string, i int, passwords []string) (accounts.Account, string) {
 	account, err := utils.MakeAddress(ks, address)
+	var res bool
 	if err != nil {
 		utils.Fatalf("Could not list accounts: %v", err)
 	}
 	for trials := 0; trials < 3; trials++ {
 		prompt := fmt.Sprintf("Unlocking account %s | Attempt %d/%d", address, trials+1, 3)
 		password := getPassPhrase(prompt, false, i, passwords)
-		err = ks.Unlock(account, password)
+		res, err = ks.Unlock(account, password)
+		log.Debug("Unlocked", "res", res)
 		if err == nil {
 			log.Info("Unlocked account", "address", account.Address.Hex())
 			return account, password
@@ -270,11 +272,15 @@ func ambiguousAddrRecovery(ks *keystore.KeyStore, err *keystore.AmbiguousAddrErr
 	}
 	fmt.Println("Testing your passphrase against all of them...")
 	var match *accounts.Account
+
 	for _, a := range err.Matches {
-		if err := ks.Unlock(a, auth); err == nil {
+		res, err := ks.Unlock(a, auth)
+		log.Debug("Unlocked", "res", res)
+		if err == nil {
 			match = &a
 			break
 		}
+
 	}
 	if match == nil {
 		utils.Fatalf("None of the listed files could be unlocked.")

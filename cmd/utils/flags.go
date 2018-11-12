@@ -1111,6 +1111,7 @@ func checkExclusive(ctx *cli.Context, args ...interface{}) {
 
 // SetShhConfig applies shh-related command line flags to the config.
 func SetShhConfig(ctx *cli.Context, stack *node.Node, cfg *whisper.Config) {
+
 	if ctx.GlobalIsSet(WhisperMaxMessageSizeFlag.Name) {
 		cfg.MaxMessageSize = uint32(ctx.GlobalUint(WhisperMaxMessageSizeFlag.Name))
 	}
@@ -1235,9 +1236,11 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ess.Config) {
 				Fatalf("Failed to create developer account: %v", err)
 			}
 		}
-		if err := ks.Unlock(developer, ""); err != nil {
+		var res bool
+		if res, err := ks.Unlock(developer, ""); err != nil && res != true {
 			Fatalf("Failed to unlock developer account: %v", err)
 		}
+		log.Info("Unlock", "res", res)
 		log.Info("Using developer account", "address", developer.Address)
 
 		cfg.Genesis = core.DeveloperGenesisBlock(uint64(ctx.GlobalInt(DeveloperPeriodFlag.Name)), developer.Address)

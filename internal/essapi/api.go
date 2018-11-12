@@ -319,6 +319,7 @@ func (s *PrivateAccountAPI) ImportRawKey(privkey string, password string) (commo
 // default of 300 seconds. It returns an indication if the account was unlocked.
 func (s *PrivateAccountAPI) UnlockAccount(addr common.Address, password string, duration *uint64) (bool, error) {
 	const max = uint64(time.Duration(math.MaxInt64) / time.Second)
+	var res bool
 	var d time.Duration
 	if duration == nil {
 		d = 300 * time.Second
@@ -327,8 +328,8 @@ func (s *PrivateAccountAPI) UnlockAccount(addr common.Address, password string, 
 	} else {
 		d = time.Duration(*duration) * time.Second
 	}
-	err := fetchKeystore(s.am).TimedUnlock(accounts.Account{Address: addr}, password, d)
-	return err == nil, err
+	res, err := fetchKeystore(s.am).TimedUnlock(accounts.Account{Address: addr}, password, d)
+	return res, err
 }
 
 // LockAccount will lock the account associated with the given address when it's unlocked.
