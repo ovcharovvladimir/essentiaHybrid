@@ -28,13 +28,15 @@ import (
 
 	//	"github.com/ovcharovvladimir/essentiaHybrid/internal/essapi"
 
-	//	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
+	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
 
-	//	"github.com/ovcharovvladimir/essentiaHybrid/crypto"
+	//"github.com/ovcharovvladimir/essentiaHybrid/crypto"
 
 	"github.com/ovcharovvladimir/essentiaHybrid/essclient"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/rpc"
+	//"github.com/ethereum/go-ethereum/core/types"
+	//"github.com/ethereum/go-ethereum/crypto"
 )
 
 func makePanel(conn string, typ ConnectionEnum, dir string, address string) *panel {
@@ -108,6 +110,7 @@ func (w *panel) run() {
 		fmt.Println(" 2. Became a VOTER")
 		fmt.Println(" 3. Deploy contract")
 		fmt.Println(" 4. Account")
+		fmt.Println(" 5. Transfer funds")
 		fmt.Println(" q. QUIT")
 		choice := w.read()
 		switch {
@@ -202,6 +205,74 @@ func (w *panel) run() {
 				log.Info("Unlock", "result", res, "err", err.Error())
 			}
 
+		case choice == "5":
+
+			fmt.Println("Enter account (Source) address:")
+			input := w.read()
+			source := common.HexToAddress(input)
+			fmt.Println("Enter passphrase:")
+			password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+
+			fmt.Println("Enter account (Destination) address:")
+			input = w.read()
+			dest := common.HexToAddress(input)
+			//			fmt.Println("Enter passphrase:")
+			//			password1, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+
+			fmt.Println("Enter amount (in wei):")
+			input = w.read()
+			amount := input
+
+			//example from:
+			//https://ethereum.stackexchange.com/questions/50775/how-to-send-signed-transaction-to-ropsten-through-infura-in-golang
+			//TODO: remove below lines after debugging
+			//start
+			dest = common.HexToAddress("0x325a01232291c820d167feb2d7a1bfe3d8401003")
+			source = common.HexToAddress("0x8071eebbd56263d11f465567a45d0cf71cddeb67")
+			//end
+			w.address = source.String()
+
+			privKey, err := KeysLoader(w, string(password))
+			if err != nil {
+				log.Info("Keys", "addr", w.address, "pK", privKey)
+				log.Crit(err.Error())
+			}
+			privateKey := privKey.PrivateKey
+			log.Info("Priv key ok")
+
+			nonce, err := client.PendingNonceAt(context.Background(), source)
+			if err != nil {
+				log.Error("Fatal", "err", err)
+			}
+
+			log.Info("PendingNonce", "val", nonce)
+
+			value := new(big.Int)
+
+			amount = "10000000000000000000"
+			value.SetString(amount, 10) // in wei (10 eth)
+			gasLimit := uint64(21000)   // in units
+			gasPrice, err := client.SuggestGasPrice(context.Background())
+			if err != nil {
+				log.Error("Fatal", "err", err)
+			}
+			log.Info("Suggest Gas Price", "price", gasPrice, "limit", gasLimit)
+
+			var data []byte
+
+			tx := types.NewTransaction(nonce, dest, value, gasLimit, gasPrice, data)
+			signedTx, err := types.SignTx(tx, types.HomesteadSigner{}, privateKey)
+			if err != nil {
+				log.Error("Fatal", "err", err, "gas", gasPrice, "nonce", nonce)
+			}
+
+			err = client.SendTransaction(context.Background(), signedTx)
+			if err != nil {
+				log.Error("Fatal", "err", err, "gas", gasPrice, "nonce", nonce)
+			}
+
+			log.Info("Transfer ", "tx sent: %s", signedTx.Hash().Hex())
+
 		case choice == "q":
 			log.Info("BYE")
 			return
@@ -224,11 +295,10 @@ func KeysLoader(w *panel, password string) (*keystore.Key, error) {
 		// find out if it's a dir or file, if file, print info
 		if !infoX.IsDir() {
 			cs := strings.Replace(w.address, "0x", "", -1)
-
+			log.Info("File", "path", pathX, "name", infoX.Name())
 			if strings.Contains(strings.ToLower(infoX.Name()), strings.ToLower(cs)) {
 				fp = pathX
-			} else {
-				log.Crit("Address not founded")
+				return nil
 			}
 
 		}

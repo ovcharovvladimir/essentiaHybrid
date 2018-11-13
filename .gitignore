@@ -30,3 +30,5 @@ cmd/snhelper/snhelper
 cmd/snhelper/shelper
 
 cmd/snhelper/password\.txt
+
+cmd/esskey/esskey
