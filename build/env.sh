@@ -182,7 +182,7 @@ fi
 #github.com/shopspring/decimal
 pth="$workspace/src/github.com"
 
-if [ ! -L "$pth/shopspring" ]; then
+if [ ! -L "$pth/github.com/shopspring" ]; then
     mkdir -p "$pth"
     cd "$pth"
     ln -s $solution/shopspring/. shopspring
