@@ -34,6 +34,11 @@ func main() {
 			Usage: "Masternode ipc path",
 		},
 		cli.StringFlag{
+			Name:  "ws",
+			Usage: "WS address",
+			Value: "ws://127.0.0.1:8546",
+		},
+		cli.StringFlag{
 			Name:  "datadir",
 			Usage: "UTC file",
 			Value: "~/.essentia",
@@ -68,6 +73,9 @@ func main() {
 				c.Set("passfile", "")
 			}
 		}
+		if !c.IsSet("ws") {
+			c.Set("ws", "ws://127.0.0.1:8546")
+		}
 		if c.IsSet("datadir") {
 			if _, err := os.Stat(c.GlobalString("datadir")); os.IsNotExist(err) {
 				//File does not exist
@@ -83,13 +91,13 @@ func main() {
 			c.Set("datadir", keystorePath)
 		}
 		if c.IsSet("rpc") {
-			makePanel(c.GlobalString("rpc"), Rpc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
+			makePanel(c.GlobalString("rpc"), c.GlobalString("ws"), Rpc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
 		} else {
 			c.Set("rpc", "http://localhost:8545")
-			makePanel(c.GlobalString("rpc"), Rpc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
+			makePanel(c.GlobalString("rpc"), c.GlobalString("ws"), Rpc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
 		}
 		if c.IsSet("ipc") {
-			makePanel(c.GlobalString("ipc"), Ipc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
+			makePanel(c.GlobalString("ipc"), c.GlobalString("ws"), Ipc, c.GlobalString("datadir"), c.GlobalString("passfile")).run()
 		}
 
 		return nil

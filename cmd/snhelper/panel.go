@@ -59,6 +59,7 @@ type panel struct {
 	lock       sync.Mutex    // Lock to protect configs during concurrent service discovery
 	datadir    string        // ESS data directory path (~/.essentia by dafeault)
 	address    string        // Password file
+	ws         string        // WS url
 }
 
 // read reads a single line from stdin, trimming if from spaces.
