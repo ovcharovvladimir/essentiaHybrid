@@ -32,3 +32,11 @@ cmd/snhelper/shelper
 cmd/snhelper/password\.txt
 
 cmd/esskey/esskey
+
+build/bin0/
+
+*.kate-swp
+
+pkgcreator\.sh\.save
+
+build/ci
