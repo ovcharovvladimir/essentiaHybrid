@@ -1232,10 +1232,11 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ess.Config) {
 				Fatalf("Failed to create developer account: %v", err)
 			}
 		}
-		if err := ks.Unlock(developer, ""); err != nil {
+		res, err := ks.Unlock(developer, "")
+		if err != nil {
 			Fatalf("Failed to unlock developer account: %v", err)
 		}
-		log.Info("Using developer account", "address", developer.Address)
+		log.Info("Using developer account", "address", developer.Address, "res", res)
 
 		cfg.Genesis = core.DeveloperGenesisBlock(uint64(ctx.GlobalInt(DeveloperPeriodFlag.Name)), developer.Address)
 		if !ctx.GlobalIsSet(MinerGasPriceFlag.Name) && !ctx.GlobalIsSet(MinerLegacyGasPriceFlag.Name) {

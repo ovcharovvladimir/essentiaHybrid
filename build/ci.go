@@ -77,7 +77,7 @@ var (
 		executablePath("bootnode"),
 		executablePath("evm"),
 		executablePath("gess"),
-		executablePath("puppeth"),
+		executablePath("puppess"),
 		executablePath("rlpdump"),
 		executablePath("wnode"),
 	}
@@ -1014,8 +1014,8 @@ func doXgo(cmdline []string) {
 		return
 	}
 	// Otherwise xxecute the explicit cross compilation
-	path := args[len(args)-1]
-	args = append(args[:len(args)-1], []string{"--dest", GOBIN, path}...)
+	//path := args[len(args)-1]
+	//args = append(args[:len(args)-1], []string{"--dest", GOBIN, path}...)
 
 	xgo := xgoTool(args)
 	build.MustRun(xgo)

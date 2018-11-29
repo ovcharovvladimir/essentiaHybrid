@@ -213,9 +213,9 @@ func unlockAccount(ctx *cli.Context, ks *keystore.KeyStore, address string, i in
 	for trials := 0; trials < 3; trials++ {
 		prompt := fmt.Sprintf("Unlocking account %s | Attempt %d/%d", address, trials+1, 3)
 		password := getPassPhrase(prompt, false, i, passwords)
-		err = ks.Unlock(account, password)
+		res, err := ks.Unlock(account, password)
 		if err == nil {
-			log.Info("Unlocked account", "address", account.Address.Hex())
+			log.Info("Unlocked account", "address", account.Address.Hex(), res)
 			return account, password
 		}
 		if err, ok := err.(*keystore.AmbiguousAddrError); ok {
@@ -271,8 +271,10 @@ func ambiguousAddrRecovery(ks *keystore.KeyStore, err *keystore.AmbiguousAddrErr
 	fmt.Println("Testing your passphrase against all of them...")
 	var match *accounts.Account
 	for _, a := range err.Matches {
-		if err := ks.Unlock(a, auth); err == nil {
+		res, err := ks.Unlock(a, auth)
+		if err == nil {
 			match = &a
+			fmt.Println(" ", res)
 			break
 		}
 	}

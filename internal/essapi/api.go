@@ -327,8 +327,8 @@ func (s *PrivateAccountAPI) UnlockAccount(addr common.Address, password string, 
 	} else {
 		d = time.Duration(*duration) * time.Second
 	}
-	err := fetchKeystore(s.am).TimedUnlock(accounts.Account{Address: addr}, password, d)
-	return err == nil, err
+	res, err := fetchKeystore(s.am).TimedUnlock(accounts.Account{Address: addr}, password, d)
+	return res, err
 }
 
 // LockAccount will lock the account associated with the given address when it's unlocked.

@@ -317,7 +317,9 @@ func (tab *Table) lookup(targetID NodeID, refreshIfEmpty bool) []*Node {
 
 func (tab *Table) findnode(n *Node, targetID NodeID, reply chan<- []*Node) {
 	fails := tab.db.findFails(n.ID)
+	log.Debug("PRFN Fails", "fails", fails)
 	r, err := tab.net.findnode(n.ID, n.addr(), targetID)
+	log.Debug("PRFN", "id", n.ID, "addr", n.addr(), "target", targetID, "err", err)
 	if err != nil || len(r) == 0 {
 		fails++
 		tab.db.updateFindFails(n.ID, fails)
