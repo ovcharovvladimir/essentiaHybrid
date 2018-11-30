@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"runtime"
 
 	//	"github.com/ovcharovvladimir/essentiaHybrid/accounts/abi"
 
@@ -119,8 +120,8 @@ func (w *panel) run() {
 		fmt.Println(" 5. Transfer funds")
 		fmt.Println(" q. QUIT")
 		choice := w.read()
-		switch {    
-    case choice == "0":
+		switch {
+		case choice == "0":
 			log.Info("Creating account ..")
 			fmt.Println("Enter passphrase:")
 			password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
