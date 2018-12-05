@@ -96,7 +96,7 @@ func (api *API) SubmitHashRate(rate hexutil.Uint64, id common.Hash) bool {
 	if api.esshash.config.PowMode != ModeNormal && api.esshash.config.PowMode != ModeTest {
 		return false
 	}
-
+	
 	var done = make(chan struct{}, 1)
 
 	select {

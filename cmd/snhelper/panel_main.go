@@ -2,47 +2,28 @@ package main
 
 import (
 	"bufio"
-	"runtime"
-
-	//	"github.com/ovcharovvladimir/essentiaHybrid/accounts/abi"
-
-	"path/filepath"
-	"strings"
-
-	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
-
 	"context"
-	//"errors"
+
 	"fmt"
 	"io/ioutil"
 	"math/big"
 	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 	"time"
 
+	"github.com/ovcharovvladimir/essentiaHybrid"
+	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts/abi/bind"
 	"github.com/ovcharovvladimir/essentiaHybrid/accounts/keystore"
 	contract "github.com/ovcharovvladimir/essentiaHybrid/cmd/snhelper/contract"
-	"golang.org/x/crypto/ssh/terminal"
-
-	//	"github.com/ovcharovvladimir/essentiaHybrid/cmd/utils"
-
-	//"github.com/ovcharovvladimir/essentiaHybrid/cmd/snhelper/util"
-	//	"github.com/ovcharovvladimir/essentiaHybrid/accounts"
 	"github.com/ovcharovvladimir/essentiaHybrid/common"
-
-	//	"github.com/ovcharovvladimir/essentiaHybrid/internal/essapi"
-
 	"github.com/ovcharovvladimir/essentiaHybrid/core/types"
-
-	//"github.com/ovcharovvladimir/essentiaHybrid/crypto"
-
-	"github.com/ovcharovvladimir/essentiaHybrid"
 	"github.com/ovcharovvladimir/essentiaHybrid/essclient"
 	"github.com/ovcharovvladimir/essentiaHybrid/log"
 	"github.com/ovcharovvladimir/essentiaHybrid/rpc"
-	//"github.com/ethereum/go-ethereum/core/types"
-	//"github.com/ethereum/go-ethereum/crypto"
-	//store "gess/cmd/snhelper/build"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func makePanel(conn string, ws string, typ ConnectionEnum, dir string, address string) *panel {
@@ -65,10 +46,6 @@ func (w *panel) run() {
 	var rpcClient *rpc.Client
 	var err error
 	var modules map[string]string
-	//var account common.Address
-
-	//	var msg ethereum.CallMsg
-	//	var result []byte
 
 	fmt.Println("+-----------------------------------------------------------+")
 	fmt.Println("|       Wellcome to the ESSENTIA Supernode Helper           |")
@@ -108,19 +85,21 @@ func (w *panel) run() {
 	} else {
 		log.Error("ESS Client", "err", err)
 	}
-
+	//loop:
 	// Basics done, loop ad infinitum about what to do
 	for {
 
 		fmt.Println("What would you like to do?")
+		fmt.Println(" 0. Create account")
 		fmt.Println(" 1. Generate Supernode public key")
 		fmt.Println(" 2. Become a VOTER")
 		fmt.Println(" 3. Deploy contract")
-		fmt.Println(" 4. Account Info")
+		fmt.Println(" 4. Account")
 		fmt.Println(" 5. Transfer funds")
 		fmt.Println(" q. QUIT")
 		choice := w.read()
 		switch {
+
 		case choice == "0":
 			log.Info("Creating account ..")
 			fmt.Println("Enter passphrase:")
@@ -146,6 +125,7 @@ func (w *panel) run() {
 				log.Error("Fatal", "HasAccount(%x) should've returned true", acc.Address)
 			}
 			fmt.Println("New account created. Address:", acc.Address.String())
+
 		case choice == "1":
 			log.Info("Generating Supernode public key ..")
 			res, err := KeyGen()
@@ -161,7 +141,10 @@ func (w *panel) run() {
 			w.address = address.Hex()
 			fmt.Println("Enter passphrase:")
 			password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
-
+			fmt.Println("Enter Voter public Key:")
+			input = w.read()
+			pubkey := common.HexToAddress(input)
+			var rs = false
 			if err != nil {
 				log.Crit(err.Error())
 			}
@@ -173,7 +156,7 @@ func (w *panel) run() {
 			txOps.Value = big.NewInt(0)
 
 			// Deploy validator registration contract
-			log.Info("Wait for contract to mine")
+			log.Info("Wait until contract is mined")
 			addr, tx, _, err := contract.DeployValidatorRegistration(txOps, client)
 			if err != nil {
 				log.Error("Error when deploy contract")
@@ -188,7 +171,7 @@ func (w *panel) run() {
 			}
 			log.Info("New contract deployed", "addr", addr.Hex())
 
-			// unlock aacount and print balance
+			// unlock account and print balance
 			var acc accounts.Account
 			acc.Address = address
 
@@ -205,7 +188,7 @@ func (w *panel) run() {
 				balance, err := client.BalanceAt(context.Background(), address, nil)
 				if err == nil {
 
-					log.Info("Balance", "amount", balance)
+					log.Info("Account", "addr", address, " balance:", balance)
 				} else {
 					log.Info("Balance", "err", err.Error())
 				}
@@ -218,57 +201,11 @@ func (w *panel) run() {
 
 			source := address
 			dest := addr
-
-			privateKey := privKey.PrivateKey
-
-			nonce, err := client.PendingNonceAt(context.Background(), source)
-			if err != nil {
-				log.Error("Fatal", "err", err)
-			}
-
-			log.Info("PendingNonce", "val", nonce)
-
-			value := new(big.Int)
-
-			amount := "10000000000000000000"
-			value.SetString(amount, 10) // in wei (32 eth)
-			gasLimit := uint64(21000)   // in units
-			gasPrice, err := client.SuggestGasPrice(context.Background())
-			if err != nil {
-				log.Error("Fatal", "err", err)
-			}
-			log.Info("Suggest Gas Price", "price", gasPrice, "limit", gasLimit)
-
-			var data []byte
-			const ValidatorRegistrationABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"usedPubkey\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"VALIDATOR_DEPOSIT\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_pubkey\",\"type\":\"bytes32\"},{\"name\":\"_withdrawalShardID\",\"type\":\"uint256\"},{\"name\":\"_withdrawalAddressbytes32\",\"type\":\"address\"},{\"name\":\"_randaoCommitment\",\"type\":\"bytes32\"}],\"name\":\"deposit\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"pubKey\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"withdrawalShardID\",\"type\":\"uint256\"},{\"indexed\":true,\"name\":\"withdrawalAddressbytes32\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"randaoCommitment\",\"type\":\"bytes32\"}],\"name\":\"ValidatorRegistered\",\"type\":\"event\"}]"
-
-			//instance, err := store.NewStore(addr, client)
-			//if err != nil {
-			//	log.Error("Fatal", "err", err)
-			//}
-
-			tx0 := types.NewTransaction(nonce, dest, value, gasLimit, gasPrice, data)
-			signedTx, err := types.SignTx(tx0, types.HomesteadSigner{}, privateKey)
-			if err != nil {
-				log.Error("Fatal", "err", err, "gas", gasPrice, "nonce", nonce)
-			}
-
-			err = client.SendTransaction(context.Background(), signedTx)
-			if err != nil {
-				log.Error("Fatal", "err", err, "gas", gasPrice, "nonce", nonce)
-			}
-
-			log.Info("Transfer ", "tx sent: %s", signedTx.Hash().Hex())
-
+			//TODO: Add event listener
 			clientWs, err := essclient.Dial(w.ws)
 			if err != nil {
 				log.Error("WS Client", "err", err)
 			}
-			//contractAddress := common.HexToAddress("0x147B8eb97fD247D06C4006D269c90C1908Fb5D54")
-
-			//headerChan: = make(chan *gethTypes.Header)
-			//headSub, err := reader.SubscribeNewHead(context.WithCancel(context), headerChan)
-
 			query := ethereum.FilterQuery{Addresses: []common.Address{dest}}
 			logs := make(chan types.Log)
 			sub, err := clientWs.SubscribeFilterLogs(context.Background(), query, logs)
@@ -277,37 +214,81 @@ func (w *panel) run() {
 				log.Crit(err.Error())
 			}
 
-			for {
-				select {
+			nonce, err := client.PendingNonceAt(context.Background(), source)
+			if err != nil {
+				log.Error("Fatal", "err", err)
+			}
+			log.Info("PendingNonce", "val", nonce)
 
-				case err := <-sub.Err():
-					log.Error("Error when select")
+			vr, err := contract.NewValidatorRegistration(dest, client)
+			ops := &bind.CallOpts{
+				From: source,
+			}
+
+			gasPrice, err := client.SuggestGasPrice(context.Background())
+			if err != nil {
+				log.Error("Fatal", "err", err)
+			}
+			var val big.Int
+			val.SetString("32000000000000000000", 10) //deposit value in wei
+			tx1ps := bind.NewKeyedTransactor(privKey.PrivateKey)
+			tx1ps.Value = &val
+			tx1ps.GasPrice = gasPrice
+
+			var VoterPubkey [32]byte
+			copy(VoterPubkey[0:len(pubkey)], pubkey[:])
+
+			res1, err := vr.UsedPubkey(ops, VoterPubkey)
+			if err != nil {
+				log.Error("Error in UsedPubkey")
+				log.Crit(err.Error())
+			}
+			if res1 == true {
+				log.Info("Voter publicKey already REGISTERED", "pk", VoterPubkey)
+			} else {
+				_, err := vr.Deposit(tx1ps, VoterPubkey, big.NewInt(1), source, VoterPubkey)
+				if err != nil {
+					log.Error("Error when deposit pending")
 					log.Crit(err.Error())
-
-				//case err := <-headSub.Err():
-				//	log.Crit(err.Error())
-
-				//case header := <-headerChan:
-				//	blockNumber := header.Number
-				//	blockHash := header.Hash()
-				//	log.Info("blockNumber",blockNumber,"blockHash",blockHash.Hex())
-
-				case vLog := <-logs:
-					fmt.Println(vLog) // pointer to event log
-					log.Info("Subcribe", "pointer", vLog)
-
-					// public key is the second topic from validatorRegistered log
-					//pubKeyLog := VRClog.Topics[1].Hex()
-					// Support user pubKeys with or without the leading 0x
-					//if pubKeyLog == w.pubKey || pubKeyLog[2:] == w.pubKey {
-					//		log.WithFields(logrus.Fields{
-					//			"publicKey": pubKeyLog,
-					//		}).Info("Validator registered in VRC with public key")
-					//		w.validatorRegistered = true
-					//		w.logChan = nil
-
-					//			}
 				}
+				log.Info("Deposit Pending")
+
+				// display balance of account
+				balance1, err := client.BalanceAt(context.Background(), source, nil)
+				if err == nil {
+
+					log.Info("Account", "addr", source, " balance:", balance1)
+				} else {
+					log.Info("Balance", "err", err.Error())
+				}
+
+				defer sub.Unsubscribe()
+
+			OUT:
+				for {
+					select {
+
+					case err := <-sub.Err():
+						log.Error("Error when sub")
+						log.Crit(err.Error())
+
+					case vLog := <-logs:
+						// public key is the second topic from validatorRegistered log
+						pubKeyLog := vLog.Topics[1].Hex()
+						key := pubKeyLog[0:42] //recover supernode key from header
+						//compare key
+						if strings.ToLower(string(key)) == strings.ToLower(pubkey.String()) {
+							if rs != true {
+								log.Info("SUCCESS: sVoter registered in VRC with public key")
+								rs = true
+							}
+							break OUT
+						}
+
+					}
+
+				}
+
 			}
 
 		case choice == "3":
@@ -329,16 +310,20 @@ func (w *panel) run() {
 			txOps.Value = big.NewInt(0)
 
 			// Deploy validator registration contract
-			log.Info("Wait for contract to mine")
+			log.Info("Wait until contract is mined")
 			addr, tx, _, err := contract.DeployValidatorRegistration(txOps, client)
 			if err != nil {
-				log.Error("Error when deploy contract")
+				log.Error("Error deploying contract")
+				log.Crit(err.Error())
+				//break loop
 			}
 
 			// Wait for contract to mine
 			for pending := true; pending; _, pending, err = client.TransactionByHash(context.Background(), tx.Hash()) {
 				if err != nil {
-					log.Error("Error when pending")
+					log.Error("Error contract pending")
+					log.Crit(err.Error())
+					//break loop
 				}
 				time.Sleep(1 * time.Second)
 			}
@@ -369,7 +354,7 @@ func (w *panel) run() {
 				balance, err := client.BalanceAt(context.Background(), address, nil)
 				if err == nil {
 
-					log.Info("Balance", "amount", balance)
+					log.Info("Account", "addr", address, " balance:", balance)
 				} else {
 					log.Info("Balance", "err", err.Error())
 				}
@@ -461,8 +446,8 @@ func (w *panel) run() {
 			if err != nil {
 				log.Crit(err.Error())
 			}
-			aa := common.HexToAddress("0x8071eebbd56263d11f465567a45d0cf71cddeb67") //account address
-			ac := common.HexToAddress("0xcb0A98df41562299d6acc29E47b0758bC333D823") //contract address
+			aa := common.HexToAddress("0x325a01232291c820d167feb2d7a1bfe3d8401003") //account address
+			ac := common.HexToAddress("0xe9252ff37007c140f7Bf71a03a1dB2ac03Bc1ADe") //contract address
 
 			vr, err := contract.NewValidatorRegistration(ac, client)
 			ops := &bind.CallOpts{

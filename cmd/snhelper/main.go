@@ -21,7 +21,7 @@ const (
 func main() {
 	app := cli.NewApp()
 	app.Name = "shelper"
-	app.Version = "0.1.0"
+	app.Version = "0.2.0"
 	app.Usage = "Supernode initialization helper"
 	app.ArgsUsage = "[arguments...]"
 
@@ -53,7 +53,7 @@ func main() {
 
 	app.Action = func(c *cli.Context) error {
 
-		// Set up the logger
+		// Set up the logger to print everything and the random generator
 		log.Root().SetHandler(log.LvlFilterHandler(log.Lvl(3), log.StreamHandler(colorable.NewColorableStdout(), log.TerminalFormat(true))))
 
 		var home string
@@ -84,8 +84,8 @@ func main() {
 				log.Crit("DataDir Not exists")
 			} else {
 
-				keystorePath := filepath.Join(home, ".essentia", "keystore")
-				c.Set("datadir", keystorePath)
+				//keystorePath := filepath.Join(home, ".essentia", "keystore")
+				//c.Set("datadir", keystorePath)
 			}
 		} else {
 			keystorePath := filepath.Join(home, ".essentia", "keystore")
